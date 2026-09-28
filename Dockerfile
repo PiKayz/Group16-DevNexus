@@ -1,4 +1,4 @@
 FROM eclipse-temurin:25
-COPY ./target/classes/org /tmp/org
-WORKDIR /tmp
-ENTRYPOINT ["java", "org.example.Main"]
+WORKDIR /app
+COPY target/semApp.jar app.jar
+ENTRYPOINT ["java", "-jar", "app.jar"]
