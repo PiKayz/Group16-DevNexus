@@ -1,0 +1,13 @@
+services:
+  app:
+    build: .
+    depends_on:
+      - db
+
+  db:
+    build: ./db
+    environment:
+      MYSQL_ROOT_PASSWORD: example
+      MYSQL_ROOT_HOST: "%"
+    ports:
+      - "33060:3306"
