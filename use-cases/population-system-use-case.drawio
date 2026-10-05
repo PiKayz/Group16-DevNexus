@@ -1,0 +1,76 @@
+<mxfile host="Electron">
+  <diagram id="population-use-cases" name="Population Use Cases">
+    <mxGraphModel dx="1585" dy="1015" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1280" pageHeight="1000" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" parent="1" style="text;html=0;align=center;fontSize=24;fontStyle=1;" value="Group16-DevNexus | Population Reporting System" vertex="1">
+          <mxGeometry height="45" width="1200" x="40" y="20" as="geometry" />
+        </mxCell>
+        <mxCell id="boundary" parent="1" style="rounded=0;html=0;verticalAlign=top;spacingTop=20;fontSize=20;fontStyle=1;fillColor=#f8fafc;strokeColor=#334155;strokeWidth=2;" value="Population Reporting System" vertex="1">
+          <mxGeometry height="815" width="640" x="320" y="95" as="geometry" />
+        </mxCell>
+        <mxCell id="user" parent="1" style="shape=umlActor;html=0;verticalLabelPosition=bottom;verticalAlign=top;fontSize=18;fillColor=#ffffff;strokeColor=#334155;" value="Report User" vertex="1">
+          <mxGeometry height="110" width="70" x="90" y="420" as="geometry" />
+        </mxCell>
+        <mxCell id="database" parent="1" style="shape=cylinder;html=0;whiteSpace=wrap;fontSize=18;fillColor=#e0f2fe;strokeColor=#0369a1;strokeWidth=2;" value="World Database&#xa;MySQL&#xa;Supporting actor" vertex="1">
+          <mxGeometry height="150" width="170" x="1070" y="405" as="geometry" />
+        </mxCell>
+        <mxCell id="uc1" parent="1" style="ellipse;html=0;whiteSpace=wrap;fontSize=17;fillColor=#ffffff;strokeColor=#334155;strokeWidth=2;" value="UC-01&#xa;View Country Population Reports" vertex="1">
+          <mxGeometry height="90" width="400" x="440" y="165" as="geometry" />
+        </mxCell>
+        <mxCell id="user-uc1" edge="1" parent="1" source="user" style="edgeStyle=none;html=0;endArrow=none;startArrow=none;strokeColor=#64748b;entryX=0;entryY=0.5;entryPerimeter=1;" target="uc1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="database-uc1" edge="1" parent="1" source="database" style="edgeStyle=none;html=0;endArrow=none;startArrow=none;strokeColor=#64748b;entryX=1;entryY=0.5;entryPerimeter=1;" target="uc1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="uc2" parent="1" style="ellipse;html=0;whiteSpace=wrap;fontSize=17;fillColor=#ffffff;strokeColor=#334155;strokeWidth=2;" value="UC-02&#xa;View City Population Reports" vertex="1">
+          <mxGeometry height="90" width="400" x="440" y="283" as="geometry" />
+        </mxCell>
+        <mxCell id="user-uc2" edge="1" parent="1" source="user" style="edgeStyle=none;html=0;endArrow=none;startArrow=none;strokeColor=#64748b;entryX=0;entryY=0.5;entryPerimeter=1;" target="uc2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="database-uc2" edge="1" parent="1" source="database" style="edgeStyle=none;html=0;endArrow=none;startArrow=none;strokeColor=#64748b;entryX=1;entryY=0.5;entryPerimeter=1;" target="uc2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="uc3" parent="1" style="ellipse;html=0;whiteSpace=wrap;fontSize=17;fillColor=#ffffff;strokeColor=#334155;strokeWidth=2;" value="UC-03&#xa;View Capital City Population Reports" vertex="1">
+          <mxGeometry height="90" width="400" x="440" y="401" as="geometry" />
+        </mxCell>
+        <mxCell id="user-uc3" edge="1" parent="1" source="user" style="edgeStyle=none;html=0;endArrow=none;startArrow=none;strokeColor=#64748b;entryX=0;entryY=0.5;entryPerimeter=1;" target="uc3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="database-uc3" edge="1" parent="1" source="database" style="edgeStyle=none;html=0;endArrow=none;startArrow=none;strokeColor=#64748b;entryX=1;entryY=0.5;entryPerimeter=1;" target="uc3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="uc4" parent="1" style="ellipse;html=0;whiteSpace=wrap;fontSize=17;fillColor=#ffffff;strokeColor=#334155;strokeWidth=2;" value="UC-04&#xa;View Population Distribution Reports" vertex="1">
+          <mxGeometry height="90" width="400" x="440" y="519" as="geometry" />
+        </mxCell>
+        <mxCell id="user-uc4" edge="1" parent="1" source="user" style="edgeStyle=none;html=0;endArrow=none;startArrow=none;strokeColor=#64748b;entryX=0;entryY=0.5;entryPerimeter=1;" target="uc4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="database-uc4" edge="1" parent="1" source="database" style="edgeStyle=none;html=0;endArrow=none;startArrow=none;strokeColor=#64748b;entryX=1;entryY=0.5;entryPerimeter=1;" target="uc4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="uc5" parent="1" style="ellipse;html=0;whiteSpace=wrap;fontSize=17;fillColor=#ffffff;strokeColor=#334155;strokeWidth=2;" value="UC-05&#xa;View Population Totals" vertex="1">
+          <mxGeometry height="90" width="400" x="440" y="637" as="geometry" />
+        </mxCell>
+        <mxCell id="user-uc5" edge="1" parent="1" source="user" style="edgeStyle=none;html=0;endArrow=none;startArrow=none;strokeColor=#64748b;entryX=0;entryY=0.5;entryPerimeter=1;" target="uc5">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="database-uc5" edge="1" parent="1" source="database" style="edgeStyle=none;html=0;endArrow=none;startArrow=none;strokeColor=#64748b;entryX=1;entryY=0.5;entryPerimeter=1;" target="uc5">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="uc6" parent="1" style="ellipse;html=0;whiteSpace=wrap;fontSize=17;fillColor=#ffffff;strokeColor=#334155;strokeWidth=2;" value="UC-06&#xa;View Language Population Report" vertex="1">
+          <mxGeometry height="90" width="400" x="440" y="755" as="geometry" />
+        </mxCell>
+        <mxCell id="user-uc6" edge="1" parent="1" source="user" style="edgeStyle=none;html=0;endArrow=none;startArrow=none;strokeColor=#64748b;entryX=0;entryY=0.5;entryPerimeter=1;" target="uc6">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="database-uc6" edge="1" parent="1" source="database" style="edgeStyle=none;html=0;endArrow=none;startArrow=none;strokeColor=#64748b;entryX=1;entryY=0.5;entryPerimeter=1;" target="uc6">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
