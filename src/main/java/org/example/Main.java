@@ -2,187 +2,114 @@ package org.example;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
 
 public class Main
 {
-    private Connection con = null;
+    private Connection con;
 
-    public void connect()
+    /**
+     * Connect to the World database.
+     */
+    public boolean connect()
     {
-        try
-        {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-        }
-        catch (ClassNotFoundException e)
-        {
-            System.out.println("Could not load SQL driver");
-            System.exit(1);
-        }
+        String url =
+                "jdbc:mysql://devnexus-db:3306/world"
+                        + "?allowPublicKeyRetrieval=true&useSSL=false"
+                        + "&connectTimeout=5000&socketTimeout=30000";
 
-        int retries = 10;
-        for (int i = 0; i < retries; ++i)
+        int retries = 30;
+
+        for (int attempt = 1; attempt <= retries; attempt++)
         {
-            System.out.println("Connecting to database...");
+            System.out.println(
+                    "Connecting to database... Attempt " + attempt
+            );
 
             try
             {
-                Thread.sleep(30000);
-
                 con = DriverManager.getConnection(
-                        "jdbc:mysql://db:3306/employees?allowPublicKeyRetrieval=true&useSSL=false",
-                        "root",
-                        "example"
+                        url,
+                        "devnexus",
+                        "DevNexusApp2026"
                 );
 
-                System.out.println("Successfully connected");
-                break;
+                System.out.println("Successfully connected to World database");
+                return true;
             }
             catch (SQLException e)
             {
-                System.out.println(
-                        "Failed to connect to database attempt " + (i + 1)
-                );
-                System.out.println(e.getMessage());
-            }
-            catch (InterruptedException e)
-            {
-                Thread.currentThread().interrupt();
-                System.out.println("Connection interrupted");
-                return;
+                System.out.println("Connection failed: " + e.getMessage());
+
+                if (attempt == retries)
+                {
+                    break;
+                }
+
+                try
+                {
+                    Thread.sleep(5000);
+                }
+                catch (InterruptedException interrupted)
+                {
+                    Thread.currentThread().interrupt();
+                    System.out.println("Connection interrupted");
+                    return false;
+                }
             }
         }
+
+        return false;
     }
 
-    public Employee getEmployee(int ID)
-    {
-        if (con == null)
-        {
-            System.out.println("Not connected to the database");
-            return null;
-        }
-
-        String strSelect =
-                "SELECT emp_no, first_name, last_name "
-                        + "FROM employees "
-                        + "WHERE emp_no = " + ID;
-
-        try (Statement stmt = con.createStatement();
-             ResultSet rset = stmt.executeQuery(strSelect))
-        {
-            if (rset.next())
-            {
-                Employee emp = new Employee();
-                emp.emp_no = rset.getInt("emp_no");
-                emp.first_name = rset.getString("first_name");
-                emp.last_name = rset.getString("last_name");
-                return emp;
-            }
-
-            return null;
-        }
-        catch (SQLException e)
-        {
-            System.out.println(e.getMessage());
-            System.out.println("Failed to get employee details");
-            return null;
-        }
-    }
-
-    public void displayEmployee(Employee emp)
-    {
-        if (emp != null)
-        {
-            System.out.println(
-                    emp.emp_no + " "
-                            + emp.first_name + " "
-                            + emp.last_name + "\n"
-                            + emp.title + "\n"
-                            + "Salary: " + emp.salary + "\n"
-                            + emp.dept_name + "\n"
-                            + "Manager: " + emp.manager + "\n"
-            );
-        }
-    }
-
-    public ArrayList<Employee> getSalariesByRole(String role)
-            throws SQLException
+    /**
+     * Check that all three World database tables contain data.
+     */
+    public void checkWorldDatabase() throws SQLException
     {
         if (con == null)
         {
             throw new SQLException("Not connected to the database");
         }
 
-        if (role == null || role.isBlank())
-        {
-            throw new IllegalArgumentException("A role title is required");
-        }
-
         String sql =
-                "SELECT employees.emp_no, employees.first_name, "
-                        + "employees.last_name, salaries.salary "
-                        + "FROM employees "
-                        + "JOIN salaries ON employees.emp_no = salaries.emp_no "
-                        + "JOIN titles ON employees.emp_no = titles.emp_no "
-                        + "WHERE salaries.to_date = '9999-01-01' "
-                        + "AND titles.to_date = '9999-01-01' "
-                        + "AND titles.title = ? "
-                        + "ORDER BY employees.emp_no ASC";
+                "SELECT "
+                        + "(SELECT COUNT(*) FROM country) AS country_count, "
+                        + "(SELECT COUNT(*) FROM city) AS city_count, "
+                        + "(SELECT COUNT(*) FROM countrylanguage) AS language_count";
 
-        ArrayList<Employee> employees = new ArrayList<>();
-
-        try (PreparedStatement stmt = con.prepareStatement(sql))
+        try (Statement stmt = con.createStatement();
+             ResultSet result = stmt.executeQuery(sql))
         {
-            stmt.setString(1, role.trim());
-
-            try (ResultSet rset = stmt.executeQuery())
+            if (!result.next())
             {
-                while (rset.next())
-                {
-                    Employee emp = new Employee();
-                    emp.emp_no = rset.getInt("emp_no");
-                    emp.first_name = rset.getString("first_name");
-                    emp.last_name = rset.getString("last_name");
-                    emp.salary = rset.getInt("salary");
-                    employees.add(emp);
-                }
+                throw new SQLException("Database check returned no result");
             }
-        }
 
-        return employees;
+            int countries = result.getInt("country_count");
+            int cities = result.getInt("city_count");
+            int languages = result.getInt("language_count");
+
+            System.out.println("Countries: " + countries);
+            System.out.println("Cities: " + cities);
+            System.out.println("Country-language records: " + languages);
+
+            if (countries == 0 || cities == 0 || languages == 0)
+            {
+                throw new SQLException(
+                        "World database contains an empty required table"
+                );
+            }
+
+            System.out.println("World database check passed");
+        }
     }
 
-    public void displaySalaries(ArrayList<Employee> employees)
-    {
-        if (employees == null || employees.isEmpty())
-        {
-            System.out.println("No employees found for this role");
-            return;
-        }
-
-        System.out.printf(
-                "%-12s %-20s %-20s %10s%n",
-                "Employee No", "First Name", "Last Name", "Salary"
-        );
-
-        for (Employee emp : employees)
-        {
-            System.out.printf(
-                    "%-12d %-20s %-20s %10d%n",
-                    emp.emp_no,
-                    emp.first_name,
-                    emp.last_name,
-                    emp.salary
-            );
-        }
-
-        System.out.println("Total employees: " + employees.size());
-    }
-
+    /**
+     * Close the database connection.
+     */
     public void disconnect()
     {
         if (con != null)
@@ -190,10 +117,14 @@ public class Main
             try
             {
                 con.close();
+                con = null;
+                System.out.println("Disconnected from database");
             }
             catch (SQLException e)
             {
-                System.out.println("Error closing connection to database");
+                System.err.println(
+                        "Error closing database connection: " + e.getMessage()
+                );
             }
         }
     }
@@ -201,31 +132,24 @@ public class Main
     public static void main(String[] args)
     {
         Main app = new Main();
-        app.connect();
 
-        if (app.con == null)
+        if (!app.connect())
         {
-            System.out.println("Could not connect to the database");
+            System.err.println("Could not connect to World database");
             System.exit(1);
+            return;
         }
 
         int exitCode = 0;
 
         try
         {
-            Employee emp = app.getEmployee(255530);
-            app.displayEmployee(emp);
-
-            String role = "Engineer";
-            System.out.println("Salary report for role: " + role);
-
-            ArrayList<Employee> employees = app.getSalariesByRole(role);
-            app.displaySalaries(employees);
+            app.checkWorldDatabase();
         }
         catch (SQLException e)
         {
-            System.out.println("Failed to produce salary report");
-            System.out.println(e.getMessage());
+            System.err.println("World database check failed");
+            System.err.println(e.getMessage());
             exitCode = 1;
         }
         finally

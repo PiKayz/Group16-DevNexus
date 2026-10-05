@@ -2,12 +2,19 @@ services:
   app:
     build: .
     depends_on:
-      - db
+      - devnexus-db
 
-  db:
+  devnexus-db:
     build: ./db
     environment:
-      MYSQL_ROOT_PASSWORD: example
-      MYSQL_ROOT_HOST: "%"
+      MYSQL_ROOT_PASSWORD: "DevNexusRoot2026"
+      MYSQL_DATABASE: "world"
+      MYSQL_USER: "devnexus"
+      MYSQL_PASSWORD: "DevNexusApp2026"
     ports:
       - "33060:3306"
+    volumes:
+      - world-data:/var/lib/mysql
+
+volumes:
+  world-data:
