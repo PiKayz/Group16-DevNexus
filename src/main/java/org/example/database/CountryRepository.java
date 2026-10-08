@@ -11,6 +11,7 @@ import java.util.Objects;
 import org.example.models.Continent;
 import org.example.models.Country;
 import org.example.models.Region;
+import org.example.models.TopN;
 
 /**
  * Read-only country queries. The caller owns the database connection;
@@ -38,24 +39,30 @@ public final class CountryRepository
 
     public List<Country> findAll() throws SQLException
     {
-        return query(SELECT_COUNTRIES + ORDER_BY_POPULATION, null);
+        return query(SELECT_COUNTRIES + ORDER_BY_POPULATION, null, null);
     }
 
     public List<Country> findByContinent(Continent continent) throws SQLException
     {
         Objects.requireNonNull(continent, "continent");
         return query(SELECT_COUNTRIES + "WHERE country.Continent = ? "
-                + ORDER_BY_POPULATION, continent.databaseName());
+                + ORDER_BY_POPULATION, continent.databaseName(), null);
     }
 
     public List<Country> findByRegion(Region region) throws SQLException
     {
         Objects.requireNonNull(region, "region");
         return query(SELECT_COUNTRIES + "WHERE LOWER(country.Region) = LOWER(?) "
-                + ORDER_BY_POPULATION, region.name());
+                + ORDER_BY_POPULATION, region.name(), null);
     }
 
-    private List<Country> query(String sql, String filter) throws SQLException
+    public List<Country> findTopInWorld(TopN topN) throws SQLException
+    {
+        Objects.requireNonNull(topN, "topN");
+        return query(SELECT_COUNTRIES + ORDER_BY_POPULATION, null, topN);
+    }
+
+    private List<Country> query(String sql, String filter, TopN topN) throws SQLException
     {
         if (connection.isClosed())
         {
@@ -64,11 +71,19 @@ public final class CountryRepository
 
         List<Country> countries = new ArrayList<>();
 
-        try (PreparedStatement statement = connection.prepareStatement(sql))
+        String querySql = topN == null ? sql : sql + " LIMIT ?";
+
+        try (PreparedStatement statement = connection.prepareStatement(querySql))
         {
+            int parameter = 1;
+
             if (filter != null)
             {
-                statement.setString(1, filter);
+                statement.setString(parameter++, filter);
+            }
+            if (topN != null)
+            {
+                statement.setInt(parameter, topN.value());
             }
 
             try (ResultSet result = statement.executeQuery())

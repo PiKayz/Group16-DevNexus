@@ -1,5 +1,5 @@
 /**
- * Country reports: requirements 1-6. World, continent and region reports (1-3)
- * are implemented; Top N reports (4-6) remain unimplemented.
+ * Country reports: requirements 1-6. Requirements 1-4 are implemented;
+ * Top N continent and region reports (5-6) remain unimplemented.
  */
 package org.example.reports.country;

@@ -29,6 +29,9 @@ jobs:
       - name: Run region country report
         run: docker compose run --rm app report03 "Eastern Asia"
 
+      - name: Run world Top N country report
+        run: docker compose run --rm app report04 10
+
       - name: Clean up
         if: always()
         run: docker compose down -v

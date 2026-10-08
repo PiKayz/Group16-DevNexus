@@ -23,6 +23,7 @@ public class Main
             System.err.println("Usage: java -jar app.jar report01");
             System.err.println("       java -jar app.jar report02 \"South America\"");
             System.err.println("       java -jar app.jar report03 \"Eastern Asia\"");
+            System.err.println("       java -jar app.jar report04 10");
             System.exit(2);
             return;
         }
@@ -51,6 +52,7 @@ public class Main
                 case 1 -> reports.printCountriesInWorld(System.out);
                 case 2 -> reports.printCountriesInContinent(request.continent(), System.out);
                 case 3 -> reports.printCountriesInRegion(request.region(), System.out);
+                case 4 -> reports.printTopCountriesInWorld(request.topN(), System.out);
                 default -> throw new IllegalStateException("Unsupported validated report");
             }
         }

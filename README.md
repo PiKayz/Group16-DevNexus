@@ -10,7 +10,7 @@ figures describe that dataset rather than current populations.
 
 ## Implemented reports
 
-This branch implements 3 requirements of 32, which is 9.375%. The other 29
+This branch implements 4 requirements of 32, which is 12.5%. The other 28
 reporting requirements remain to be implemented. Output screenshots for the
 final submission still need to be captured.
 
@@ -19,9 +19,10 @@ final submission still need to be captured.
 | 1 | All countries in the world, largest population first | [Report 1](src/main/java/org/example/reports/country/report01.md) |
 | 2 | All countries in a selected continent, largest population first | [Report 2](src/main/java/org/example/reports/country/report02.md) |
 | 3 | All countries in a selected region, largest population first | [Report 3](src/main/java/org/example/reports/country/report03.md) |
+| 4 | Top N countries in the world | [Report 4](src/main/java/org/example/reports/country/report04.md) |
 
 Reports are grouped by category. A single `CountryReportService` supplies the
-world, continent and region reports as separate methods, with shared queries
+country reports as separate methods, with shared queries
 and formatting. All country reports display Code, Name, Continent,
 Region, Population, and Capital. Countries without a recorded capital remain
 in the output with `N/A` in the Capital column.
@@ -38,6 +39,7 @@ src/main/java/org/example/
     Country.java
     Continent.java
     Region.java
+    TopN.java
     ReportRequest.java
   reports/
     country/
@@ -47,6 +49,7 @@ src/main/java/org/example/
       report01.md
       report02.md
       report03.md
+      report04.md
     city/package-info.java
     capital/package-info.java
     breakdown/package-info.java
@@ -66,7 +69,7 @@ methods for its requirements. Tests follow the same category packages.
 
 | Category | Requirements still unimplemented |
 |---|---|
-| Country | 4-6: Top N reports |
+| Country | 5-6: Top N continent and region reports |
 | City | 7-16 |
 | Capital | 17-22 |
 | Breakdown | 23-25 |
@@ -89,6 +92,7 @@ docker compose build app
 docker compose run --rm app report02 Asia
 docker compose run --rm app report02 "South America"
 docker compose run --rm app report03 "Eastern Asia"
+docker compose run --rm app report04 10
 ```
 
 Use `report01` to explicitly select report 1. Continent names are case
@@ -100,7 +104,7 @@ exit with code 1; successful reports exit with code 0.
 against a small, isolated H2 database in MySQL compatibility mode. Docker checks
 verify the reports against the actual World dataset and MySQL.
 
-Validation: 48 automated tests passed. MySQL verification returned all 239
+Validation: 71 automated tests passed. MySQL verification returned all 239
 countries for report 1 and the correct filtered rows for all seven continents
 in report 2 (Asia 51, Europe 46, North America 37, Africa 58, Oceania 28,
 Antarctica 5, South America 14).

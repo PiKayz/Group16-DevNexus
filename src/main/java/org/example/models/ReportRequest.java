@@ -3,18 +3,23 @@ package org.example.models;
 /**
  * Validated CLI input. No arguments preserves the original report 1 default.
  */
-public record ReportRequest(int number, Continent continent, Region region)
+public record ReportRequest(int number, Continent continent, Region region, TopN topN)
 {
     public ReportRequest(int number, Continent continent)
     {
-        this(number, continent, null);
+        this(number, continent, null, null);
+    }
+
+    public ReportRequest(int number, Continent continent, Region region)
+    {
+        this(number, continent, region, null);
     }
 
     public ReportRequest
     {
-        if (number < 1 || number > 3)
+        if (number < 1 || number > 4)
         {
-            throw new IllegalArgumentException("Supported reports: report01-report03");
+            throw new IllegalArgumentException("Supported reports: report01-report04");
         }
         if (number == 2 && continent == null)
         {
@@ -31,6 +36,14 @@ public record ReportRequest(int number, Continent continent, Region region)
         if (number != 3 && region != null)
         {
             throw new IllegalArgumentException("This report does not use a region");
+        }
+        if (number == 4 && topN == null)
+        {
+            throw new IllegalArgumentException("Report 4 requires N");
+        }
+        if (number < 4 && topN != null)
+        {
+            throw new IllegalArgumentException("This report does not use N");
         }
     }
 
@@ -71,8 +84,16 @@ public record ReportRequest(int number, Continent continent, Region region)
                 }
                 yield new ReportRequest(3, null, new Region(arguments[1]));
             }
+            case "4", "report04" ->
+            {
+                if (arguments.length != 2)
+                {
+                    throw new IllegalArgumentException("Report 4 requires N");
+                }
+                yield new ReportRequest(4, null, null, TopN.parse(arguments[1]));
+            }
             default -> throw new IllegalArgumentException(
-                    "Unknown report: " + arguments[0] + ". Choose report01-report03"
+                    "Unknown report: " + arguments[0] + ". Choose report01-report04"
             );
         };
     }

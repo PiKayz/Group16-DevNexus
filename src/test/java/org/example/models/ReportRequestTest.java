@@ -76,4 +76,23 @@ class ReportRequestTest
         assertThrows(IllegalArgumentException.class,
                 () -> ReportRequest.parse(new String[]{"report03", "Eastern", "Asia"}));
     }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"4", "report04"})
+    void acceptsWorldTopNReports(String command)
+    {
+        assertEquals(new ReportRequest(4, null, null, new TopN(5)),
+                ReportRequest.parse(new String[]{command, "5"}));
+    }
+
+    @Test
+    void requiresExactlyOneValidCountForWorldTopNReports()
+    {
+        assertThrows(IllegalArgumentException.class,
+                () -> ReportRequest.parse(new String[]{"report04"}));
+        assertThrows(IllegalArgumentException.class,
+                () -> ReportRequest.parse(new String[]{"report04", "5", "extra"}));
+        assertThrows(IllegalArgumentException.class,
+                () -> ReportRequest.parse(new String[]{"report04", "0"}));
+    }
 }

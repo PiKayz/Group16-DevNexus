@@ -9,10 +9,10 @@ import org.example.database.CountryRepository;
 import org.example.models.Continent;
 import org.example.models.Country;
 import org.example.models.Region;
+import org.example.models.TopN;
 
 /**
- * Country reporting, requirements 1-6. World, continent and region reports
- * (requirements 1-3) are implemented.
+ * Country reporting, requirements 1-6. Requirements 1-4 are implemented.
  */
 public final class CountryReportService
 {
@@ -47,6 +47,14 @@ public final class CountryReportService
         return repository.findByRegion(region);
     }
 
+    /**
+     * Requirement 4: the user's Top N countries in the world, largest first.
+     */
+    public List<Country> getTopCountriesInWorld(TopN topN) throws SQLException
+    {
+        return repository.findTopInWorld(topN);
+    }
+
     public void printCountriesInWorld(PrintStream output) throws SQLException
     {
         CountryReportFormatter.print(
@@ -74,6 +82,16 @@ public final class CountryReportService
                 "All countries in " + region.name()
                         + " by population (largest to smallest)",
                 getCountriesInRegion(region), output
+        );
+    }
+
+    public void printTopCountriesInWorld(TopN topN, PrintStream output)
+            throws SQLException
+    {
+        Objects.requireNonNull(topN, "topN");
+        CountryReportFormatter.print(
+                "Top " + topN.value() + " countries in the world by population (largest to smallest)",
+                getTopCountriesInWorld(topN), output
         );
     }
 }
