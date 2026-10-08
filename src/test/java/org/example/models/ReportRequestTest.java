@@ -181,4 +181,15 @@ class ReportRequestTest
                 () -> ReportRequest.parse(new String[]{command, " "}));
     }
 
+
+    @ParameterizedTest
+    @ValueSource(strings = {"10", "report10"})
+    void acceptsCountryCityReports(String command)
+    {
+        assertEquals(new ReportRequest(10, null, null, null, new CountryFilter("United States")),
+                ReportRequest.parse(new String[]{command, " United States "}));
+        assertThrows(IllegalArgumentException.class,
+                () -> ReportRequest.parse(new String[]{command, " "}));
+    }
+
 }

@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.example.database.CityRepository;
 import org.example.models.City;
+import org.example.models.CountryFilter;
 import org.example.models.Region;
 import org.example.models.Continent;
 import org.example.support.WorldDatabaseFixture;
@@ -88,6 +89,43 @@ class CityReportServiceTest
         try (Connection connection = WorldDatabaseFixture.open())
         {
             assertTrue(service(connection).getCitiesInRegion(new Region(value)).isEmpty());
+        }
+    }
+
+
+    @ParameterizedTest
+    @ValueSource(strings = {"USA", " usa ", "United States", " united states "})
+    void findsCitiesByCountryCodeOrCompleteName(String value) throws Exception
+    {
+        try (Connection connection = WorldDatabaseFixture.open())
+        {
+            List<City> cities = service(connection).getCitiesInCountry(new CountryFilter(value));
+            assertEquals(List.of("Washington", "Springfield"), cities.stream().map(City::name).toList());
+            assertTrue(cities.stream().allMatch(city -> city.country().equals("United States")));
+            assertEquals(0, cities.getLast().population());
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"Unknown Country", "US", "USA' OR 1=1 --"})
+    void matchesTheWholeCountryIdentifierAsLiteralData(String value) throws Exception
+    {
+        try (Connection connection = WorldDatabaseFixture.open())
+        {
+            assertTrue(service(connection).getCitiesInCountry(new CountryFilter(value)).isEmpty());
+        }
+    }
+
+    @Test
+    void supportsApostrophesInCountryNames() throws Exception
+    {
+        try (Connection connection = WorldDatabaseFixture.open();
+             java.sql.PreparedStatement statement = connection.prepareStatement(
+                     "UPDATE country SET Name = ? WHERE Code = 'USA'"))
+        {
+            statement.setString(1, "O'Country");
+            statement.executeUpdate();
+            assertEquals(2, service(connection).getCitiesInCountry(new CountryFilter("O'Country")).size());
         }
     }
 
