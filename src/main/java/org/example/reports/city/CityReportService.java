@@ -7,10 +7,11 @@ import java.util.Objects;
 
 import org.example.database.CityRepository;
 import org.example.models.City;
+import org.example.models.Continent;
 import org.example.models.ReportRequest;
 
 /**
- * City reporting, requirements 7-16. Requirement 7 is implemented.
+ * City reporting, requirements 7-16. Requirements 7-8 are implemented.
  */
 public final class CityReportService
 {
@@ -27,6 +28,12 @@ public final class CityReportService
         return repository.findAll();
     }
 
+    /** Requirement 8: all cities in a continent. */
+    public List<City> getCitiesInContinent(Continent continent) throws SQLException
+    {
+        return repository.findByContinent(continent);
+    }
+
     public void print(ReportRequest request, PrintStream output) throws SQLException
     {
         Objects.requireNonNull(request, "request");
@@ -35,6 +42,9 @@ public final class CityReportService
             case 7 -> CityReportFormatter.print(
                     "All cities in the world by population (largest to smallest)",
                     getCitiesInWorld(), output);
+            case 8 -> CityReportFormatter.print(
+                    "All cities in " + request.continent().databaseName() + " by population (largest to smallest)",
+                    getCitiesInContinent(request.continent()), output);
             default -> throw new IllegalArgumentException("Unsupported city report");
         }
     }

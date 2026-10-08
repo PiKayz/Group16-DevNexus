@@ -1,7 +1,7 @@
 package org.example.models;
 
 /**
- * Validated CLI input. No arguments preserves the original report 1 default.
+ * Validated CLI input. No arguments preserves report 1 as the default.
  */
 public record ReportRequest(int number, Continent continent, Region region, TopN topN)
 {
@@ -17,31 +17,34 @@ public record ReportRequest(int number, Continent continent, Region region, TopN
 
     public ReportRequest
     {
-        if (number < 1 || number > 7)
+        if (number < 1 || number > 8)
         {
-            throw new IllegalArgumentException("Supported reports: report01-report07");
+            throw new IllegalArgumentException("Supported reports: report01-report08");
         }
-        if ((number == 2 || number == 5) && continent == null)
+        boolean needsContinent = number == 2 || number == 5 || number == 8 || number == 13;
+        if (needsContinent && continent == null)
         {
             throw new IllegalArgumentException("Report " + number + " requires a continent");
         }
-        if (number != 2 && number != 5 && continent != null)
+        if (!needsContinent && continent != null)
         {
             throw new IllegalArgumentException("This report does not use a continent");
         }
-        if ((number == 3 || number == 6) && region == null)
+        boolean needsRegion = number == 3 || number == 6 || number == 9 || number == 14;
+        if (needsRegion && region == null)
         {
             throw new IllegalArgumentException("Report " + number + " requires a region");
         }
-        if (number != 3 && number != 6 && region != null)
+        if (!needsRegion && region != null)
         {
             throw new IllegalArgumentException("This report does not use a region");
         }
-        if (number >= 4 && number <= 6 && topN == null)
+        boolean needsTopN = (number >= 4 && number <= 6) || (number >= 12 && number <= 16);
+        if (needsTopN && topN == null)
         {
             throw new IllegalArgumentException("Report " + number + " requires N");
         }
-        if ((number < 4 || number > 6) && topN != null)
+        if (!needsTopN && topN != null)
         {
             throw new IllegalArgumentException("This report does not use N");
         }
@@ -58,71 +61,54 @@ public record ReportRequest(int number, Continent continent, Region region, TopN
         {
             case "1", "report01" ->
             {
-                if (arguments.length != 1)
-                {
-                    throw new IllegalArgumentException("Report 1 takes no filter arguments");
-                }
-                yield new ReportRequest(1, null);
+                requireLength(arguments, 1, "Report 1 requires no filter arguments");
+                yield new ReportRequest(1, null, null, null);
             }
             case "2", "report02" ->
             {
-                if (arguments.length != 2)
-                {
-                    throw new IllegalArgumentException(
-                            "Report 2 requires one continent; quote names containing spaces"
-                    );
-                }
-                yield new ReportRequest(2, Continent.parse(arguments[1]));
+                requireLength(arguments, 2, "Report 2 requires a continent");
+                yield new ReportRequest(2, Continent.parse(arguments[1]), null, null);
             }
             case "3", "report03" ->
             {
-                if (arguments.length != 2)
-                {
-                    throw new IllegalArgumentException(
-                            "Report 3 requires one region; quote names containing spaces"
-                    );
-                }
-                yield new ReportRequest(3, null, new Region(arguments[1]));
+                requireLength(arguments, 2, "Report 3 requires a region");
+                yield new ReportRequest(3, null, new Region(arguments[1]), null);
             }
             case "4", "report04" ->
             {
-                if (arguments.length != 2)
-                {
-                    throw new IllegalArgumentException("Report 4 requires N");
-                }
+                requireLength(arguments, 2, "Report 4 requires N");
                 yield new ReportRequest(4, null, null, TopN.parse(arguments[1]));
             }
             case "5", "report05" ->
             {
-                if (arguments.length != 3)
-                {
-                    throw new IllegalArgumentException("Report 5 requires a continent and N");
-                }
-                yield new ReportRequest(5, Continent.parse(arguments[1]),
-                        null, TopN.parse(arguments[2]));
+                requireLength(arguments, 3, "Report 5 requires a continent and N");
+                yield new ReportRequest(5, Continent.parse(arguments[1]), null, TopN.parse(arguments[2]));
             }
             case "6", "report06" ->
             {
-                if (arguments.length != 3)
-                {
-                    throw new IllegalArgumentException(
-                            "Report 6 requires one region and N; quote names containing spaces"
-                    );
-                }
-                yield new ReportRequest(6, null, new Region(arguments[1]),
-                        TopN.parse(arguments[2]));
+                requireLength(arguments, 3, "Report 6 requires a region and N");
+                yield new ReportRequest(6, null, new Region(arguments[1]), TopN.parse(arguments[2]));
             }
             case "7", "report07" ->
             {
-                if (arguments.length != 1)
-                {
-                    throw new IllegalArgumentException("Report 7 takes no filter arguments");
-                }
-                yield new ReportRequest(7, null);
+                requireLength(arguments, 1, "Report 7 requires no filter arguments");
+                yield new ReportRequest(7, null, null, null);
             }
-            default -> throw new IllegalArgumentException(
-                    "Unknown report: " + arguments[0] + ". Choose report01-report07"
-            );
+            case "8", "report08" ->
+            {
+                requireLength(arguments, 2, "Report 8 requires a continent");
+                yield new ReportRequest(8, Continent.parse(arguments[1]), null, null);
+            }
+            default -> throw new IllegalArgumentException("Unknown report: " + arguments[0]
+                    + ". Choose report01-report08");
         };
+    }
+
+    private static void requireLength(String[] arguments, int expected, String message)
+    {
+        if (arguments.length != expected)
+        {
+            throw new IllegalArgumentException(message + "; quote names containing spaces");
+        }
     }
 }
