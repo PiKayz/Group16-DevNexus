@@ -14,5 +14,5 @@ docker compose build app
 docker compose run --rm app report01
 ```
 
-Implementation: `CountriesInWorldReport.java` in this folder. Tests are in the
-matching `src/test/java/org/example/reports/report01` folder.
+Implementation: `CountryReportService.getCountriesInWorld()` in this folder.
+Tests are in `src/test/java/org/example/reports/country`.

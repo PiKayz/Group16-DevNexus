@@ -1,4 +1,4 @@
-package org.example.reports.common;
+package org.example.database;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -7,6 +7,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+
+import org.example.models.Continent;
+import org.example.models.Country;
 
 /**
  * Read-only country queries. The caller owns the database connection;

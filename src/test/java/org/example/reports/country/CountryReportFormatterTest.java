@@ -1,4 +1,4 @@
-package org.example.reports.common;
+package org.example.reports.country;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -6,6 +6,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Locale;
 
+import org.example.models.Country;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

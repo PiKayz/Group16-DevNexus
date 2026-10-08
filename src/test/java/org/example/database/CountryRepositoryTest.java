@@ -1,4 +1,4 @@
-package org.example.reports.common;
+package org.example.database;
 
 import java.sql.Connection;
 import java.sql.SQLException;

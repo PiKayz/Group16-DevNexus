@@ -1,4 +1,4 @@
-package org.example.reports.common;
+package org.example.models;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;

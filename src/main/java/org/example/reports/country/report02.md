@@ -20,8 +20,9 @@ docker compose run --rm app report02 Asia
 docker compose run --rm app report02 "South America"
 ```
 
-Implementation: `CountriesInContinentReport.java` in this folder. Tests are in the
-matching `src/test/java/org/example/reports/report02` folder.
+Implementation: `CountryReportService.getCountriesInContinent()` in this folder.
+Tests are in `src/test/java/org/example/reports/country`.
 
-The shared country repository binds the continent as a prepared-statement
-parameter. The report class uses the shared country model and formatter.
+The shared country repository in `org.example.database` binds the continent as a
+prepared-statement parameter. The service uses the country model in
+`org.example.models` and the country formatter in this package.

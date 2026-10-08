@@ -1,4 +1,4 @@
-package org.example.reports.report02;
+package org.example.reports.country;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -7,9 +7,9 @@ import java.sql.Connection;
 import java.sql.Statement;
 import java.util.List;
 
-import org.example.reports.common.Continent;
-import org.example.reports.common.Country;
-import org.example.reports.common.CountryRepository;
+import org.example.database.CountryRepository;
+import org.example.models.Continent;
+import org.example.models.Country;
 import org.example.support.WorldDatabaseFixture;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -27,7 +27,7 @@ class CountriesInContinentReportTest
     {
         try (Connection connection = WorldDatabaseFixture.open())
         {
-            List<Country> countries = report(connection).generate(Continent.ASIA);
+            List<Country> countries = report(connection).getCountriesInContinent(Continent.ASIA);
 
             assertEquals(List.of("CHN", "IND", "NCP"),
                     countries.stream().map(Country::code).toList());
@@ -43,7 +43,7 @@ class CountriesInContinentReportTest
         try (Connection connection = WorldDatabaseFixture.open())
         {
             assertEquals(List.of("DEU", "GBR"), report(connection)
-                    .generate(Continent.EUROPE).stream().map(Country::code).toList());
+                    .getCountriesInContinent(Continent.EUROPE).stream().map(Country::code).toList());
         }
     }
 
@@ -53,7 +53,7 @@ class CountriesInContinentReportTest
     {
         try (Connection connection = WorldDatabaseFixture.open())
         {
-            List<Country> countries = report(connection).generate(continent);
+            List<Country> countries = report(connection).getCountriesInContinent(continent);
 
             assertFalse(countries.isEmpty());
             assertTrue(countries.stream().allMatch(
@@ -72,7 +72,7 @@ class CountriesInContinentReportTest
 
             try (PrintStream output = new PrintStream(bytes, true, StandardCharsets.UTF_8))
             {
-                report(connection).print(Continent.ASIA, output);
+                report(connection).printCountriesInContinent(Continent.ASIA, output);
             }
 
             String text = bytes.toString(StandardCharsets.UTF_8);
@@ -82,8 +82,8 @@ class CountriesInContinentReportTest
         }
     }
 
-    private CountriesInContinentReport report(Connection connection)
+    private CountryReportService report(Connection connection)
     {
-        return new CountriesInContinentReport(new CountryRepository(connection));
+        return new CountryReportService(new CountryRepository(connection));
     }
 }

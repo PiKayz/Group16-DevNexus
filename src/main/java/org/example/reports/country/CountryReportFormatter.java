@@ -1,9 +1,11 @@
-package org.example.reports.common;
+package org.example.reports.country;
 
 import java.io.PrintStream;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+
+import org.example.models.Country;
 
 /**
  * Console output shared by country reports, independent of database access.

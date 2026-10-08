@@ -1,6 +1,4 @@
-package org.example.reports;
-
-import org.example.reports.common.Continent;
+package org.example.models;
 
 /**
  * Validated CLI input. No arguments preserves the original report 1 default.

@@ -1,6 +1,4 @@
-package org.example.reports;
-
-import org.example.reports.common.Continent;
+package org.example.models;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;

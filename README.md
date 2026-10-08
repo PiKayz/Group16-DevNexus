@@ -14,16 +14,61 @@ This branch implements 2 requirements of 32, which is 6.25%. The other 30
 reporting requirements remain to be implemented. Output screenshots for the
 final submission still need to be captured.
 
-| Report | Requirement | Source folder |
+| Report | Requirement | Documentation |
 |---|---|---|
-| 1 | All countries in the world, largest population first | [report01](src/main/java/org/example/reports/report01) |
-| 2 | All countries in a selected continent, largest population first | [report02](src/main/java/org/example/reports/report02) |
+| 1 | All countries in the world, largest population first | [Report 1](src/main/java/org/example/reports/country/report01.md) |
+| 2 | All countries in a selected continent, largest population first | [Report 2](src/main/java/org/example/reports/country/report02.md) |
 
-Each report has a separate source folder and matching test folder. The common
-folder holds the country model, continent validation, parameterised database
-queries, and console formatting. Both reports display Code, Name, Continent,
+Reports are grouped by category. A single `CountryReportService` supplies the
+existing world and continent reports as separate methods, with shared queries
+and formatting. Both reports display Code, Name, Continent,
 Region, Population, and Capital. Countries without a recorded capital remain
 in the output with `N/A` in the Capital column.
+
+## Java package structure
+
+```text
+src/main/java/org/example/
+  Main.java
+  database/
+    WorldDatabase.java
+    CountryRepository.java
+  models/
+    Country.java
+    Continent.java
+    ReportRequest.java
+  reports/
+    country/
+      CountryReportService.java
+      CountryReportFormatter.java
+      package-info.java
+      report01.md
+      report02.md
+    city/package-info.java
+    capital/package-info.java
+    breakdown/package-info.java
+    population/package-info.java
+    language/package-info.java
+```
+
+`Main` validates the request and selects the report. `WorldDatabase` owns the
+existing MySQL connection, retry logic, database checks, and shutdown.
+`CountryRepository` shares parameterised SQL and result mapping. The model
+package contains immutable report data and validated request values.
+
+The category packages containing only `package-info.java` document future
+work; they provide no report service or stub results. As their reports are
+implemented, each category should have one cohesive service with separate
+methods for its requirements. Tests follow the same category packages.
+
+| Category | Requirements still unimplemented |
+|---|---|
+| Country | 3-6: region and Top N reports |
+| City | 7-16 |
+| Capital | 17-22 |
+| Breakdown | 23-25 |
+| Population | 26-31 |
+| Language | 32: all five requested languages together |
 
 ## Build and run
 

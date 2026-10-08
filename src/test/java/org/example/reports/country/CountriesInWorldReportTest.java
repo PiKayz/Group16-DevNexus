@@ -1,10 +1,10 @@
-package org.example.reports.report01;
+package org.example.reports.country;
 
 import java.sql.Connection;
 import java.util.List;
 
-import org.example.reports.common.Country;
-import org.example.reports.common.CountryRepository;
+import org.example.database.CountryRepository;
+import org.example.models.Country;
 import org.example.support.WorldDatabaseFixture;
 import org.junit.jupiter.api.Test;
 
@@ -19,9 +19,9 @@ class CountriesInWorldReportTest
     {
         try (Connection connection = WorldDatabaseFixture.open())
         {
-            List<Country> countries = new CountriesInWorldReport(
+            List<Country> countries = new CountryReportService(
                     new CountryRepository(connection)
-            ).generate();
+            ).getCountriesInWorld();
 
             assertEquals(List.of("CHN", "IND", "USA", "BRA", "DEU", "GBR",
                     "EGY", "AUS", "ATA", "NCP"),
