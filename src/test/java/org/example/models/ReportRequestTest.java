@@ -59,4 +59,21 @@ class ReportRequestTest
         assertThrows(IllegalArgumentException.class,
                 () -> ReportRequest.parse(new String[]{"report03"}));
     }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"3", "report03"})
+    void acceptsRegionReports(String command)
+    {
+        assertEquals(new ReportRequest(3, null, new Region("Eastern Asia")),
+                ReportRequest.parse(new String[]{command, " Eastern Asia "}));
+    }
+
+    @Test
+    void rejectsBlankRegionsAndUnexpectedRegionArguments()
+    {
+        assertThrows(IllegalArgumentException.class,
+                () -> ReportRequest.parse(new String[]{"report03", " "}));
+        assertThrows(IllegalArgumentException.class,
+                () -> ReportRequest.parse(new String[]{"report03", "Eastern", "Asia"}));
+    }
 }

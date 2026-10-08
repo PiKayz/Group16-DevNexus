@@ -10,6 +10,7 @@ import java.util.Objects;
 
 import org.example.models.Continent;
 import org.example.models.Country;
+import org.example.models.Region;
 
 /**
  * Read-only country queries. The caller owns the database connection;
@@ -44,10 +45,17 @@ public final class CountryRepository
     {
         Objects.requireNonNull(continent, "continent");
         return query(SELECT_COUNTRIES + "WHERE country.Continent = ? "
-                + ORDER_BY_POPULATION, continent);
+                + ORDER_BY_POPULATION, continent.databaseName());
     }
 
-    private List<Country> query(String sql, Continent continent) throws SQLException
+    public List<Country> findByRegion(Region region) throws SQLException
+    {
+        Objects.requireNonNull(region, "region");
+        return query(SELECT_COUNTRIES + "WHERE LOWER(country.Region) = LOWER(?) "
+                + ORDER_BY_POPULATION, region.name());
+    }
+
+    private List<Country> query(String sql, String filter) throws SQLException
     {
         if (connection.isClosed())
         {
@@ -58,9 +66,9 @@ public final class CountryRepository
 
         try (PreparedStatement statement = connection.prepareStatement(sql))
         {
-            if (continent != null)
+            if (filter != null)
             {
-                statement.setString(1, continent.databaseName());
+                statement.setString(1, filter);
             }
 
             try (ResultSet result = statement.executeQuery())

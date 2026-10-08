@@ -22,6 +22,7 @@ public class Main
             System.err.println(error.getMessage());
             System.err.println("Usage: java -jar app.jar report01");
             System.err.println("       java -jar app.jar report02 \"South America\"");
+            System.err.println("       java -jar app.jar report03 \"Eastern Asia\"");
             System.exit(2);
             return;
         }
@@ -45,13 +46,12 @@ public class Main
                     new CountryRepository(database.getConnection())
             );
 
-            if (request.number() == 1)
+            switch (request.number())
             {
-                reports.printCountriesInWorld(System.out);
-            }
-            else
-            {
-                reports.printCountriesInContinent(request.continent(), System.out);
+                case 1 -> reports.printCountriesInWorld(System.out);
+                case 2 -> reports.printCountriesInContinent(request.continent(), System.out);
+                case 3 -> reports.printCountriesInRegion(request.region(), System.out);
+                default -> throw new IllegalStateException("Unsupported validated report");
             }
         }
         catch (SQLException e)

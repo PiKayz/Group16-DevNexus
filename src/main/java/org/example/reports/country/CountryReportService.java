@@ -8,10 +8,11 @@ import java.util.Objects;
 import org.example.database.CountryRepository;
 import org.example.models.Continent;
 import org.example.models.Country;
+import org.example.models.Region;
 
 /**
- * Country reporting, requirements 1-6. Only the existing world and continent
- * reports (requirements 1 and 2) are implemented.
+ * Country reporting, requirements 1-6. World, continent and region reports
+ * (requirements 1-3) are implemented.
  */
 public final class CountryReportService
 {
@@ -38,6 +39,14 @@ public final class CountryReportService
         return repository.findByContinent(continent);
     }
 
+    /**
+     * Requirement 3: countries in the selected region, largest first.
+     */
+    public List<Country> getCountriesInRegion(Region region) throws SQLException
+    {
+        return repository.findByRegion(region);
+    }
+
     public void printCountriesInWorld(PrintStream output) throws SQLException
     {
         CountryReportFormatter.print(
@@ -54,6 +63,17 @@ public final class CountryReportService
                 "All countries in " + continent.databaseName()
                         + " by population (largest to smallest)",
                 getCountriesInContinent(continent), output
+        );
+    }
+
+    public void printCountriesInRegion(Region region, PrintStream output)
+            throws SQLException
+    {
+        Objects.requireNonNull(region, "region");
+        CountryReportFormatter.print(
+                "All countries in " + region.name()
+                        + " by population (largest to smallest)",
+                getCountriesInRegion(region), output
         );
     }
 }
