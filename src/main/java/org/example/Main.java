@@ -33,6 +33,7 @@ public class Main
             System.err.println("       java -jar app.jar report09 \"Eastern Asia\"");
             System.err.println("       java -jar app.jar report10 USA");
             System.err.println("       java -jar app.jar report11 California USA");
+            System.err.println("       java -jar app.jar report12 10");
             System.exit(2);
             return;
         }

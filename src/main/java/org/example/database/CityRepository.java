@@ -82,6 +82,12 @@ public final class CityRepository
         return query(filter, parameters, null);
     }
 
+    public List<City> findTopInWorld(TopN topN) throws SQLException
+    {
+        Objects.requireNonNull(topN, "topN");
+        return query("", List.of(), topN);
+    }
+
     private List<City> query(String filter, List<String> parameters, TopN topN)
             throws SQLException
     {

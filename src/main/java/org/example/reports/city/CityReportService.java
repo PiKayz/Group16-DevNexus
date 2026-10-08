@@ -7,6 +7,7 @@ import java.util.Objects;
 
 import org.example.database.CityRepository;
 import org.example.models.City;
+import org.example.models.TopN;
 import org.example.models.DistrictFilter;
 import org.example.models.CountryFilter;
 import org.example.models.Region;
@@ -14,7 +15,7 @@ import org.example.models.Continent;
 import org.example.models.ReportRequest;
 
 /**
- * City reporting, requirements 7-16. Requirements 7-11 are implemented.
+ * City reporting, requirements 7-16. Requirements 7-12 are implemented.
  */
 public final class CityReportService
 {
@@ -55,6 +56,12 @@ public final class CityReportService
         return repository.findByDistrict(district);
     }
 
+    /** Requirement 12: Top N cities in the world. */
+    public List<City> getTopCitiesInWorld(TopN topN) throws SQLException
+    {
+        return repository.findTopInWorld(topN);
+    }
+
     public void print(ReportRequest request, PrintStream output) throws SQLException
     {
         Objects.requireNonNull(request, "request");
@@ -75,6 +82,9 @@ public final class CityReportService
             case 11 -> CityReportFormatter.print(
                     "All cities in " + "district " + request.district().label() + " by population (largest to smallest)",
                     getCitiesInDistrict(request.district()), output);
+            case 12 -> CityReportFormatter.print(
+                    "Top " + request.topN().value() + " cities in " + "the world" + " by population (largest to smallest)",
+                    getTopCitiesInWorld(request.topN()), output);
             default -> throw new IllegalArgumentException("Unsupported city report");
         }
     }

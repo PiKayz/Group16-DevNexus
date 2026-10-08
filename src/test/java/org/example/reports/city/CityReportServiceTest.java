@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.example.database.CityRepository;
 import org.example.models.City;
+import org.example.models.TopN;
 import org.example.models.DistrictFilter;
 import org.example.models.CountryFilter;
 import org.example.models.Region;
@@ -162,6 +163,32 @@ class CityReportServiceTest
         try (Connection connection = WorldDatabaseFixture.open())
         {
             assertTrue(service(connection).getCitiesInDistrict(new DistrictFilter(value)).isEmpty());
+        }
+    }
+
+
+    @Test
+    void limitsWorldCitiesAfterPopulationSortingWithStableTies() throws Exception
+    {
+        try (Connection connection = WorldDatabaseFixture.open())
+        {
+            assertEquals(List.of("Shanghai", "Mumbai", "Berlin"), service(connection)
+                    .getTopCitiesInWorld(new TopN(3)).stream().map(City::name).toList());
+            assertEquals(List.of("Shanghai"), service(connection)
+                    .getTopCitiesInWorld(new TopN(1)).stream().map(City::name).toList());
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {100, Integer.MAX_VALUE})
+    void retainsAllCitiesWhenNExceedsTheWorldCityCount(int count) throws Exception
+    {
+        try (Connection connection = WorldDatabaseFixture.open())
+        {
+            List<City> cities = service(connection).getTopCitiesInWorld(new TopN(count));
+            assertEquals(12, cities.size());
+            assertEquals(0, cities.getLast().population());
+            assertEquals(2, cities.stream().filter(city -> city.name().equals("Springfield")).count());
         }
     }
 
