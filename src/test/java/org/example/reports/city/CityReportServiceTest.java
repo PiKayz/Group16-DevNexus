@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.example.database.CityRepository;
 import org.example.models.City;
+import org.example.models.Region;
 import org.example.models.Continent;
 import org.example.support.WorldDatabaseFixture;
 import org.junit.jupiter.api.Test;
@@ -65,6 +66,28 @@ class CityReportServiceTest
             };
             assertEquals(expected, service(connection).getCitiesInContinent(continent)
                     .stream().map(City::name).toList());
+        }
+    }
+
+
+    @ParameterizedTest
+    @ValueSource(strings = {"Eastern Asia", "eastern ASIA", " Eastern Asia "})
+    void filtersCitiesByRegionInPopulationOrder(String value) throws Exception
+    {
+        try (Connection connection = WorldDatabaseFixture.open())
+        {
+            assertEquals(List.of("Shanghai", "Peking"), service(connection)
+                    .getCitiesInRegion(new Region(value)).stream().map(City::name).toList());
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"Unknown Region", "Eastern Asia' OR 1=1 --"})
+    void treatsCityRegionFiltersAsLiteralData(String value) throws Exception
+    {
+        try (Connection connection = WorldDatabaseFixture.open())
+        {
+            assertTrue(service(connection).getCitiesInRegion(new Region(value)).isEmpty());
         }
     }
 

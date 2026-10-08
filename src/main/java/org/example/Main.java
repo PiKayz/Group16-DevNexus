@@ -30,6 +30,7 @@ public class Main
             System.err.println("       java -jar app.jar report06 \"Eastern Asia\" 10");
             System.err.println("       java -jar app.jar report07");
             System.err.println("       java -jar app.jar report08 Asia");
+            System.err.println("       java -jar app.jar report09 \"Eastern Asia\"");
             System.exit(2);
             return;
         }

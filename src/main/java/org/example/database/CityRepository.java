@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Objects;
 
 import org.example.models.City;
+import org.example.models.Region;
 import org.example.models.Continent;
 import org.example.models.TopN;
 
@@ -28,6 +29,8 @@ public final class CityRepository
 
     private static final String FILTER_CONTINENT = "WHERE country.Continent = ? ";
 
+    private static final String FILTER_REGION = "WHERE LOWER(country.Region) = LOWER(?) ";
+
     private final Connection connection;
 
     public CityRepository(Connection connection)
@@ -44,6 +47,12 @@ public final class CityRepository
     {
         Objects.requireNonNull(continent, "continent");
         return query(FILTER_CONTINENT, List.of(continent.databaseName()), null);
+    }
+
+    public List<City> findByRegion(Region region) throws SQLException
+    {
+        Objects.requireNonNull(region, "region");
+        return query(FILTER_REGION, List.of(region.name()), null);
     }
 
     private List<City> query(String filter, List<String> parameters, TopN topN)

@@ -44,6 +44,9 @@ jobs:
       - name: Run city report 8
         run: docker compose run --rm app report08 Asia
 
+      - name: Run city report 9
+        run: docker compose run --rm app report09 "Eastern Asia"
+
       - name: Clean up
         if: always()
         run: docker compose down -v

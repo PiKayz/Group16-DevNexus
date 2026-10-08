@@ -10,7 +10,7 @@ figures describe that dataset rather than current populations.
 
 ## Implemented reports
 
-This branch implements 8 requirements of 32, which is 25%. The other 24
+This branch implements 9 requirements of 32, which is 28.125%. The other 23
 reporting requirements remain to be implemented. Output screenshots for the
 final submission still need to be captured.
 
@@ -24,6 +24,7 @@ final submission still need to be captured.
 | 6 | Top N countries in a selected region | [Report 6](src/main/java/org/example/reports/country/report06.md) |
 | 7 | All cities in the world | [Report 7](src/main/java/org/example/reports/city/report07.md) |
 | 8 | All cities in a continent | [Report 8](src/main/java/org/example/reports/city/report08.md) |
+| 9 | All cities in a region | [Report 9](src/main/java/org/example/reports/city/report09.md) |
 
 Reports are grouped by category. A single `CountryReportService` supplies the
 country reports as separate methods, with shared queries
@@ -67,6 +68,7 @@ src/main/java/org/example/
       package-info.java
       report07.md
       report08.md
+      report09.md
     capital/package-info.java
     breakdown/package-info.java
     population/package-info.java
@@ -86,7 +88,7 @@ methods for its requirements. Tests follow the same category packages.
 | Category | Requirements still unimplemented |
 |---|---|
 | Country | None: requirements 1-6 implemented |
-| City | 9-16 |
+| City | 10-16 |
 | Capital | 17-22 |
 | Breakdown | 23-25 |
 | Population | 26-31 |
@@ -132,7 +134,7 @@ preceding implemented country reports; this final branch contains all six.
 against a small, isolated H2 database in MySQL compatibility mode. Docker checks
 verify the reports against the actual World dataset and MySQL.
 
-Validation: 116 automated tests passed. MySQL verification returned all 239
+Validation: 123 automated tests passed. MySQL verification returned all 239
 countries for report 1 and the correct filtered rows for all seven continents
 in report 2 (Asia 51, Europe 46, North America 37, Africa 58, Oceania 28,
 Antarctica 5, South America 14).

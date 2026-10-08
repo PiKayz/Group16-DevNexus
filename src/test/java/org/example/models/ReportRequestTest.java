@@ -170,4 +170,15 @@ class ReportRequestTest
                 () -> ReportRequest.parse(new String[]{command, "Atlantis"}));
     }
 
+
+    @ParameterizedTest
+    @ValueSource(strings = {"9", "report09"})
+    void acceptsRegionCityReports(String command)
+    {
+        assertEquals(new ReportRequest(9, null, new Region("Eastern Asia")),
+                ReportRequest.parse(new String[]{command, " Eastern Asia "}));
+        assertThrows(IllegalArgumentException.class,
+                () -> ReportRequest.parse(new String[]{command, " "}));
+    }
+
 }
