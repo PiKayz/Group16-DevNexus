@@ -296,6 +296,65 @@ class CityReportServiceTest
         }
     }
 
+
+    @Test
+    void limitsSharedDistrictsAcrossCountriesOrInsideAQualifiedCountry() throws Exception
+    {
+        try (Connection connection = WorldDatabaseFixture.open())
+        {
+            assertEquals(List.of("Shanghai"), service(connection)
+                    .getTopCitiesInDistrict(new DistrictFilter("Shared District"), new TopN(1))
+                    .stream().map(City::name).toList());
+            assertEquals(List.of("Mumbai"), service(connection)
+                    .getTopCitiesInDistrict(new DistrictFilter("Shared District", new CountryFilter("IND")), new TopN(1))
+                    .stream().map(City::name).toList());
+            assertTrue(service(connection)
+                    .getTopCitiesInDistrict(new DistrictFilter("Shared District", new CountryFilter("United States")), new TopN(1))
+                    .isEmpty());
+            assertEquals(List.of(new City("Springfield", "United States", "Central", 0)), service(connection)
+                    .getTopCitiesInDistrict(new DistrictFilter("Central", new CountryFilter("USA")), new TopN(1)));
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {100, Integer.MAX_VALUE})
+    void retainsAllMatchingDistrictCitiesForLargeN(int count) throws Exception
+    {
+        try (Connection connection = WorldDatabaseFixture.open())
+        {
+            List<City> cities = service(connection)
+                    .getTopCitiesInDistrict(new DistrictFilter("Central"), new TopN(count));
+            assertEquals(List.of("Brazil", "United States"), cities.stream().map(City::country).toList());
+            assertEquals(List.of("Springfield", "Springfield"), cities.stream().map(City::name).toList());
+            assertEquals(0, cities.getLast().population());
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"Unknown District", "Central' OR 1=1 --"})
+    void bindsTheTopCityDistrictAsData(String value) throws Exception
+    {
+        try (Connection connection = WorldDatabaseFixture.open())
+        {
+            assertTrue(service(connection).getTopCitiesInDistrict(new DistrictFilter(value), new TopN(5)).isEmpty());
+        }
+    }
+
+    @Test
+    void sortsEqualDistrictPopulationsByCityIdBeforeTheLimit() throws Exception
+    {
+        try (Connection connection = WorldDatabaseFixture.open();
+             java.sql.PreparedStatement statement = connection.prepareStatement(
+                     "UPDATE city SET District = ? WHERE ID = 4"))
+        {
+            statement.setString(1, "Berlin");
+            statement.executeUpdate();
+            assertEquals(List.of("Berlin"), service(connection)
+                    .getTopCitiesInDistrict(new DistrictFilter("Berlin"), new TopN(1))
+                    .stream().map(City::name).toList());
+        }
+    }
+
     private CityReportService service(Connection connection)
     {
         return new CityReportService(new CityRepository(connection));

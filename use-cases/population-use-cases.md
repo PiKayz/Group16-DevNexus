@@ -750,13 +750,14 @@ This document specifies the expected behaviour of the reporting system.
 
 
 
-The World database connection, table checks and UC-01 country reports
+The World database connection, table checks, UC-01 country reports and
 
-for requirements 1-6 have been implemented and verified with automated
+UC-02 city reports for requirements 1-16 have been implemented and verified
 
-tests and the MySQL World database. UC-02 through UC-06 (requirements 7-32)
+with automated tests and the MySQL World database. UC-03 through UC-06
 
-remain unimplemented and must be verified before being marked complete.
+(requirements 17-32) remain unimplemented and must be verified before being
+marked complete.
 
 
 

@@ -261,4 +261,36 @@ class ReportRequestTest
                 () -> ReportRequest.parse(new String[]{command, "USA"}));
     }
 
+
+    @ParameterizedTest
+    @ValueSource(strings = {"16", "report16"})
+    void acceptsDistrictTopNCityReportsWithAnOptionalCountry(String command)
+    {
+        assertEquals(new DistrictFilter("Central"),
+                ReportRequest.parse(new String[]{command, " Central ", "2"}).district());
+        assertEquals(new DistrictFilter("Central", new CountryFilter("USA")),
+                ReportRequest.parse(new String[]{command, "Central", "2", "USA"}).district());
+        assertThrows(IllegalArgumentException.class,
+                () -> ReportRequest.parse(new String[]{command, "Central", "0"}));
+        assertThrows(IllegalArgumentException.class,
+                () -> ReportRequest.parse(new String[]{command, "Central"}));
+        assertThrows(IllegalArgumentException.class,
+                () -> ReportRequest.parse(new String[]{command, "Central", "2", "USA", "extra"}));
+    }
+
+    @Test
+    void rejectsCityRequestsWithFiltersBelongingToOtherScopes()
+    {
+        assertThrows(IllegalArgumentException.class,
+                () -> new ReportRequest(7, Continent.ASIA));
+        assertThrows(IllegalArgumentException.class,
+                () -> new ReportRequest(8, Continent.ASIA, null, new TopN(5)));
+        assertThrows(IllegalArgumentException.class,
+                () -> new ReportRequest(10, null, null, null, new CountryFilter("USA"), new DistrictFilter("Central")));
+        assertThrows(IllegalArgumentException.class,
+                () -> new ReportRequest(11, null, null, null, new CountryFilter("USA"), new DistrictFilter("Central")));
+        assertThrows(IllegalArgumentException.class,
+                () -> new ReportRequest(16, null, null, new TopN(5)));
+    }
+
 }

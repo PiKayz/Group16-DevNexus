@@ -7,15 +7,15 @@ import java.util.Objects;
 
 import org.example.database.CityRepository;
 import org.example.models.City;
-import org.example.models.TopN;
-import org.example.models.DistrictFilter;
-import org.example.models.CountryFilter;
-import org.example.models.Region;
 import org.example.models.Continent;
+import org.example.models.CountryFilter;
+import org.example.models.DistrictFilter;
+import org.example.models.Region;
 import org.example.models.ReportRequest;
+import org.example.models.TopN;
 
 /**
- * City reporting, requirements 7-16. Requirements 7-15 are implemented.
+ * All ten city reports, requirements 7-16, using shared queries and formatting.
  */
 public final class CityReportService
 {
@@ -80,6 +80,12 @@ public final class CityReportService
         return repository.findTopByCountry(country, topN);
     }
 
+    /** Requirement 16: Top N cities in a district. */
+    public List<City> getTopCitiesInDistrict(DistrictFilter district, TopN topN) throws SQLException
+    {
+        return repository.findTopByDistrict(district, topN);
+    }
+
     public void print(ReportRequest request, PrintStream output) throws SQLException
     {
         Objects.requireNonNull(request, "request");
@@ -98,10 +104,10 @@ public final class CityReportService
                     "All cities in " + request.country().value() + " by population (largest to smallest)",
                     getCitiesInCountry(request.country()), output);
             case 11 -> CityReportFormatter.print(
-                    "All cities in " + "district " + request.district().label() + " by population (largest to smallest)",
+                    "All cities in district " + request.district().label() + " by population (largest to smallest)",
                     getCitiesInDistrict(request.district()), output);
             case 12 -> CityReportFormatter.print(
-                    "Top " + request.topN().value() + " cities in " + "the world" + " by population (largest to smallest)",
+                    "Top " + request.topN().value() + " cities in the world by population (largest to smallest)",
                     getTopCitiesInWorld(request.topN()), output);
             case 13 -> CityReportFormatter.print(
                     "Top " + request.topN().value() + " cities in " + request.continent().databaseName() + " by population (largest to smallest)",
@@ -112,6 +118,9 @@ public final class CityReportService
             case 15 -> CityReportFormatter.print(
                     "Top " + request.topN().value() + " cities in " + request.country().value() + " by population (largest to smallest)",
                     getTopCitiesInCountry(request.country(), request.topN()), output);
+            case 16 -> CityReportFormatter.print(
+                    "Top " + request.topN().value() + " cities in district " + request.district().label() + " by population (largest to smallest)",
+                    getTopCitiesInDistrict(request.district(), request.topN()), output);
             default -> throw new IllegalArgumentException("Unsupported city report");
         }
     }

@@ -109,6 +109,22 @@ public final class CityRepository
         return query("WHERE " + MATCH_COUNTRY + " ", List.of(country.value(), country.value()), topN);
     }
 
+    public List<City> findTopByDistrict(DistrictFilter district, TopN topN) throws SQLException
+    {
+        Objects.requireNonNull(district, "district");
+        Objects.requireNonNull(topN, "topN");
+        String filter = FILTER_DISTRICT;
+        List<String> parameters = new ArrayList<>();
+        parameters.add(district.name());
+        if (district.country() != null)
+        {
+            filter += "AND " + MATCH_COUNTRY + " ";
+            parameters.add(district.country().value());
+            parameters.add(district.country().value());
+        }
+        return query(filter, parameters, topN);
+    }
+
     private List<City> query(String filter, List<String> parameters, TopN topN)
             throws SQLException
     {
