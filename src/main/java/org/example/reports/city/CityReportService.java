@@ -15,7 +15,7 @@ import org.example.models.Continent;
 import org.example.models.ReportRequest;
 
 /**
- * City reporting, requirements 7-16. Requirements 7-12 are implemented.
+ * City reporting, requirements 7-16. Requirements 7-13 are implemented.
  */
 public final class CityReportService
 {
@@ -62,6 +62,12 @@ public final class CityReportService
         return repository.findTopInWorld(topN);
     }
 
+    /** Requirement 13: Top N cities in a continent. */
+    public List<City> getTopCitiesInContinent(Continent continent, TopN topN) throws SQLException
+    {
+        return repository.findTopByContinent(continent, topN);
+    }
+
     public void print(ReportRequest request, PrintStream output) throws SQLException
     {
         Objects.requireNonNull(request, "request");
@@ -85,6 +91,9 @@ public final class CityReportService
             case 12 -> CityReportFormatter.print(
                     "Top " + request.topN().value() + " cities in " + "the world" + " by population (largest to smallest)",
                     getTopCitiesInWorld(request.topN()), output);
+            case 13 -> CityReportFormatter.print(
+                    "Top " + request.topN().value() + " cities in " + request.continent().databaseName() + " by population (largest to smallest)",
+                    getTopCitiesInContinent(request.continent(), request.topN()), output);
             default -> throw new IllegalArgumentException("Unsupported city report");
         }
     }

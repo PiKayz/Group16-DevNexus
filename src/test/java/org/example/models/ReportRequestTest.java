@@ -220,4 +220,17 @@ class ReportRequestTest
                 () -> ReportRequest.parse(new String[]{command}));
     }
 
+
+    @ParameterizedTest
+    @ValueSource(strings = {"13", "report13"})
+    void acceptsContinentTopNCityReports(String command)
+    {
+        assertEquals(new ReportRequest(13, Continent.ASIA, null, new TopN(2)),
+                ReportRequest.parse(new String[]{command, "asia", "2"}));
+        assertThrows(IllegalArgumentException.class,
+                () -> ReportRequest.parse(new String[]{command, "Asia"}));
+        assertThrows(IllegalArgumentException.class,
+                () -> ReportRequest.parse(new String[]{command, "Atlantis", "2"}));
+    }
+
 }

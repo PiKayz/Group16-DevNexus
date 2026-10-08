@@ -88,6 +88,13 @@ public final class CityRepository
         return query("", List.of(), topN);
     }
 
+    public List<City> findTopByContinent(Continent continent, TopN topN) throws SQLException
+    {
+        Objects.requireNonNull(continent, "continent");
+        Objects.requireNonNull(topN, "topN");
+        return query(FILTER_CONTINENT, List.of(continent.databaseName()), topN);
+    }
+
     private List<City> query(String filter, List<String> parameters, TopN topN)
             throws SQLException
     {

@@ -192,6 +192,36 @@ class CityReportServiceTest
         }
     }
 
+
+    @Test
+    void limitsCitiesWithinTheSelectedContinentRatherThanTheWorld() throws Exception
+    {
+        try (Connection connection = WorldDatabaseFixture.open())
+        {
+            assertEquals(List.of("Shanghai", "Mumbai"), service(connection)
+                    .getTopCitiesInContinent(Continent.ASIA, new TopN(2))
+                    .stream().map(City::name).toList());
+            assertEquals(List.of("Berlin"), service(connection)
+                    .getTopCitiesInContinent(Continent.EUROPE, new TopN(1))
+                    .stream().map(City::name).toList());
+            assertTrue(service(connection)
+                    .getTopCitiesInContinent(Continent.ANTARCTICA, new TopN(1)).isEmpty());
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {100, Integer.MAX_VALUE})
+    void retainsAllMatchingContinentCitiesForLargeN(int count) throws Exception
+    {
+        try (Connection connection = WorldDatabaseFixture.open())
+        {
+            List<City> cities = service(connection)
+                    .getTopCitiesInContinent(Continent.NORTH_AMERICA, new TopN(count));
+            assertEquals(List.of("Washington", "Springfield"), cities.stream().map(City::name).toList());
+            assertEquals(0, cities.getLast().population());
+        }
+    }
+
     private CityReportService service(Connection connection)
     {
         return new CityReportService(new CityRepository(connection));
