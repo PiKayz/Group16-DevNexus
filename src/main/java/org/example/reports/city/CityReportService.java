@@ -7,13 +7,14 @@ import java.util.Objects;
 
 import org.example.database.CityRepository;
 import org.example.models.City;
+import org.example.models.DistrictFilter;
 import org.example.models.CountryFilter;
 import org.example.models.Region;
 import org.example.models.Continent;
 import org.example.models.ReportRequest;
 
 /**
- * City reporting, requirements 7-16. Requirements 7-10 are implemented.
+ * City reporting, requirements 7-16. Requirements 7-11 are implemented.
  */
 public final class CityReportService
 {
@@ -48,6 +49,12 @@ public final class CityReportService
         return repository.findByCountry(country);
     }
 
+    /** Requirement 11: all cities in a district. */
+    public List<City> getCitiesInDistrict(DistrictFilter district) throws SQLException
+    {
+        return repository.findByDistrict(district);
+    }
+
     public void print(ReportRequest request, PrintStream output) throws SQLException
     {
         Objects.requireNonNull(request, "request");
@@ -65,6 +72,9 @@ public final class CityReportService
             case 10 -> CityReportFormatter.print(
                     "All cities in " + request.country().value() + " by population (largest to smallest)",
                     getCitiesInCountry(request.country()), output);
+            case 11 -> CityReportFormatter.print(
+                    "All cities in " + "district " + request.district().label() + " by population (largest to smallest)",
+                    getCitiesInDistrict(request.district()), output);
             default -> throw new IllegalArgumentException("Unsupported city report");
         }
     }

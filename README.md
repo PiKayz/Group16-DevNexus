@@ -10,7 +10,7 @@ figures describe that dataset rather than current populations.
 
 ## Implemented reports
 
-This branch implements 10 requirements of 32, which is 31.25%. The other 22
+This branch implements 11 requirements of 32, which is 34.375%. The other 21
 reporting requirements remain to be implemented. Output screenshots for the
 final submission still need to be captured.
 
@@ -26,6 +26,7 @@ final submission still need to be captured.
 | 8 | All cities in a continent | [Report 8](src/main/java/org/example/reports/city/report08.md) |
 | 9 | All cities in a region | [Report 9](src/main/java/org/example/reports/city/report09.md) |
 | 10 | All cities in a country | [Report 10](src/main/java/org/example/reports/city/report10.md) |
+| 11 | All cities in a district | [Report 11](src/main/java/org/example/reports/city/report11.md) |
 
 Reports are grouped by category. A single `CountryReportService` supplies the
 country reports as separate methods, with shared queries
@@ -49,6 +50,7 @@ src/main/java/org/example/
     Country.java
     City.java
     CountryFilter.java
+    DistrictFilter.java
     Continent.java
     Region.java
     TopN.java
@@ -72,6 +74,7 @@ src/main/java/org/example/
       report08.md
       report09.md
       report10.md
+      report11.md
     capital/package-info.java
     breakdown/package-info.java
     population/package-info.java
@@ -91,7 +94,7 @@ methods for its requirements. Tests follow the same category packages.
 | Category | Requirements still unimplemented |
 |---|---|
 | Country | None: requirements 1-6 implemented |
-| City | 11-16 |
+| City | 12-16 |
 | Capital | 17-22 |
 | Breakdown | 23-25 |
 | Population | 26-31 |
@@ -137,7 +140,7 @@ preceding implemented country reports; this final branch contains all six.
 against a small, isolated H2 database in MySQL compatibility mode. Docker checks
 verify the reports against the actual World dataset and MySQL.
 
-Validation: 138 automated tests passed. MySQL verification returned all 239
+Validation: 152 automated tests passed. MySQL verification returned all 239
 countries for report 1 and the correct filtered rows for all seven continents
 in report 2 (Asia 51, Europe 46, North America 37, Africa 58, Oceania 28,
 Antarctica 5, South America 14).

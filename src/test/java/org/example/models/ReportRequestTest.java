@@ -192,4 +192,19 @@ class ReportRequestTest
                 () -> ReportRequest.parse(new String[]{command, " "}));
     }
 
+
+    @ParameterizedTest
+    @ValueSource(strings = {"11", "report11"})
+    void acceptsDistrictCityReportsWithAnOptionalCountry(String command)
+    {
+        assertEquals(new DistrictFilter("Central"),
+                ReportRequest.parse(new String[]{command, " Central "}).district());
+        assertEquals(new DistrictFilter("Central", new CountryFilter("USA")),
+                ReportRequest.parse(new String[]{command, "Central", "USA"}).district());
+        assertThrows(IllegalArgumentException.class,
+                () -> ReportRequest.parse(new String[]{command, " "}));
+        assertThrows(IllegalArgumentException.class,
+                () -> ReportRequest.parse(new String[]{command, "Central", "USA", "extra"}));
+    }
+
 }

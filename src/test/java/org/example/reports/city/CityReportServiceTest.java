@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.example.database.CityRepository;
 import org.example.models.City;
+import org.example.models.DistrictFilter;
 import org.example.models.CountryFilter;
 import org.example.models.Region;
 import org.example.models.Continent;
@@ -126,6 +127,41 @@ class CityReportServiceTest
             statement.setString(1, "O'Country");
             statement.executeUpdate();
             assertEquals(2, service(connection).getCitiesInCountry(new CountryFilter("O'Country")).size());
+        }
+    }
+
+
+    @ParameterizedTest
+    @ValueSource(strings = {"Shared District", "shared DISTRICT", " Shared District "})
+    void includesAllCountriesWhenADistrictNameIsShared(String value) throws Exception
+    {
+        try (Connection connection = WorldDatabaseFixture.open())
+        {
+            List<City> cities = service(connection).getCitiesInDistrict(new DistrictFilter(value));
+            assertEquals(List.of("Shanghai", "Mumbai"), cities.stream().map(City::name).toList());
+            assertEquals(List.of("China", "India"), cities.stream().map(City::country).toList());
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"USA", "United States"})
+    void qualifiesDistrictsByCountryWithoutDroppingZeroPopulationCities(String value) throws Exception
+    {
+        try (Connection connection = WorldDatabaseFixture.open())
+        {
+            List<City> cities = service(connection).getCitiesInDistrict(
+                    new DistrictFilter("Central", new CountryFilter(value)));
+            assertEquals(List.of(new City("Springfield", "United States", "Central", 0)), cities);
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"Unknown District", "Central' OR 1=1 --"})
+    void treatsDistrictNamesAsLiteralData(String value) throws Exception
+    {
+        try (Connection connection = WorldDatabaseFixture.open())
+        {
+            assertTrue(service(connection).getCitiesInDistrict(new DistrictFilter(value)).isEmpty());
         }
     }
 
