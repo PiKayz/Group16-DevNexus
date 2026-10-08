@@ -150,4 +150,13 @@ class ReportRequestTest
         assertThrows(IllegalArgumentException.class,
                 () -> new ReportRequest(3, null, new Region("Eastern Asia"), new TopN(5)));
     }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"7", "report07"})
+    void acceptsWorldCityReportsWithoutFiltersOrLimits(String command)
+    {
+        assertEquals(new ReportRequest(7, null), ReportRequest.parse(new String[]{command}));
+        assertThrows(IllegalArgumentException.class,
+                () -> ReportRequest.parse(new String[]{command, "5"}));
+    }
 }

@@ -17,9 +17,9 @@ public record ReportRequest(int number, Continent continent, Region region, TopN
 
     public ReportRequest
     {
-        if (number < 1 || number > 6)
+        if (number < 1 || number > 7)
         {
-            throw new IllegalArgumentException("Supported reports: report01-report06");
+            throw new IllegalArgumentException("Supported reports: report01-report07");
         }
         if ((number == 2 || number == 5) && continent == null)
         {
@@ -37,11 +37,11 @@ public record ReportRequest(int number, Continent continent, Region region, TopN
         {
             throw new IllegalArgumentException("This report does not use a region");
         }
-        if (number >= 4 && topN == null)
+        if (number >= 4 && number <= 6 && topN == null)
         {
             throw new IllegalArgumentException("Report " + number + " requires N");
         }
-        if (number < 4 && topN != null)
+        if ((number < 4 || number > 6) && topN != null)
         {
             throw new IllegalArgumentException("This report does not use N");
         }
@@ -112,8 +112,16 @@ public record ReportRequest(int number, Continent continent, Region region, TopN
                 yield new ReportRequest(6, null, new Region(arguments[1]),
                         TopN.parse(arguments[2]));
             }
+            case "7", "report07" ->
+            {
+                if (arguments.length != 1)
+                {
+                    throw new IllegalArgumentException("Report 7 takes no filter arguments");
+                }
+                yield new ReportRequest(7, null);
+            }
             default -> throw new IllegalArgumentException(
-                    "Unknown report: " + arguments[0] + ". Choose report01-report06"
+                    "Unknown report: " + arguments[0] + ". Choose report01-report07"
             );
         };
     }

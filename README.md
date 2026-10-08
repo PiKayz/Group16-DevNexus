@@ -10,7 +10,7 @@ figures describe that dataset rather than current populations.
 
 ## Implemented reports
 
-This branch implements 6 requirements of 32, which is 18.75%. The other 26
+This branch implements 7 requirements of 32, which is 21.875%. The other 25
 reporting requirements remain to be implemented. Output screenshots for the
 final submission still need to be captured.
 
@@ -22,12 +22,16 @@ final submission still need to be captured.
 | 4 | Top N countries in the world | [Report 4](src/main/java/org/example/reports/country/report04.md) |
 | 5 | Top N countries in a selected continent | [Report 5](src/main/java/org/example/reports/country/report05.md) |
 | 6 | Top N countries in a selected region | [Report 6](src/main/java/org/example/reports/country/report06.md) |
+| 7 | All cities in the world | [Report 7](src/main/java/org/example/reports/city/report07.md) |
 
 Reports are grouped by category. A single `CountryReportService` supplies the
 country reports as separate methods, with shared queries
 and formatting. All country reports display Code, Name, Continent,
 Region, Population, and Capital. Countries without a recorded capital remain
 in the output with `N/A` in the Capital column.
+
+City reports display Name, Country, District, and Population. CityReportService
+uses shared queries and formatting for every implemented city requirement.
 
 ## Java package structure
 
@@ -37,8 +41,10 @@ src/main/java/org/example/
   database/
     WorldDatabase.java
     CountryRepository.java
+    CityRepository.java
   models/
     Country.java
+    City.java
     Continent.java
     Region.java
     TopN.java
@@ -54,7 +60,11 @@ src/main/java/org/example/
       report04.md
       report05.md
       report06.md
-    city/package-info.java
+    city/
+      CityReportService.java
+      CityReportFormatter.java
+      package-info.java
+      report07.md
     capital/package-info.java
     breakdown/package-info.java
     population/package-info.java
@@ -74,7 +84,7 @@ methods for its requirements. Tests follow the same category packages.
 | Category | Requirements still unimplemented |
 |---|---|
 | Country | None: requirements 1-6 implemented |
-| City | 7-16 |
+| City | 8-16 |
 | Capital | 17-22 |
 | Breakdown | 23-25 |
 | Population | 26-31 |
@@ -120,7 +130,7 @@ preceding implemented country reports; this final branch contains all six.
 against a small, isolated H2 database in MySQL compatibility mode. Docker checks
 verify the reports against the actual World dataset and MySQL.
 
-Validation: 98 automated tests passed. MySQL verification returned all 239
+Validation: 107 automated tests passed. MySQL verification returned all 239
 countries for report 1 and the correct filtered rows for all seven continents
 in report 2 (Asia 51, Europe 46, North America 37, Africa 58, Oceania 28,
 Antarctica 5, South America 14).

@@ -3,9 +3,11 @@ package org.example;
 import java.sql.SQLException;
 
 import org.example.database.CountryRepository;
+import org.example.database.CityRepository;
 import org.example.database.WorldDatabase;
 import org.example.models.ReportRequest;
 import org.example.reports.country.CountryReportService;
+import org.example.reports.city.CityReportService;
 
 public class Main
 {
@@ -26,6 +28,7 @@ public class Main
             System.err.println("       java -jar app.jar report04 10");
             System.err.println("       java -jar app.jar report05 \"South America\" 10");
             System.err.println("       java -jar app.jar report06 \"Eastern Asia\" 10");
+            System.err.println("       java -jar app.jar report07");
             System.exit(2);
             return;
         }
@@ -45,26 +48,32 @@ public class Main
         {
             database.checkWorldDatabase();
             System.out.println();
-            CountryReportService reports = new CountryReportService(
-                    new CountryRepository(database.getConnection())
-            );
-
-            switch (request.number())
+            if (request.number() <= 6)
             {
-                case 1 -> reports.printCountriesInWorld(System.out);
-                case 2 -> reports.printCountriesInContinent(request.continent(), System.out);
-                case 3 -> reports.printCountriesInRegion(request.region(), System.out);
-                case 4 -> reports.printTopCountriesInWorld(request.topN(), System.out);
-                case 5 -> reports.printTopCountriesInContinent(
-                        request.continent(), request.topN(), System.out);
-                case 6 -> reports.printTopCountriesInRegion(
-                        request.region(), request.topN(), System.out);
-                default -> throw new IllegalStateException("Unsupported validated report");
+                CountryReportService reports = new CountryReportService(
+                        new CountryRepository(database.getConnection()));
+                switch (request.number())
+                {
+                    case 1 -> reports.printCountriesInWorld(System.out);
+                    case 2 -> reports.printCountriesInContinent(request.continent(), System.out);
+                    case 3 -> reports.printCountriesInRegion(request.region(), System.out);
+                    case 4 -> reports.printTopCountriesInWorld(request.topN(), System.out);
+                    case 5 -> reports.printTopCountriesInContinent(
+                            request.continent(), request.topN(), System.out);
+                    case 6 -> reports.printTopCountriesInRegion(
+                            request.region(), request.topN(), System.out);
+                    default -> throw new IllegalStateException("Unsupported validated report");
+                }
+            }
+            else
+            {
+                new CityReportService(new CityRepository(database.getConnection()))
+                        .print(request, System.out);
             }
         }
         catch (SQLException e)
         {
-            System.err.println("World database check or country report failed");
+            System.err.println("World database check or population report failed");
             System.err.println(e.getMessage());
             exitCode = 1;
         }

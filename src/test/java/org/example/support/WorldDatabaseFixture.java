@@ -25,7 +25,10 @@ public final class WorldDatabaseFixture
         try (Statement statement = connection.createStatement())
         {
             statement.execute("""
-                    CREATE TABLE city (ID INT PRIMARY KEY, Name VARCHAR(35))
+                    CREATE TABLE city (
+                        ID INT PRIMARY KEY, Name VARCHAR(35), CountryCode VARCHAR(3),
+                        District VARCHAR(20), Population BIGINT
+                    )
                     """);
             statement.execute("""
                     CREATE TABLE country (
@@ -36,9 +39,18 @@ public final class WorldDatabaseFixture
                     """);
             statement.execute("""
                     INSERT INTO city VALUES
-                        (1, 'Peking'), (2, 'New Delhi'), (3, 'Berlin'),
-                        (4, 'London'), (5, 'Brasilia'), (6, 'Washington'),
-                        (7, 'Cairo'), (8, 'Canberra')
+                        (1, 'Peking', 'CHN', 'Beijing', 300),
+                        (2, 'New Delhi', 'IND', 'Delhi', 200),
+                        (3, 'Berlin', 'DEU', 'Berlin', 400),
+                        (4, 'London', 'GBR', 'England', 400),
+                        (5, 'Brasilia', 'BRA', 'Distrito Federal', 250),
+                        (6, 'Washington', 'USA', 'District of Columbia', 150),
+                        (7, 'Cairo', 'EGY', 'Cairo', 400),
+                        (8, 'Canberra', 'AUS', 'Capital Region', 350),
+                        (9, 'Shanghai', 'CHN', 'Shared District', 600),
+                        (10, 'Mumbai', 'IND', 'Shared District', 500),
+                        (11, 'Springfield', 'USA', 'Central', 0),
+                        (12, 'Springfield', 'BRA', 'Central', 100)
                     """);
             statement.execute("""
                     INSERT INTO country VALUES
