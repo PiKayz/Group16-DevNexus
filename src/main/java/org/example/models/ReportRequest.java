@@ -17,9 +17,9 @@ public record ReportRequest(int number, Continent continent, Region region, TopN
 
     public ReportRequest
     {
-        if (number < 1 || number > 5)
+        if (number < 1 || number > 6)
         {
-            throw new IllegalArgumentException("Supported reports: report01-report05");
+            throw new IllegalArgumentException("Supported reports: report01-report06");
         }
         if ((number == 2 || number == 5) && continent == null)
         {
@@ -29,11 +29,11 @@ public record ReportRequest(int number, Continent continent, Region region, TopN
         {
             throw new IllegalArgumentException("This report does not use a continent");
         }
-        if (number == 3 && region == null)
+        if ((number == 3 || number == 6) && region == null)
         {
-            throw new IllegalArgumentException("Report 3 requires a region");
+            throw new IllegalArgumentException("Report " + number + " requires a region");
         }
-        if (number != 3 && region != null)
+        if (number != 3 && number != 6 && region != null)
         {
             throw new IllegalArgumentException("This report does not use a region");
         }
@@ -101,8 +101,19 @@ public record ReportRequest(int number, Continent continent, Region region, TopN
                 yield new ReportRequest(5, Continent.parse(arguments[1]),
                         null, TopN.parse(arguments[2]));
             }
+            case "6", "report06" ->
+            {
+                if (arguments.length != 3)
+                {
+                    throw new IllegalArgumentException(
+                            "Report 6 requires one region and N; quote names containing spaces"
+                    );
+                }
+                yield new ReportRequest(6, null, new Region(arguments[1]),
+                        TopN.parse(arguments[2]));
+            }
             default -> throw new IllegalArgumentException(
-                    "Unknown report: " + arguments[0] + ". Choose report01-report05"
+                    "Unknown report: " + arguments[0] + ". Choose report01-report06"
             );
         };
     }

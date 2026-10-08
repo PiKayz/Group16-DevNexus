@@ -746,15 +746,17 @@ The language report is displayed and the database is unchanged.
 
 
 
-This document specifies planned behaviour.
+This document specifies the expected behaviour of the reporting system.
 
 
 
-The World database connection and table checks have been implemented
+The World database connection, table checks and UC-01 country reports
 
-and tested. The use cases must be implemented and verified separately
+for requirements 1-6 have been implemented and verified with automated
 
-before being marked complete.
+tests and the MySQL World database. UC-02 through UC-06 (requirements 7-32)
+
+remain unimplemented and must be verified before being marked complete.
 
 
 

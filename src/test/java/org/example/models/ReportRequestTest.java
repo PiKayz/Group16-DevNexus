@@ -116,4 +116,38 @@ class ReportRequestTest
         assertThrows(IllegalArgumentException.class,
                 () -> ReportRequest.parse(new String[]{"report05", "Asia", "5", "extra"}));
     }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"6", "report06"})
+    void acceptsRegionTopNReports(String command)
+    {
+        assertEquals(new ReportRequest(6, null, new Region("Eastern Asia"), new TopN(10)),
+                ReportRequest.parse(new String[]{command, " Eastern Asia ", "10"}));
+    }
+
+    @Test
+    void requiresExactlyOneNonblankRegionAndValidCount()
+    {
+        assertThrows(IllegalArgumentException.class,
+                () -> ReportRequest.parse(new String[]{"report06", "Eastern Asia"}));
+        assertThrows(IllegalArgumentException.class,
+                () -> ReportRequest.parse(new String[]{"report06", " ", "5"}));
+        assertThrows(IllegalArgumentException.class,
+                () -> ReportRequest.parse(new String[]{"report06", "Eastern Asia", "-1"}));
+        assertThrows(IllegalArgumentException.class,
+                () -> ReportRequest.parse(new String[]{"report06", "Eastern Asia", "5", "extra"}));
+    }
+
+    @Test
+    void rejectsRequestsWhoseFiltersDoNotBelongToTheSelectedReport()
+    {
+        assertThrows(IllegalArgumentException.class,
+                () -> new ReportRequest(4, Continent.ASIA, null, new TopN(5)));
+        assertThrows(IllegalArgumentException.class,
+                () -> new ReportRequest(5, Continent.ASIA, new Region("Eastern Asia"), new TopN(5)));
+        assertThrows(IllegalArgumentException.class,
+                () -> new ReportRequest(6, null, null, new TopN(5)));
+        assertThrows(IllegalArgumentException.class,
+                () -> new ReportRequest(3, null, new Region("Eastern Asia"), new TopN(5)));
+    }
 }

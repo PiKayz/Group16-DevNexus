@@ -31,6 +31,7 @@ public final class CountryRepository
             "ORDER BY country.Population DESC, country.Code ASC";
 
     private static final String FILTER_CONTINENT = "WHERE country.Continent = ? ";
+    private static final String FILTER_REGION = "WHERE LOWER(country.Region) = LOWER(?) ";
 
     private final Connection connection;
 
@@ -54,7 +55,7 @@ public final class CountryRepository
     public List<Country> findByRegion(Region region) throws SQLException
     {
         Objects.requireNonNull(region, "region");
-        return query(SELECT_COUNTRIES + "WHERE LOWER(country.Region) = LOWER(?) "
+        return query(SELECT_COUNTRIES + FILTER_REGION
                 + ORDER_BY_POPULATION, region.name(), null);
     }
 
@@ -70,6 +71,14 @@ public final class CountryRepository
         Objects.requireNonNull(topN, "topN");
         return query(SELECT_COUNTRIES + FILTER_CONTINENT + ORDER_BY_POPULATION,
                 continent.databaseName(), topN);
+    }
+
+    public List<Country> findTopByRegion(Region region, TopN topN) throws SQLException
+    {
+        Objects.requireNonNull(region, "region");
+        Objects.requireNonNull(topN, "topN");
+        return query(SELECT_COUNTRIES + FILTER_REGION + ORDER_BY_POPULATION,
+                region.name(), topN);
     }
 
     private List<Country> query(String sql, String filter, TopN topN) throws SQLException

@@ -10,7 +10,7 @@ figures describe that dataset rather than current populations.
 
 ## Implemented reports
 
-This branch implements 5 requirements of 32, which is 15.625%. The other 27
+This branch implements 6 requirements of 32, which is 18.75%. The other 26
 reporting requirements remain to be implemented. Output screenshots for the
 final submission still need to be captured.
 
@@ -21,6 +21,7 @@ final submission still need to be captured.
 | 3 | All countries in a selected region, largest population first | [Report 3](src/main/java/org/example/reports/country/report03.md) |
 | 4 | Top N countries in the world | [Report 4](src/main/java/org/example/reports/country/report04.md) |
 | 5 | Top N countries in a selected continent | [Report 5](src/main/java/org/example/reports/country/report05.md) |
+| 6 | Top N countries in a selected region | [Report 6](src/main/java/org/example/reports/country/report06.md) |
 
 Reports are grouped by category. A single `CountryReportService` supplies the
 country reports as separate methods, with shared queries
@@ -52,6 +53,7 @@ src/main/java/org/example/
       report03.md
       report04.md
       report05.md
+      report06.md
     city/package-info.java
     capital/package-info.java
     breakdown/package-info.java
@@ -71,7 +73,7 @@ methods for its requirements. Tests follow the same category packages.
 
 | Category | Requirements still unimplemented |
 |---|---|
-| Country | 6: Top N region report |
+| Country | None: requirements 1-6 implemented |
 | City | 7-16 |
 | Capital | 17-22 |
 | Breakdown | 23-25 |
@@ -96,6 +98,7 @@ docker compose run --rm app report02 "South America"
 docker compose run --rm app report03 "Eastern Asia"
 docker compose run --rm app report04 10
 docker compose run --rm app report05 Asia 10
+docker compose run --rm app report06 "Eastern Asia" 10
 ```
 
 Use `report01` to explicitly select report 1. Continent names are case
@@ -103,14 +106,31 @@ insensitive; names containing spaces must be quoted. Missing or invalid input
 exits with code 2 before connecting to the database. Database/report failures
 exit with code 1; successful reports exit with code 0.
 
+Region names are also case insensitive and ignore surrounding whitespace. An
+unknown region produces `No matching records found`. Top N reports require N to
+be a positive integer; when it exceeds the available count, all matches are
+displayed. Region/continent filters and SQL row limits use bound parameters.
+
+Reports 3-6 have separate local commits on `feature/country-reports/all-region`,
+`feature/country-reports/top-n-world`, `feature/country-reports/top-n-continent`,
+and `feature/country-reports/top-n-region`. Each report branch includes the
+preceding implemented country reports; this final branch contains all six.
+
 `mvn package` runs formatter/input tests and tests of the production SQL queries
 against a small, isolated H2 database in MySQL compatibility mode. Docker checks
 verify the reports against the actual World dataset and MySQL.
 
-Validation: 85 automated tests passed. MySQL verification returned all 239
+Validation: 98 automated tests passed. MySQL verification returned all 239
 countries for report 1 and the correct filtered rows for all seven continents
 in report 2 (Asia 51, Europe 46, North America 37, Africa 58, Oceania 28,
 Antarctica 5, South America 14).
+
+Reports 3-6 were also verified against MySQL: region filtering (Eastern Asia 8
+countries, Western Europe 9), exact Top N rows in each scope, counts exceeding
+the available matches, the maximum supported integer count, unknown regions,
+and parameterised region inputs. Ten invalid CLI cases were rejected before
+connecting. Example outputs are saved in `target/report03-output.txt` through
+`target/report06-output.txt` after verification.
 
 ```sh
 docker compose down
