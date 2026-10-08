@@ -102,6 +102,13 @@ public final class CityRepository
         return query(FILTER_REGION, List.of(region.name()), topN);
     }
 
+    public List<City> findTopByCountry(CountryFilter country, TopN topN) throws SQLException
+    {
+        Objects.requireNonNull(country, "country");
+        Objects.requireNonNull(topN, "topN");
+        return query("WHERE " + MATCH_COUNTRY + " ", List.of(country.value(), country.value()), topN);
+    }
+
     private List<City> query(String filter, List<String> parameters, TopN topN)
             throws SQLException
     {

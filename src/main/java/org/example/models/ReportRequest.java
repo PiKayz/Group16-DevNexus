@@ -27,9 +27,9 @@ public record ReportRequest(int number, Continent continent, Region region, TopN
 
     public ReportRequest
     {
-        if (number < 1 || number > 14)
+        if (number < 1 || number > 15)
         {
-            throw new IllegalArgumentException("Supported reports: report01-report14");
+            throw new IllegalArgumentException("Supported reports: report01-report15");
         }
         boolean needsContinent = number == 2 || number == 5 || number == 8 || number == 13;
         if (needsContinent && continent == null)
@@ -160,8 +160,13 @@ public record ReportRequest(int number, Continent continent, Region region, TopN
                 requireLength(arguments, 3, "Report 14 requires a region and N");
                 yield new ReportRequest(14, null, new Region(arguments[1]), TopN.parse(arguments[2]), null, null);
             }
+            case "15", "report15" ->
+            {
+                requireLength(arguments, 3, "Report 15 requires a country and N");
+                yield new ReportRequest(15, null, null, TopN.parse(arguments[2]), new CountryFilter(arguments[1]), null);
+            }
             default -> throw new IllegalArgumentException("Unknown report: " + arguments[0]
-                    + ". Choose report01-report14");
+                    + ". Choose report01-report15");
         };
     }
 

@@ -260,6 +260,42 @@ class CityReportServiceTest
         }
     }
 
+
+    @ParameterizedTest
+    @ValueSource(strings = {"USA", "United States"})
+    void limitsCitiesInsideTheSelectedCountry(String value) throws Exception
+    {
+        try (Connection connection = WorldDatabaseFixture.open())
+        {
+            assertEquals(List.of("Washington"), service(connection)
+                    .getTopCitiesInCountry(new CountryFilter(value), new TopN(1))
+                    .stream().map(City::name).toList());
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {100, Integer.MAX_VALUE})
+    void retainsAllMatchingCountryCitiesForLargeN(int count) throws Exception
+    {
+        try (Connection connection = WorldDatabaseFixture.open())
+        {
+            List<City> cities = service(connection)
+                    .getTopCitiesInCountry(new CountryFilter("USA"), new TopN(count));
+            assertEquals(List.of("Washington", "Springfield"), cities.stream().map(City::name).toList());
+            assertEquals(0, cities.getLast().population());
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"Unknown Country", "USA' OR 1=1 --"})
+    void bindsTheTopCityCountrySeparatelyFromN(String value) throws Exception
+    {
+        try (Connection connection = WorldDatabaseFixture.open())
+        {
+            assertTrue(service(connection).getTopCitiesInCountry(new CountryFilter(value), new TopN(5)).isEmpty());
+        }
+    }
+
     private CityReportService service(Connection connection)
     {
         return new CityReportService(new CityRepository(connection));
