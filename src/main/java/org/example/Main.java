@@ -145,10 +145,14 @@ public class Main
         try
         {
             app.checkWorldDatabase();
+            System.out.println();
+            CountryReport.printCountries(
+                    CountryReport.getAllCountries(app.con), System.out
+            );
         }
         catch (SQLException e)
         {
-            System.err.println("World database check failed");
+            System.err.println("World database check or country report failed");
             System.err.println(e.getMessage());
             exitCode = 1;
         }
