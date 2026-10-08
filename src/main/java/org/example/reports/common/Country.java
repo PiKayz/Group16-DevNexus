@@ -1,4 +1,4 @@
-package org.example;
+package org.example.reports.common;
 
 /**
  * The six columns required for a country population report.

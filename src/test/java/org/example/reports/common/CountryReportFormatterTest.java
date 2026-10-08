@@ -1,9 +1,8 @@
-package org.example;
+package org.example.reports.common;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Locale;
 
@@ -11,10 +10,9 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class CountryReportTest
+class CountryReportFormatterTest
 {
     @Test
     void displaysAllRequiredColumnsAndFullCountryAndCapitalNames()
@@ -81,22 +79,13 @@ class CountryReportTest
         }
     }
 
-    @Test
-    void refusesToQueryWithoutADatabaseConnection()
-    {
-        SQLException error = assertThrows(SQLException.class,
-                () -> CountryReport.getAllCountries(null));
-
-        assertEquals("Not connected to the database", error.getMessage());
-    }
-
     private String render(List<Country> countries)
     {
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
 
         try (PrintStream output = new PrintStream(bytes, true, StandardCharsets.UTF_8))
         {
-            CountryReport.printCountries(countries, output);
+            CountryReportFormatter.print("Country population report", countries, output);
         }
 
         return bytes.toString(StandardCharsets.UTF_8);

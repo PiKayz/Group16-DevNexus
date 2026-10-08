@@ -6,6 +6,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import org.example.reports.ReportRequest;
+import org.example.reports.common.CountryRepository;
+import org.example.reports.report01.CountriesInWorldReport;
+import org.example.reports.report02.CountriesInContinentReport;
+
 public class Main
 {
     private Connection con;
@@ -131,6 +136,21 @@ public class Main
 
     public static void main(String[] args)
     {
+        ReportRequest request;
+
+        try
+        {
+            request = ReportRequest.parse(args);
+        }
+        catch (IllegalArgumentException error)
+        {
+            System.err.println(error.getMessage());
+            System.err.println("Usage: java -jar app.jar report01");
+            System.err.println("       java -jar app.jar report02 \"South America\"");
+            System.exit(2);
+            return;
+        }
+
         Main app = new Main();
 
         if (!app.connect())
@@ -146,9 +166,17 @@ public class Main
         {
             app.checkWorldDatabase();
             System.out.println();
-            CountryReport.printCountries(
-                    CountryReport.getAllCountries(app.con), System.out
-            );
+            CountryRepository repository = new CountryRepository(app.con);
+
+            if (request.number() == 1)
+            {
+                new CountriesInWorldReport(repository).print(System.out);
+            }
+            else
+            {
+                new CountriesInContinentReport(repository)
+                        .print(request.continent(), System.out);
+            }
         }
         catch (SQLException e)
         {

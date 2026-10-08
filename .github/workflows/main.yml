@@ -23,6 +23,9 @@ jobs:
       - name: Run Docker Compose
         run: docker compose up --build --abort-on-container-exit --exit-code-from app
 
+      - name: Run continent country report
+        run: docker compose run --rm app report02 Asia
+
       - name: Clean up
         if: always()
         run: docker compose down -v
