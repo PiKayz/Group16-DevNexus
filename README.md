@@ -10,7 +10,7 @@ figures describe that dataset rather than current populations.
 
 ## Implemented reports
 
-This branch implements 4 requirements of 32, which is 12.5%. The other 28
+This branch implements 5 requirements of 32, which is 15.625%. The other 27
 reporting requirements remain to be implemented. Output screenshots for the
 final submission still need to be captured.
 
@@ -20,6 +20,7 @@ final submission still need to be captured.
 | 2 | All countries in a selected continent, largest population first | [Report 2](src/main/java/org/example/reports/country/report02.md) |
 | 3 | All countries in a selected region, largest population first | [Report 3](src/main/java/org/example/reports/country/report03.md) |
 | 4 | Top N countries in the world | [Report 4](src/main/java/org/example/reports/country/report04.md) |
+| 5 | Top N countries in a selected continent | [Report 5](src/main/java/org/example/reports/country/report05.md) |
 
 Reports are grouped by category. A single `CountryReportService` supplies the
 country reports as separate methods, with shared queries
@@ -50,6 +51,7 @@ src/main/java/org/example/
       report02.md
       report03.md
       report04.md
+      report05.md
     city/package-info.java
     capital/package-info.java
     breakdown/package-info.java
@@ -69,7 +71,7 @@ methods for its requirements. Tests follow the same category packages.
 
 | Category | Requirements still unimplemented |
 |---|---|
-| Country | 5-6: Top N continent and region reports |
+| Country | 6: Top N region report |
 | City | 7-16 |
 | Capital | 17-22 |
 | Breakdown | 23-25 |
@@ -93,6 +95,7 @@ docker compose run --rm app report02 Asia
 docker compose run --rm app report02 "South America"
 docker compose run --rm app report03 "Eastern Asia"
 docker compose run --rm app report04 10
+docker compose run --rm app report05 Asia 10
 ```
 
 Use `report01` to explicitly select report 1. Continent names are case
@@ -104,7 +107,7 @@ exit with code 1; successful reports exit with code 0.
 against a small, isolated H2 database in MySQL compatibility mode. Docker checks
 verify the reports against the actual World dataset and MySQL.
 
-Validation: 71 automated tests passed. MySQL verification returned all 239
+Validation: 85 automated tests passed. MySQL verification returned all 239
 countries for report 1 and the correct filtered rows for all seven continents
 in report 2 (Asia 51, Europe 46, North America 37, Africa 58, Oceania 28,
 Antarctica 5, South America 14).

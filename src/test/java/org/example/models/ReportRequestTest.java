@@ -95,4 +95,25 @@ class ReportRequestTest
         assertThrows(IllegalArgumentException.class,
                 () -> ReportRequest.parse(new String[]{"report04", "0"}));
     }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"5", "report05"})
+    void acceptsContinentTopNReports(String command)
+    {
+        assertEquals(new ReportRequest(5, Continent.SOUTH_AMERICA, null, new TopN(10)),
+                ReportRequest.parse(new String[]{command, "south america", "10"}));
+    }
+
+    @Test
+    void requiresAValidContinentAndExactlyOneValidCount()
+    {
+        assertThrows(IllegalArgumentException.class,
+                () -> ReportRequest.parse(new String[]{"report05", "Asia"}));
+        assertThrows(IllegalArgumentException.class,
+                () -> ReportRequest.parse(new String[]{"report05", "Atlantis", "5"}));
+        assertThrows(IllegalArgumentException.class,
+                () -> ReportRequest.parse(new String[]{"report05", "Asia", "1.5"}));
+        assertThrows(IllegalArgumentException.class,
+                () -> ReportRequest.parse(new String[]{"report05", "Asia", "5", "extra"}));
+    }
 }

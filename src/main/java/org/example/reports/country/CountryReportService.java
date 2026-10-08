@@ -12,7 +12,7 @@ import org.example.models.Region;
 import org.example.models.TopN;
 
 /**
- * Country reporting, requirements 1-6. Requirements 1-4 are implemented.
+ * Country reporting, requirements 1-6. Requirements 1-5 are implemented.
  */
 public final class CountryReportService
 {
@@ -55,6 +55,15 @@ public final class CountryReportService
         return repository.findTopInWorld(topN);
     }
 
+    /**
+     * Requirement 5: the user's Top N countries in a continent, largest first.
+     */
+    public List<Country> getTopCountriesInContinent(Continent continent, TopN topN)
+            throws SQLException
+    {
+        return repository.findTopByContinent(continent, topN);
+    }
+
     public void printCountriesInWorld(PrintStream output) throws SQLException
     {
         CountryReportFormatter.print(
@@ -92,6 +101,18 @@ public final class CountryReportService
         CountryReportFormatter.print(
                 "Top " + topN.value() + " countries in the world by population (largest to smallest)",
                 getTopCountriesInWorld(topN), output
+        );
+    }
+
+    public void printTopCountriesInContinent(Continent continent, TopN topN, PrintStream output)
+            throws SQLException
+    {
+        Objects.requireNonNull(continent, "continent");
+        Objects.requireNonNull(topN, "topN");
+        CountryReportFormatter.print(
+                "Top " + topN.value() + " countries in " + continent.databaseName()
+                        + " by population (largest to smallest)",
+                getTopCountriesInContinent(continent, topN), output
         );
     }
 }
