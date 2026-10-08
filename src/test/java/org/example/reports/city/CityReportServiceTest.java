@@ -222,6 +222,44 @@ class CityReportServiceTest
         }
     }
 
+
+    @Test
+    void limitsCitiesWithinTheSelectedRegion() throws Exception
+    {
+        try (Connection connection = WorldDatabaseFixture.open())
+        {
+            assertEquals(List.of("Shanghai", "Peking"), service(connection)
+                    .getTopCitiesInRegion(new Region(" eastern ASIA "), new TopN(2))
+                    .stream().map(City::name).toList());
+            assertEquals(List.of("Berlin"), service(connection)
+                    .getTopCitiesInRegion(new Region("Western Europe"), new TopN(1))
+                    .stream().map(City::name).toList());
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {100, Integer.MAX_VALUE})
+    void retainsAllMatchingRegionCitiesForLargeN(int count) throws Exception
+    {
+        try (Connection connection = WorldDatabaseFixture.open())
+        {
+            List<City> cities = service(connection)
+                    .getTopCitiesInRegion(new Region("North America"), new TopN(count));
+            assertEquals(List.of("Washington", "Springfield"), cities.stream().map(City::name).toList());
+            assertEquals(0, cities.getLast().population());
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"Unknown Region", "Eastern Asia' OR 1=1 --"})
+    void bindsTheTopCityRegionSeparatelyFromN(String value) throws Exception
+    {
+        try (Connection connection = WorldDatabaseFixture.open())
+        {
+            assertTrue(service(connection).getTopCitiesInRegion(new Region(value), new TopN(5)).isEmpty());
+        }
+    }
+
     private CityReportService service(Connection connection)
     {
         return new CityReportService(new CityRepository(connection));
