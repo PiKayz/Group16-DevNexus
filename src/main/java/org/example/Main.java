@@ -121,6 +121,7 @@ public class Main
     public void runCountryReports() throws SQLException
     {
         countryReports.printAllCountriesInWorld(con);
+        countryReports.printAllCountriesInContinent(con, "Asia");
     }
 
     /**
