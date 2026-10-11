@@ -10,6 +10,14 @@ public class Main
 {
     private Connection con;
 
+    // Create the six report classes. Report methods will be added by the team.
+    private final CountryReports countryReports = new CountryReports();
+    private final CityReports cityReports = new CityReports();
+    private final CapitalReports capitalReports = new CapitalReports();
+    private final PopulationBreakdowns populationBreakdowns = new PopulationBreakdowns();
+    private final PopulationTotals populationTotals = new PopulationTotals();
+    private final LanguageReports languageReports = new LanguageReports();
+
     /**
      * Connect to the World database.
      */
