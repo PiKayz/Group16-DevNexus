@@ -116,6 +116,14 @@ public class Main
     }
 
     /**
+     * Run the country reports implemented so far.
+     */
+    public void runCountryReports() throws SQLException
+    {
+        countryReports.printAllCountriesInWorld(con);
+    }
+
+    /**
      * Close the database connection.
      */
     public void disconnect()
@@ -153,6 +161,7 @@ public class Main
         try
         {
             app.checkWorldDatabase();
+            app.runCountryReports();
         }
         catch (SQLException e)
         {
