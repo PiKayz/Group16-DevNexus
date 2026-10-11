@@ -26,7 +26,6 @@ World Database.
 ### Main Flow
 
 1. The user requests the "All Capital Cities in the World by Population" report.
-
 2. The application identifies capital cities using `country.Capital = city.ID`.
 3. The application sorts the capitals by city population in descending order.
 4. The application displays the report.
@@ -80,6 +79,7 @@ World Database.
 4. The application identifies capital cities using `country.Capital = city.ID`.
 5. The application keeps only capitals whose country belongs to the selected continent (`country.Continent = ?`).
 6. The application sorts the capitals by city population in descending order.
+7. The application displays the report.
 
 ### Report Columns
 
@@ -131,6 +131,7 @@ World Database.
 4. The application identifies capital cities using `country.Capital = city.ID`.
 5. The application keeps only capitals whose country belongs to the selected region (`country.Region = ?`).
 6. The application sorts the capitals by city population in descending order.
+7. The application displays the report.
 
 ### Report Columns
 
