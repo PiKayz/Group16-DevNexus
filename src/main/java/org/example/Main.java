@@ -18,9 +18,7 @@ public class Main
     private final PopulationTotals populationTotals = new PopulationTotals();
     private final LanguageReports languageReports = new LanguageReports();
 
-    /**
-     * Connect to the World database.
-     */
+
     public boolean connect()
     {
         String url =
@@ -72,9 +70,6 @@ public class Main
         return false;
     }
 
-    /**
-     * Check that all three World database tables contain data.
-     */
     public void checkWorldDatabase() throws SQLException
     {
         if (con == null)
@@ -115,27 +110,24 @@ public class Main
         }
     }
 
-    /**
-     * Close the database connection.
-     */
-    public void disconnect()
+public void disconnect()
+{
+    if (con != null)
     {
-        if (con != null)
+        try
         {
-            try
-            {
-                con.close();
-                con = null;
-                System.out.println("Disconnected from database");
-            }
-            catch (SQLException e)
-            {
-                System.err.println(
-                        "Error closing database connection: " + e.getMessage()
-                );
-            }
+            con.close();
+            con = null;
+            System.out.println("Disconnected from database");
+        }
+        catch (SQLException e)
+        {
+            System.err.println(
+                    "Error closing database connection: " + e.getMessage()
+            );
         }
     }
+}
 
     public static void main(String[] args)
     {
@@ -153,6 +145,7 @@ public class Main
         try
         {
             app.checkWorldDatabase();
+            app.cityReports.topNCitiesInWorld(app.con, 5);
         }
         catch (SQLException e)
         {
