@@ -5,14 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-/**
- * Country reports: requirements 1-6.
- * Assigned developer: Htet Aung Shine.
- *
- * Implemented so far:
- *  1. All countries in the world, largest population first (UC-01).
- *  2. All countries in a continent, largest population first (UC-02).
- */
+
 public class CountryReports
 {
     // Shared SELECT part. LEFT JOIN keeps countries without a capital.
