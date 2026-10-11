@@ -13,7 +13,8 @@ public class Main
     // Create the six report classes. Report methods will be added by the team.
     private final CountryReports countryReports = new CountryReports();
     private final CityReports cityReports = new CityReports();
-    private final CapitalReports capitalReports = new CapitalReports();
+    // Created after the database connection is open (it needs the Connection).
+    private CapitalReports capitalReports;
     private final PopulationBreakdowns populationBreakdowns = new PopulationBreakdowns();
     private final PopulationTotals populationTotals = new PopulationTotals();
     private final LanguageReports languageReports = new LanguageReports();
@@ -153,6 +154,15 @@ public class Main
         try
         {
             app.checkWorldDatabase();
+
+            // Capital city reports 17-22
+            app.capitalReports = new CapitalReports(app.con);
+            app.capitalReports.report17();
+            app.capitalReports.report18("Asia");
+            app.capitalReports.report19("Southeast Asia");
+            app.capitalReports.report20(10);
+            app.capitalReports.report21("Europe", 5);
+            app.capitalReports.report22("Caribbean", 5);
         }
         catch (SQLException e)
         {
