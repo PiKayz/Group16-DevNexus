@@ -5,7 +5,15 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+/**
+ * Country reports: requirements 1-6.
+ * Assigned developer: Htet Aung Shine.
 
+ * Implemented so far:
+ *  1. All countries in the world, largest population first (UC-01).
+ *  2. All countries in a continent, largest population first (UC-02).
+ *  3. All countries in a region, largest population first (UC-03).
+ */
 public class CountryReports
 {
     // Shared SELECT part. LEFT JOIN keeps countries without a capital.
@@ -17,9 +25,6 @@ public class CountryReports
 
     /**
      * Requirement 1: print all countries in the world, largest population first.
-     *
-     * @param con an open connection to the World database
-     * @throws SQLException if the query fails
      */
     public void printAllCountriesInWorld(Connection con) throws SQLException
     {
@@ -31,10 +36,6 @@ public class CountryReports
 
     /**
      * Requirement 2: print all countries in one continent, largest population first.
-     *
-     * @param con       an open connection to the World database
-     * @param continent the continent name, for example "Asia"
-     * @throws SQLException if the query fails
      */
     public void printAllCountriesInContinent(Connection con, String continent) throws SQLException
     {
@@ -51,6 +52,27 @@ public class CountryReports
                 "Report 2: All countries in the continent " + name
                         + " by population (largest to smallest)",
                 BASE_SQL + "WHERE c.Continent = ? ORDER BY c.Population DESC, c.Name",
+                name);
+    }
+
+    /**
+     * Requirement 3: print all countries in one region, largest population first.
+     */
+    public void printAllCountriesInRegion(Connection con, String region) throws SQLException
+    {
+        if (region == null || region.trim().isEmpty())
+        {
+            System.out.println();
+            System.out.println("Report 3: Invalid input - please enter a region name");
+            return;
+        }
+
+        String name = region.trim();
+
+        printReport(con,
+                "Report 3: All countries in the region " + name
+                        + " by population (largest to smallest)",
+                BASE_SQL + "WHERE c.Region = ? ORDER BY c.Population DESC, c.Name",
                 name);
     }
 

@@ -122,6 +122,7 @@ public class Main
     {
         countryReports.printAllCountriesInWorld(con);
         countryReports.printAllCountriesInContinent(con, "Asia");
+        countryReports.printAllCountriesInRegion(con, "Southeast Asia");
     }
 
     /**
