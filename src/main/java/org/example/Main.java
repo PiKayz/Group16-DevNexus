@@ -10,13 +10,13 @@ public class Main
 {
     private Connection con;
 
-    // Create the six report classes. Report methods will be added by the team.
-    private final CountryReports countryReports = new CountryReports();
-    private final CityReports cityReports = new CityReports();
-    private final CapitalReports capitalReports = new CapitalReports();
-    private final PopulationBreakdowns populationBreakdowns = new PopulationBreakdowns();
-    private final PopulationTotals populationTotals = new PopulationTotals();
-    private final LanguageReports languageReports = new LanguageReports();
+    // Report classes.
+    private CountryReports countryReports;
+    private CityReports cityReports;
+    private CapitalReports capitalReports;
+    private PopulationBreakdowns populationBreakdowns;
+    private PopulationTotals populationTotals;
+    private LanguageReports languageReports;
 
     /**
      * Connect to the World database.
@@ -43,6 +43,14 @@ public class Main
                         "devnexus",
                         "DevNexusApp2026"
                 );
+
+                // Connect every report class to the same database connection.
+                countryReports = new CountryReports();
+                cityReports = new CityReports(con);
+                capitalReports = new CapitalReports();
+                populationBreakdowns = new PopulationBreakdowns();
+                populationTotals = new PopulationTotals();
+                languageReports = new LanguageReports();
 
                 System.out.println("Successfully connected to World database");
                 return true;
@@ -116,6 +124,33 @@ public class Main
     }
 
     /**
+     * Run a simple City Report to prove that Main and CityReports
+     * are connected correctly.
+     */
+    public void runCityReport() throws SQLException
+    {
+        if (cityReports == null)
+        {
+            throw new SQLException("CityReports is not connected to the database");
+        }
+
+        // Example: Requirement 7 - all cities in the world.
+        cityReports.allCitiesInWorld();
+
+        // Other examples:
+        // cityReports.allCitiesInContinent("Asia");
+        // cityReports.allCitiesInRegion("Southeast Asia");
+        // cityReports.allCitiesInCountry("Myanmar");
+        // cityReports.allCitiesInDistrict("Yangon");
+        //
+        // cityReports.topNCitiesInWorld(10);
+        // cityReports.topNCitiesInContinent("Asia", 10);
+        // cityReports.topNCitiesInRegion("Southeast Asia", 10);
+        // cityReports.topNCitiesInCountry("Myanmar", 10);
+        // cityReports.topNCitiesInDistrict("Yangon", 10);
+    }
+
+    /**
      * Close the database connection.
      */
     public void disconnect()
@@ -153,10 +188,19 @@ public class Main
         try
         {
             app.checkWorldDatabase();
+
+            // Main -> CityReports -> MySQL.
+            app.runCityReport();
         }
         catch (SQLException e)
         {
-            System.err.println("World database check failed");
+            System.err.println("Report/database error");
+            System.err.println(e.getMessage());
+            exitCode = 1;
+        }
+        catch (IllegalArgumentException e)
+        {
+            System.err.println("Invalid report input");
             System.err.println(e.getMessage());
             exitCode = 1;
         }
