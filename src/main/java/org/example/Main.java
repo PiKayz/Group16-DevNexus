@@ -153,6 +153,15 @@ public class Main
         try
         {
             app.checkWorldDatabase();
+
+            // --- ADDED: Run your Population Totals reports ---
+            System.out.println("\n--- Running Population Totals Report ---");
+            app.populationTotals.printWorldPopulation(app.con);
+
+            // --- NEW: Add these for Continent, Region, Country ---
+            app.populationTotals.printPopulationByContinent(app.con);
+            app.populationTotals.printPopulationByRegion(app.con, "Western Europe");
+            app.populationTotals.printPopulationByCountry(app.con, "United Kingdom");
         }
         catch (SQLException e)
         {
