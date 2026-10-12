@@ -70,6 +70,7 @@ public class Main
         return false;
     }
 
+
     public void checkWorldDatabase() throws SQLException
     {
         if (con == null)
@@ -109,7 +110,6 @@ public class Main
             System.out.println("World database check passed");
         }
     }
-
 public void disconnect()
 {
     if (con != null)
@@ -146,6 +146,8 @@ public void disconnect()
         {
             app.checkWorldDatabase();
             app.cityReports.topNCitiesInWorld(app.con, 5);
+            app.cityReports.topNCitiesInContinent(app.con, "Asia", 5);
+            app.cityReports.topNCitiesInRegion(app.con, "Southeast Asia", 5);
         }
         catch (SQLException e)
         {
