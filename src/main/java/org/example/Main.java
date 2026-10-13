@@ -24,8 +24,7 @@ public class Main
             new LanguageReports();
 
     /**
-     * Connect using Docker environment settings,
-     * or localhost when running directly from IntelliJ.
+     * Connect using Docker settings or localhost for IntelliJ.
      */
     public boolean connect()
     {
@@ -217,6 +216,27 @@ public class Main
     }
 
     /**
+     * Khaine Zaw Hein: Implemented population totals 26-29.
+     */
+    public void runPopulationTotals()
+    {
+        System.out.println(
+                "\n--- Running Population Totals Reports ---"
+        );
+
+        populationTotals.printWorldPopulation(con);
+        populationTotals.printPopulationByContinent(con);
+        populationTotals.printPopulationByRegion(
+                con,
+                "Western Europe"
+        );
+        populationTotals.printPopulationByCountry(
+                con,
+                "United Kingdom"
+        );
+    }
+
+    /**
      * Close the database connection.
      */
     public void disconnect()
@@ -266,6 +286,7 @@ public class Main
             app.runCityReports();
             app.runCapitalReports();
             app.runPopulationBreakdowns();
+            app.runPopulationTotals();
         }
         catch (SQLException e)
         {
