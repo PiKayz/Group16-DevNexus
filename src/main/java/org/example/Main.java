@@ -9,15 +9,20 @@ import java.sql.Statement;
 public class Main
 {
     private Connection con;
-
     private CityReports cityReports;
 
-    private final CountryReports countryReports = new CountryReports();
-    private final CapitalReports capitalReports = new CapitalReports();
+    private final CountryReports countryReports =
+            new CountryReports();
+
+    private final CapitalReports capitalReports =
+            new CapitalReports();
+
     private final PopulationBreakdowns populationBreakdowns =
             new PopulationBreakdowns();
+
     private final PopulationTotals populationTotals =
             new PopulationTotals();
+
     private final LanguageReports languageReports =
             new LanguageReports();
 
@@ -82,13 +87,15 @@ public class Main
     }
 
     /**
-     * Check that all three World database tables contain data.
+     * Check that the required database tables contain data.
      */
     public void checkWorldDatabase() throws SQLException
     {
         if (con == null)
         {
-            throw new SQLException("Not connected to the database");
+            throw new SQLException(
+                    "Not connected to the database"
+            );
         }
 
         String sql =
@@ -102,7 +109,9 @@ public class Main
         {
             if (!result.next())
             {
-                throw new SQLException("Database check returned no result");
+                throw new SQLException(
+                        "Database check returned no result"
+                );
             }
 
             int countries = result.getInt("country_count");
@@ -111,7 +120,9 @@ public class Main
 
             System.out.println("Countries: " + countries);
             System.out.println("Cities: " + cities);
-            System.out.println("Country-language records: " + languages);
+            System.out.println(
+                    "Country-language records: " + languages
+            );
 
             if (countries == 0 || cities == 0 || languages == 0)
             {
@@ -131,23 +142,39 @@ public class Main
     {
         countryReports.printAllCountriesInWorld(con);
         countryReports.printAllCountriesInContinent(con, "Asia");
-        countryReports.printAllCountriesInRegion(con, "Southeast Asia");
+        countryReports.printAllCountriesInRegion(
+                con,
+                "Southeast Asia"
+        );
     }
 
     /**
-     * Run city reports 7-9.
+     * Run the city reports implemented by both members.
      */
     public void runCityReports() throws SQLException
     {
         if (cityReports == null)
         {
-            throw new SQLException("CityReports is not initialized");
+            throw new SQLException(
+                    "CityReports is not initialized"
+            );
         }
 
         cityReports.cityReports();
+
+        // Htet Aung Lin: Requirements 7-9
         cityReports.allCitiesInWorld();
         cityReports.allCitiesInContinent("Asia");
         cityReports.allCitiesInRegion("Western Europe");
+
+        // Win Aung: Requirements 12-14
+        cityReports.topNCitiesInWorld(con, 5);
+        cityReports.topNCitiesInContinent(con, "Asia", 5);
+        cityReports.topNCitiesInRegion(
+                con,
+                "Southeast Asia",
+                5
+        );
     }
 
     /**
@@ -162,12 +189,15 @@ public class Main
                 con.close();
                 con = null;
 
-                System.out.println("Disconnected from database");
+                System.out.println(
+                        "Disconnected from database"
+                );
             }
             catch (SQLException e)
             {
                 System.err.println(
-                        "Error closing database connection: " + e.getMessage()
+                        "Error closing database connection: "
+                                + e.getMessage()
                 );
             }
         }
@@ -179,7 +209,10 @@ public class Main
 
         if (!app.connect())
         {
-            System.err.println("Could not connect to World database");
+            System.err.println(
+                    "Could not connect to World database"
+            );
+
             System.exit(1);
             return;
         }
@@ -190,16 +223,16 @@ public class Main
         {
             app.checkWorldDatabase();
 
-            // Preserve country report calls.
             app.runCountryReports();
-
-            // Include city report calls.
             app.runCityReports();
         }
         catch (SQLException e)
         {
-            System.err.println("Database check or report query failed");
+            System.err.println(
+                    "Database check or report query failed"
+            );
             System.err.println(e.getMessage());
+
             exitCode = 1;
         }
         finally
