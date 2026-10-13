@@ -6,7 +6,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
- * City reports: Requirements 7-9.
+ * City Reports
+ *
+ * Requirement 7 - All cities in the world
+ * Requirement 8 - All cities in a continent
+ * Requirement 9 - All cities in a region
  */
 public class CityReports
 {
@@ -24,12 +28,40 @@ public class CityReports
         this.con = con;
     }
 
+
+    // ============================================================
+    // CITY REPORTS
+    // ============================================================
+
+    /**
+     * City Reports
+     */
+    public void cityReports()
+    {
+        System.out.println();
+        System.out.println("==============================");
+        System.out.println("        CITY REPORTS");
+        System.out.println("==============================");
+    }
+
+
+    // ============================================================
+    // ALL WORLD
+    // Requirement 7
+    // ============================================================
+
     /**
      * Requirement 7:
-     * All cities in the world ordered by largest population to smallest.
+     * All cities in the world ordered by largest population
+     * to smallest.
      */
     public void allCitiesInWorld() throws SQLException
     {
+        System.out.println();
+        System.out.println("------------------------------");
+        System.out.println("          ALL WORLD");
+        System.out.println("------------------------------");
+
         String sql =
                 "SELECT city.Name AS City, " +
                         "country.Name AS Country, " +
@@ -42,11 +74,19 @@ public class CityReports
         runReport(sql);
     }
 
+
+    // ============================================================
+    // ALL CONTINENT
+    // Requirement 8
+    // ============================================================
+
     /**
      * Requirement 8:
-     * All cities in a continent ordered by largest population to smallest.
+     * All cities in a continent ordered by largest population
+     * to smallest.
      */
-    public void allCitiesInContinent(String continent) throws SQLException
+    public void allCitiesInContinent(String continent)
+            throws SQLException
     {
         if (continent == null || continent.trim().isEmpty())
         {
@@ -54,6 +94,11 @@ public class CityReports
                     "Continent cannot be empty"
             );
         }
+
+        System.out.println();
+        System.out.println("------------------------------");
+        System.out.println("       ALL CONTINENT");
+        System.out.println("------------------------------");
 
         String sql =
                 "SELECT city.Name AS City, " +
@@ -68,11 +113,19 @@ public class CityReports
         runReport(sql, continent);
     }
 
+
+    // ============================================================
+    // ALL REGION
+    // Requirement 9
+    // ============================================================
+
     /**
      * Requirement 9:
-     * All cities in a region ordered by largest population to smallest.
+     * All cities in a region ordered by largest population
+     * to smallest.
      */
-    public void allCitiesInRegion(String region) throws SQLException
+    public void allCitiesInRegion(String region)
+            throws SQLException
     {
         if (region == null || region.trim().isEmpty())
         {
@@ -80,6 +133,11 @@ public class CityReports
                     "Region cannot be empty"
             );
         }
+
+        System.out.println();
+        System.out.println("------------------------------");
+        System.out.println("          ALL REGION");
+        System.out.println("------------------------------");
 
         String sql =
                 "SELECT city.Name AS City, " +
@@ -94,17 +152,27 @@ public class CityReports
         runReport(sql, region);
     }
 
+
+    // ============================================================
+    // REPORT OUTPUT
+    // ============================================================
+
     /**
      * Runs the report query and prints the results.
      */
-    private void runReport(String sql, Object... parameters)
-            throws SQLException
+    private void runReport(
+            String sql,
+            Object... parameters
+    ) throws SQLException
     {
         try (PreparedStatement stmt = con.prepareStatement(sql))
         {
             for (int i = 0; i < parameters.length; i++)
             {
-                stmt.setObject(i + 1, parameters[i]);
+                stmt.setObject(
+                        i + 1,
+                        parameters[i]
+                );
             }
 
             try (ResultSet rs = stmt.executeQuery())
@@ -138,7 +206,9 @@ public class CityReports
 
                 if (!found)
                 {
-                    System.out.println("No cities found.");
+                    System.out.println(
+                            "No cities found."
+                    );
                 }
             }
         }
