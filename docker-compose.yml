@@ -1,6 +1,10 @@
 services:
   app:
     build: .
+    environment:
+      DB_URL: jdbc:mysql://devnexus-db:3306/world
+      DB_USER: devnexus
+      DB_PASSWORD: DevNexusApp2026
     depends_on:
       - devnexus-db
 
