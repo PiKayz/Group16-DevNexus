@@ -10,13 +10,16 @@ public class Main
 {
     private Connection con;
 
-    // Create the six report classes. Report methods will be added by the team.
+    private CityReports cityReports;
+
     private final CountryReports countryReports = new CountryReports();
-    private final CityReports cityReports = new CityReports();
     private final CapitalReports capitalReports = new CapitalReports();
-    private final PopulationBreakdowns populationBreakdowns = new PopulationBreakdowns();
-    private final PopulationTotals populationTotals = new PopulationTotals();
-    private final LanguageReports languageReports = new LanguageReports();
+    private final PopulationBreakdowns populationBreakdowns =
+            new PopulationBreakdowns();
+    private final PopulationTotals populationTotals =
+            new PopulationTotals();
+    private final LanguageReports languageReports =
+            new LanguageReports();
 
     /**
      * Connect to the World database.
@@ -44,12 +47,18 @@ public class Main
                         "DevNexusApp2026"
                 );
 
-                System.out.println("Successfully connected to World database");
+                System.out.println(
+                        "Successfully connected to World database"
+                );
+
+                cityReports = new CityReports(con);
                 return true;
             }
             catch (SQLException e)
             {
-                System.out.println("Connection failed: " + e.getMessage());
+                System.out.println(
+                        "Connection failed: " + e.getMessage()
+                );
 
                 if (attempt == retries)
                 {
@@ -126,6 +135,22 @@ public class Main
     }
 
     /**
+     * Run city reports 7-9.
+     */
+    public void runCityReports() throws SQLException
+    {
+        if (cityReports == null)
+        {
+            throw new SQLException("CityReports is not initialized");
+        }
+
+        cityReports.cityReports();
+        cityReports.allCitiesInWorld();
+        cityReports.allCitiesInContinent("Asia");
+        cityReports.allCitiesInRegion("Western Europe");
+    }
+
+    /**
      * Close the database connection.
      */
     public void disconnect()
@@ -136,6 +161,7 @@ public class Main
             {
                 con.close();
                 con = null;
+
                 System.out.println("Disconnected from database");
             }
             catch (SQLException e)
@@ -163,11 +189,16 @@ public class Main
         try
         {
             app.checkWorldDatabase();
+
+            // Preserve country report calls.
             app.runCountryReports();
+
+            // Include city report calls.
+            app.runCityReports();
         }
         catch (SQLException e)
         {
-            System.err.println("World database check failed");
+            System.err.println("Database check or report query failed");
             System.err.println(e.getMessage());
             exitCode = 1;
         }
