@@ -218,18 +218,25 @@ public class Main
     /**
      * Khaine Zaw Hein: Implemented population totals 26-29.
      */
-    public void runPopulationTotals()
+    public void runPopulationTotals() throws SQLException
     {
         System.out.println(
                 "\n--- Running Population Totals Reports ---"
         );
 
+        // Requirement 26: World population
         populationTotals.printWorldPopulation(con);
-        populationTotals.printPopulationByContinent(con);
+
+        // Requirement 27: Selected continent population
+        populationTotals.printPopulationByContinent(con, "Asia");
+
+        // Requirement 28: Selected region population
         populationTotals.printPopulationByRegion(
                 con,
                 "Western Europe"
         );
+
+        // Requirement 29: Selected country population
         populationTotals.printPopulationByCountry(
                 con,
                 "United Kingdom"

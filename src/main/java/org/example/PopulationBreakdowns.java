@@ -74,6 +74,18 @@ public class PopulationBreakdowns
                 String name = result.getString("area_name");
                 long total = result.getLong("total_population");
                 long city = result.getLong("city_population");
+                // Keep the source figures visible, but do not present a negative
+                // outside-city population or percentages above 100% as valid.
+                if (city > total)
+                {
+                    System.out.printf(Locale.ROOT,
+                            "%-40s %18d %18d %12s %18s %12s%n",
+                            name, total, city, "N/A", "N/A", "N/A");
+                    System.out.println("  Data inconsistency: recorded city population "
+                            + "exceeds the reported total for " + name + ".");
+                    rows++;
+                    continue;
+                }
                 long outside = total - city;
                 double cityPercent = total == 0 ? 0.0 : city * 100.0 / total;
                 double outsidePercent = total == 0 ? 0.0 : outside * 100.0 / total;
