@@ -9,14 +9,13 @@ import java.sql.Statement;
 public class Main
 {
     private Connection con;
+
     private CityReports cityReports;
     private CapitalReports capitalReports;
+    private PopulationBreakdowns populationBreakdowns;
 
     private final CountryReports countryReports =
             new CountryReports();
-
-    private final PopulationBreakdowns populationBreakdowns =
-            new PopulationBreakdowns();
 
     private final PopulationTotals populationTotals =
             new PopulationTotals();
@@ -25,14 +24,25 @@ public class Main
             new LanguageReports();
 
     /**
-     * Connect to the World database.
+     * Connect using Docker environment settings,
+     * or localhost when running directly from IntelliJ.
      */
     public boolean connect()
     {
-        String url =
-                "jdbc:mysql://devnexus-db:3306/world"
-                        + "?allowPublicKeyRetrieval=true&useSSL=false"
-                        + "&connectTimeout=5000&socketTimeout=30000";
+        String url = getSetting(
+                "DB_URL",
+                "jdbc:mysql://localhost:33060/world"
+        );
+
+        url += (url.contains("?") ? "&" : "?")
+                + "allowPublicKeyRetrieval=true&useSSL=false"
+                + "&connectTimeout=5000&socketTimeout=30000";
+
+        String user = getSetting("DB_USER", "devnexus");
+        String password = getSetting(
+                "DB_PASSWORD",
+                "DevNexusApp2026"
+        );
 
         int retries = 30;
 
@@ -46,8 +56,8 @@ public class Main
             {
                 con = DriverManager.getConnection(
                         url,
-                        "devnexus",
-                        "DevNexusApp2026"
+                        user,
+                        password
                 );
 
                 System.out.println(
@@ -56,12 +66,13 @@ public class Main
 
                 cityReports = new CityReports(con);
                 capitalReports = new CapitalReports(con);
+                populationBreakdowns = new PopulationBreakdowns(con);
 
                 return true;
             }
             catch (SQLException e)
             {
-                System.out.println(
+                System.err.println(
                         "Connection failed: " + e.getMessage()
                 );
 
@@ -77,7 +88,7 @@ public class Main
                 catch (InterruptedException interrupted)
                 {
                     Thread.currentThread().interrupt();
-                    System.out.println("Connection interrupted");
+                    System.err.println("Connection interrupted");
                     return false;
                 }
             }
@@ -86,8 +97,20 @@ public class Main
         return false;
     }
 
+    private static String getSetting(
+            String name,
+            String fallback
+    )
+    {
+        String value = System.getenv(name);
+
+        return value == null || value.isBlank()
+                ? fallback
+                : value;
+    }
+
     /**
-     * Check that the required database tables contain data.
+     * Check the required database tables.
      */
     public void checkWorldDatabase() throws SQLException
     {
@@ -153,13 +176,6 @@ public class Main
      */
     public void runCityReports() throws SQLException
     {
-        if (cityReports == null)
-        {
-            throw new SQLException(
-                    "CityReports is not initialized"
-            );
-        }
-
         cityReports.cityReports();
 
         // Htet Aung Lin: Requirements 7-9
@@ -188,6 +204,16 @@ public class Main
         capitalReports.report20(10);
         capitalReports.report21("Europe", 5);
         capitalReports.report22("Caribbean", 5);
+    }
+
+    /**
+     * Han Htal Sein: Population breakdown reports 23-25.
+     */
+    public void runPopulationBreakdowns() throws SQLException
+    {
+        populationBreakdowns.report23();
+        populationBreakdowns.report24();
+        populationBreakdowns.report25();
     }
 
     /**
@@ -239,6 +265,7 @@ public class Main
             app.runCountryReports();
             app.runCityReports();
             app.runCapitalReports();
+            app.runPopulationBreakdowns();
         }
         catch (SQLException e)
         {
