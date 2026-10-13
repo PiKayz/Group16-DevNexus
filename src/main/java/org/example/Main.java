@@ -10,12 +10,10 @@ public class Main
 {
     private Connection con;
     private CityReports cityReports;
+    private CapitalReports capitalReports;
 
     private final CountryReports countryReports =
             new CountryReports();
-
-    private final CapitalReports capitalReports =
-            new CapitalReports();
 
     private final PopulationBreakdowns populationBreakdowns =
             new PopulationBreakdowns();
@@ -57,6 +55,8 @@ public class Main
                 );
 
                 cityReports = new CityReports(con);
+                capitalReports = new CapitalReports(con);
+
                 return true;
             }
             catch (SQLException e)
@@ -149,7 +149,7 @@ public class Main
     }
 
     /**
-     * Run the city reports implemented by both members.
+     * Run implemented city reports from both members.
      */
     public void runCityReports() throws SQLException
     {
@@ -175,6 +175,19 @@ public class Main
                 "Southeast Asia",
                 5
         );
+    }
+
+    /**
+     * Hein Phyo: Capital reports 17-22.
+     */
+    public void runCapitalReports()
+    {
+        capitalReports.report17();
+        capitalReports.report18("Asia");
+        capitalReports.report19("Southeast Asia");
+        capitalReports.report20(10);
+        capitalReports.report21("Europe", 5);
+        capitalReports.report22("Caribbean", 5);
     }
 
     /**
@@ -225,6 +238,7 @@ public class Main
 
             app.runCountryReports();
             app.runCityReports();
+            app.runCapitalReports();
         }
         catch (SQLException e)
         {
