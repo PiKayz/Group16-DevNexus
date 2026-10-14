@@ -10,15 +10,38 @@ public class Main
 {
     private Connection con;
 
+    private CityReports cityReports;
+    private CapitalReports capitalReports;
+    private PopulationBreakdowns populationBreakdowns;
+
+    private final CountryReports countryReports =
+            new CountryReports();
+
+    private final PopulationTotals populationTotals =
+            new PopulationTotals();
+
+    private final LanguageReports languageReports =
+            new LanguageReports();
+
     /**
-     * Connect to the World database.
+     * Connect using Docker settings or localhost for IntelliJ.
      */
     public boolean connect()
     {
-        String url =
-                "jdbc:mysql://devnexus-db:3306/world"
-                        + "?allowPublicKeyRetrieval=true&useSSL=false"
-                        + "&connectTimeout=5000&socketTimeout=30000";
+        String url = getSetting(
+                "DB_URL",
+                "jdbc:mysql://localhost:33060/world"
+        );
+
+        url += (url.contains("?") ? "&" : "?")
+                + "allowPublicKeyRetrieval=true&useSSL=false"
+                + "&connectTimeout=5000&socketTimeout=30000";
+
+        String user = getSetting("DB_USER", "devnexus");
+        String password = getSetting(
+                "DB_PASSWORD",
+                "DevNexusApp2026"
+        );
 
         int retries = 30;
 
@@ -32,16 +55,25 @@ public class Main
             {
                 con = DriverManager.getConnection(
                         url,
-                        "devnexus",
-                        "DevNexusApp2026"
+                        user,
+                        password
                 );
 
-                System.out.println("Successfully connected to World database");
+                System.out.println(
+                        "Successfully connected to World database"
+                );
+
+                cityReports = new CityReports(con);
+                capitalReports = new CapitalReports(con);
+                populationBreakdowns = new PopulationBreakdowns(con);
+
                 return true;
             }
             catch (SQLException e)
             {
-                System.out.println("Connection failed: " + e.getMessage());
+                System.err.println(
+                        "Connection failed: " + e.getMessage()
+                );
 
                 if (attempt == retries)
                 {
@@ -55,7 +87,7 @@ public class Main
                 catch (InterruptedException interrupted)
                 {
                     Thread.currentThread().interrupt();
-                    System.out.println("Connection interrupted");
+                    System.err.println("Connection interrupted");
                     return false;
                 }
             }
@@ -64,14 +96,28 @@ public class Main
         return false;
     }
 
+    private static String getSetting(
+            String name,
+            String fallback
+    )
+    {
+        String value = System.getenv(name);
+
+        return value == null || value.isBlank()
+                ? fallback
+                : value;
+    }
+
     /**
-     * Check that all three World database tables contain data.
+     * Check the required database tables.
      */
     public void checkWorldDatabase() throws SQLException
     {
         if (con == null)
         {
-            throw new SQLException("Not connected to the database");
+            throw new SQLException(
+                    "Not connected to the database"
+            );
         }
 
         String sql =
@@ -85,7 +131,9 @@ public class Main
         {
             if (!result.next())
             {
-                throw new SQLException("Database check returned no result");
+                throw new SQLException(
+                        "Database check returned no result"
+                );
             }
 
             int countries = result.getInt("country_count");
@@ -94,7 +142,9 @@ public class Main
 
             System.out.println("Countries: " + countries);
             System.out.println("Cities: " + cities);
-            System.out.println("Country-language records: " + languages);
+            System.out.println(
+                    "Country-language records: " + languages
+            );
 
             if (countries == 0 || cities == 0 || languages == 0)
             {
@@ -108,6 +158,92 @@ public class Main
     }
 
     /**
+     * Run the country reports implemented so far.
+     */
+    public void runCountryReports() throws SQLException
+    {
+        countryReports.printAllCountriesInWorld(con);
+        countryReports.printAllCountriesInContinent(con, "Asia");
+        countryReports.printAllCountriesInRegion(
+                con,
+                "Southeast Asia"
+        );
+    }
+
+    /**
+     * Run implemented city reports from both members.
+     */
+    public void runCityReports() throws SQLException
+    {
+        cityReports.cityReports();
+
+        // Htet Aung Lin: Requirements 7-9
+        cityReports.allCitiesInWorld();
+        cityReports.allCitiesInContinent("Asia");
+        cityReports.allCitiesInRegion("Western Europe");
+
+        // Win Aung: Requirements 12-14
+        cityReports.topNCitiesInWorld(con, 5);
+        cityReports.topNCitiesInContinent(con, "Asia", 5);
+        cityReports.topNCitiesInRegion(
+                con,
+                "Southeast Asia",
+                5
+        );
+    }
+
+    /**
+     * Hein Phyo: Capital reports 17-22.
+     */
+    public void runCapitalReports()
+    {
+        capitalReports.report17();
+        capitalReports.report18("Asia");
+        capitalReports.report19("Southeast Asia");
+        capitalReports.report20(10);
+        capitalReports.report21("Europe", 5);
+        capitalReports.report22("Caribbean", 5);
+    }
+
+    /**
+     * Han Htal Sein: Population breakdown reports 23-25.
+     */
+    public void runPopulationBreakdowns() throws SQLException
+    {
+        populationBreakdowns.report23();
+        populationBreakdowns.report24();
+        populationBreakdowns.report25();
+    }
+
+    /**
+     * Khaine Zaw Hein: Implemented population totals 26-29.
+     */
+    public void runPopulationTotals() throws SQLException
+    {
+        System.out.println(
+                "\n--- Running Population Totals Reports ---"
+        );
+
+        // Requirement 26: World population
+        populationTotals.printWorldPopulation(con);
+
+        // Requirement 27: Selected continent population
+        populationTotals.printPopulationByContinent(con, "Asia");
+
+        // Requirement 28: Selected region population
+        populationTotals.printPopulationByRegion(
+                con,
+                "Western Europe"
+        );
+
+        // Requirement 29: Selected country population
+        populationTotals.printPopulationByCountry(
+                con,
+                "United Kingdom"
+        );
+    }
+
+    /**
      * Close the database connection.
      */
     public void disconnect()
@@ -118,12 +254,16 @@ public class Main
             {
                 con.close();
                 con = null;
-                System.out.println("Disconnected from database");
+
+                System.out.println(
+                        "Disconnected from database"
+                );
             }
             catch (SQLException e)
             {
                 System.err.println(
-                        "Error closing database connection: " + e.getMessage()
+                        "Error closing database connection: "
+                                + e.getMessage()
                 );
             }
         }
@@ -135,7 +275,10 @@ public class Main
 
         if (!app.connect())
         {
-            System.err.println("Could not connect to World database");
+            System.err.println(
+                    "Could not connect to World database"
+            );
+
             System.exit(1);
             return;
         }
@@ -145,11 +288,20 @@ public class Main
         try
         {
             app.checkWorldDatabase();
+
+            app.runCountryReports();
+            app.runCityReports();
+            app.runCapitalReports();
+            app.runPopulationBreakdowns();
+            app.runPopulationTotals();
         }
         catch (SQLException e)
         {
-            System.err.println("World database check failed");
+            System.err.println(
+                    "Database check or report query failed"
+            );
             System.err.println(e.getMessage());
+
             exitCode = 1;
         }
         finally
