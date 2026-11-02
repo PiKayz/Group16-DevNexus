@@ -162,6 +162,8 @@ public class Main
             app.populationTotals.printPopulationByContinent(app.con);
             app.populationTotals.printPopulationByRegion(app.con, "Western Europe");
             app.populationTotals.printPopulationByCountry(app.con, "United Kingdom");
+            app.populationTotals.printPopulationByDistrict(app.con, "England");
+            app.populationTotals.printPopulationByCity(app.con, "London");
         }
         catch (SQLException e)
         {

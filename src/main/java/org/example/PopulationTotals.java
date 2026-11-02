@@ -129,4 +129,61 @@ public class PopulationTotals
             System.out.println("Error fetching country population: " + e.getMessage());
         }
     }
+    /**
+     * Requirement 30: The population of a district.
+     */
+    public void printPopulationByDistrict(Connection con, String district)
+    {
+        String query = "SELECT SUM(Population) AS total FROM city WHERE District = ?";
+
+        System.out.println("\nPopulation Totals - District (" + district + "):");
+        System.out.println("--------------------------------------------------");
+
+        try (PreparedStatement pstmt = con.prepareStatement(query))
+        {
+            pstmt.setString(1, district);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next())
+            {
+                System.out.println("District Population (" + district + "): " + rs.getLong("total"));
+            }
+            else
+            {
+                System.out.println("No data found for district: " + district);
+            }
+        }
+        catch (SQLException e)
+        {
+            System.out.println("Error fetching district population: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Requirement 31: The population of a city.
+     */
+    public void printPopulationByCity(Connection con, String cityName)
+    {
+        String query = "SELECT Name, Population FROM city WHERE Name = ?";
+
+        System.out.println("\nPopulation Totals - City (" + cityName + "):");
+        System.out.println("---------------------------------------------");
+
+        try (PreparedStatement pstmt = con.prepareStatement(query))
+        {
+            pstmt.setString(1, cityName);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next())
+            {
+                System.out.println("City Population (" + cityName + "): " + rs.getLong("Population"));
+            }
+            else
+            {
+                System.out.println("No data found for city: " + cityName);
+            }
+        }
+        catch (SQLException e)
+        {
+            System.out.println("Error fetching city population: " + e.getMessage());
+        }
+    }
 }
