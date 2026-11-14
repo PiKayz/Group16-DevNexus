@@ -145,6 +145,8 @@ public class Main
      * Requirement 7: All cities in the world.
      * Requirement 8: All cities in a continent.
      * Requirement 9: All cities in a region.
+     * Requirement 10: All cities in a country.
+     * Requirement 11: All cities in a district.
      */
     public void runCityReports()
     {
@@ -159,12 +161,11 @@ public class Main
         try
         {
             cityReports.cityReports();
-
             cityReports.allCitiesInWorld();
-
             cityReports.allCitiesInContinent("Asia");
-
             cityReports.allCitiesInRegion("Western Europe");
+            cityReports.allCitiesInCountry("Myanmar");
+            cityReports.allCitiesInDistrict("California");
         }
         catch (SQLException e)
         {
