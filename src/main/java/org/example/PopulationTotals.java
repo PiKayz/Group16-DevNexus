@@ -20,7 +20,7 @@ public class PopulationTotals
     {
         String query = "SELECT SUM(Population) AS total FROM country";
 
-        System.out.println("Population Totals — World:");
+        System.out.println("# 64 :Population Totals — World:");
         System.out.println("--------------------------");
 
         try (Statement stmt = con.createStatement();
@@ -50,7 +50,7 @@ public class PopulationTotals
         String query = "SELECT Continent AS name, SUM(Population) AS total " +
                 "FROM country GROUP BY Continent ORDER BY total DESC";
 
-        System.out.println("\nPopulation Totals — By Continent:");
+        System.out.println("\n#65: Population Totals — By Continent:");
         System.out.println("---------------------------------");
         System.out.println("Continent       | Total Population");
         System.out.println("----------------------------------");
@@ -79,7 +79,7 @@ public class PopulationTotals
         String query = "SELECT Region AS name, SUM(Population) AS total " +
                 "FROM country WHERE Region = ? GROUP BY Region";
 
-        System.out.println("\nPopulation Totals — Region (" + region + "):");
+        System.out.println("\n#66: Population Totals — Region (" + region + "):");
         System.out.println("--------------------------------------------");
 
         try (PreparedStatement pstmt = con.prepareStatement(query))
@@ -108,7 +108,7 @@ public class PopulationTotals
     {
         String query = "SELECT Name, Population FROM country WHERE Name = ?";
 
-        System.out.println("\nPopulation Totals — Country (" + countryName + "):");
+        System.out.println("\n#67: Population Totals — Country (" + countryName + "):");
         System.out.println("--------------------------------------------------");
 
         try (PreparedStatement pstmt = con.prepareStatement(query))
@@ -136,7 +136,7 @@ public class PopulationTotals
     {
         String query = "SELECT SUM(Population) AS total FROM city WHERE District = ?";
 
-        System.out.println("\nPopulation Totals - District (" + district + "):");
+        System.out.println("\n#68: Population Totals - District (" + district + "):");
         System.out.println("--------------------------------------------------");
 
         try (PreparedStatement pstmt = con.prepareStatement(query))
@@ -165,7 +165,7 @@ public class PopulationTotals
     {
         String query = "SELECT Name, Population FROM city WHERE Name = ?";
 
-        System.out.println("\nPopulation Totals - City (" + cityName + "):");
+        System.out.println("\n#69: Population Totals - City (" + cityName + "):");
         System.out.println("---------------------------------------------");
 
         try (PreparedStatement pstmt = con.prepareStatement(query))
