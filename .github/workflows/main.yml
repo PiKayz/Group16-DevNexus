@@ -17,8 +17,11 @@ jobs:
           java-version: '25'
           distribution: 'temurin'
 
+      - name: Unit Tests
+        run: mvn -B test
+
       - name: Build with Maven
-        run: mvn package
+        run: mvn -B package -DskipTests
 
       - name: Run Docker Compose
         run: docker compose up --build --abort-on-container-exit --exit-code-from app
