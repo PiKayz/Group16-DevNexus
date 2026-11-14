@@ -110,24 +110,25 @@ public class Main
             System.out.println("World database check passed");
         }
     }
-public void disconnect()
-{
-    if (con != null)
+
+    public void disconnect()
     {
-        try
+        if (con != null)
         {
-            con.close();
-            con = null;
-            System.out.println("Disconnected from database");
-        }
-        catch (SQLException e)
-        {
-            System.err.println(
-                    "Error closing database connection: " + e.getMessage()
-            );
+            try
+            {
+                con.close();
+                con = null;
+                System.out.println("Disconnected from database");
+            }
+            catch (SQLException e)
+            {
+                System.err.println(
+                        "Error closing database connection: " + e.getMessage()
+                );
+            }
         }
     }
-}
 
     public static void main(String[] args)
     {
@@ -148,6 +149,8 @@ public void disconnect()
             app.cityReports.topNCitiesInWorld(app.con, 5);
             app.cityReports.topNCitiesInContinent(app.con, "Asia", 5);
             app.cityReports.topNCitiesInRegion(app.con, "Southeast Asia", 5);
+            app.cityReports.topNCitiesInCountry(app.con, "Myanmar", 5);
+            app.cityReports.topNCitiesInDistrict(app.con, "Mandalay", 5);
         }
         catch (SQLException e)
         {

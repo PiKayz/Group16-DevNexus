@@ -10,21 +10,37 @@ public class CityReports
 
     public void topNCitiesInWorld(Connection con, int n) throws SQLException
     {
-        printTopN(con, "Top " + n + " cities in the world", "", null, n);
+        printTopN(con, "Report 12 - Top " + n + " cities in the world", "", null, n);
     }
 
 
     public void topNCitiesInContinent(Connection con, String continent, int n) throws SQLException
     {
-        printTopN(con, "Top " + n + " cities in " + continent,
+        printTopN(con, "Report 13 - Top " + n + " cities in " + continent,
                 "WHERE country.Continent = ? ", continent, n);
     }
 
 
     public void topNCitiesInRegion(Connection con, String region, int n) throws SQLException
     {
-        printTopN(con, "Top " + n + " cities in " + region,
+        printTopN(con, "Report 14 - Top " + n + " cities in " + region,
                 "WHERE country.Region = ? ", region, n);
+    }
+
+
+    /** Report 15: top N populated cities in a country. */
+    public void topNCitiesInCountry(Connection con, String country, int n) throws SQLException
+    {
+        printTopN(con, "Report 15 - Top " + n + " cities in " + country,
+                "WHERE country.Name = ? ", country, n);
+    }
+
+
+    /** Report 16: top N populated cities in a district. */
+    public void topNCitiesInDistrict(Connection con, String district, int n) throws SQLException
+    {
+        printTopN(con, "Report 16 - Top " + n + " cities in " + district + " district",
+                "WHERE city.District = ? ", district, n);
     }
 
     /**
