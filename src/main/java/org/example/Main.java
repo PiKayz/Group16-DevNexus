@@ -116,13 +116,19 @@ public class Main
     }
 
     /**
-     * Run the country reports implemented so far.
+     * Run all six country reports (requirements 1-6).
      */
     public void runCountryReports() throws SQLException
     {
+        // Requirements 1-3: all countries
         countryReports.printAllCountriesInWorld(con);
         countryReports.printAllCountriesInContinent(con, "Asia");
         countryReports.printAllCountriesInRegion(con, "Southeast Asia");
+
+        // Requirements 4-6: top N countries
+        countryReports.printTopNCountriesInWorld(con, 10);
+        countryReports.printTopNCountriesInContinent(con, "Asia", 5);
+        countryReports.printTopNCountriesInRegion(con, "Southeast Asia", 5);
     }
 
     /**
