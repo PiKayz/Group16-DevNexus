@@ -153,6 +153,7 @@ public class Main
         try
         {
             app.checkWorldDatabase();
+            app.languageReports.printLanguageSpeakerReport(app.con);
         }
         catch (SQLException e)
         {
