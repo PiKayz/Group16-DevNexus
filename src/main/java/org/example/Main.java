@@ -18,20 +18,15 @@ public class Main
     private final PopulationTotals populationTotals = new PopulationTotals();
     private final LanguageReports languageReports = new LanguageReports();
 
-    /**
-     * Connect using Docker settings or localhost for IntelliJ.
-     */
     public boolean connect()
     {
         String url = getSetting("DB_URL", "jdbc:mysql://localhost:33060/world");
-
         url += (url.contains("?") ? "&" : "?")
                 + "allowPublicKeyRetrieval=true&useSSL=false"
                 + "&connectTimeout=5000&socketTimeout=30000";
 
         String user = getSetting("DB_USER", "devnexus");
         String password = getSetting("DB_PASSWORD", "DevNexusApp2026");
-
         int retries = 30;
 
         for (int attempt = 1; attempt <= retries; attempt++)
@@ -46,7 +41,6 @@ public class Main
                 cityReports = new CityReports(con);
                 capitalReports = new CapitalReports(con);
                 populationBreakdowns = new PopulationBreakdowns(con);
-
                 return true;
             }
             catch (SQLException e)
@@ -136,14 +130,14 @@ public class Main
     {
         cityReports.cityReports();
 
-        // Htet Aung Lin: Reports 7–11
+        // Reports 7–11: All cities
         cityReports.allCitiesInWorld();
         cityReports.allCitiesInContinent("Asia");
         cityReports.allCitiesInRegion("Western Europe");
         cityReports.allCitiesInCountry("Myanmar");
         cityReports.allCitiesInDistrict("California");
 
-        // Win Aung: Reports 12–16
+        // Reports 12–16: Top N cities
         cityReports.topNCitiesInWorld(con, 5);
         cityReports.topNCitiesInContinent(con, "Asia", 5);
         cityReports.topNCitiesInRegion(con, "Southeast Asia", 5);
@@ -153,6 +147,7 @@ public class Main
 
     public void runCapitalReports()
     {
+        // Reports 17–22
         capitalReports.report17();
         capitalReports.report18("Asia");
         capitalReports.report19("Southeast Asia");
@@ -163,6 +158,7 @@ public class Main
 
     public void runPopulationBreakdowns() throws SQLException
     {
+        // Reports 23–25
         populationBreakdowns.report23();
         populationBreakdowns.report24();
         populationBreakdowns.report25();
@@ -172,10 +168,13 @@ public class Main
     {
         System.out.println("\n--- Running Population Totals Reports ---");
 
+        // Reports 26–31
         populationTotals.printWorldPopulation(con);
         populationTotals.printPopulationByContinent(con, "Asia");
         populationTotals.printPopulationByRegion(con, "Western Europe");
         populationTotals.printPopulationByCountry(con, "United Kingdom");
+        populationTotals.printPopulationByDistrict(con, "California");
+        populationTotals.printPopulationByCity(con, "Rangoon (Yangon)");
     }
 
     public void disconnect()
