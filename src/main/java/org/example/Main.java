@@ -9,7 +9,6 @@ import java.sql.Statement;
 public class Main
 {
     private Connection con;
-
     private CityReports cityReports;
     private CapitalReports capitalReports;
     private PopulationBreakdowns populationBreakdowns;
@@ -115,12 +114,11 @@ public class Main
 
     public void runCountryReports() throws SQLException
     {
-        // Reports 1–3: All countries
+        // Reports 1–6
         countryReports.printAllCountriesInWorld(con);
         countryReports.printAllCountriesInContinent(con, "Asia");
         countryReports.printAllCountriesInRegion(con, "Southeast Asia");
 
-        // Reports 4–6: Top N countries
         countryReports.printTopNCountriesInWorld(con, 10);
         countryReports.printTopNCountriesInContinent(con, "Asia", 5);
         countryReports.printTopNCountriesInRegion(con, "Southeast Asia", 5);
@@ -130,14 +128,14 @@ public class Main
     {
         cityReports.cityReports();
 
-        // Reports 7–11: All cities
+        // Reports 7–11
         cityReports.allCitiesInWorld();
         cityReports.allCitiesInContinent("Asia");
         cityReports.allCitiesInRegion("Western Europe");
         cityReports.allCitiesInCountry("Myanmar");
         cityReports.allCitiesInDistrict("California");
 
-        // Reports 12–16: Top N cities
+        // Reports 12–16
         cityReports.topNCitiesInWorld(con, 5);
         cityReports.topNCitiesInContinent(con, "Asia", 5);
         cityReports.topNCitiesInRegion(con, "Southeast Asia", 5);
@@ -217,6 +215,7 @@ public class Main
             app.runCapitalReports();
             app.runPopulationBreakdowns();
             app.runPopulationTotals();
+            app.languageReports.printLanguageSpeakerReport(app.con);
         }
         catch (SQLException e)
         {
