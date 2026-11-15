@@ -124,9 +124,15 @@ public class Main
 
     public void runCountryReports() throws SQLException
     {
+        // Reports 1–3: All countries
         countryReports.printAllCountriesInWorld(con);
         countryReports.printAllCountriesInContinent(con, "Asia");
         countryReports.printAllCountriesInRegion(con, "Southeast Asia");
+
+        // Reports 4–6: Top N countries
+        countryReports.printTopNCountriesInWorld(con, 10);
+        countryReports.printTopNCountriesInContinent(con, "Asia", 5);
+        countryReports.printTopNCountriesInRegion(con, "Southeast Asia", 5);
     }
 
     public void runCityReports() throws SQLException

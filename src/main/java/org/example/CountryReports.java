@@ -8,11 +8,16 @@ import java.sql.SQLException;
 /**
  * Country reports: requirements 1-6.
  * Assigned developer: Htet Aung Shine.
-
- * Implemented so far:
+ *
+ * Implemented reports:
  *  1. All countries in the world, largest population first (UC-01).
  *  2. All countries in a continent, largest population first (UC-02).
  *  3. All countries in a region, largest population first (UC-03).
+ *  4. Top N populated countries in the world, largest population first.
+ *  5. Top N populated countries in a continent, largest population first.
+ *  6. Top N populated countries in a region, largest population first.
+ *
+ * Every report shows: Code, Name, Continent, Region, Population, Capital.
  */
 public class CountryReports
 {
@@ -23,6 +28,9 @@ public class CountryReports
                     + "FROM country c "
                     + "LEFT JOIN city ci ON c.Capital = ci.ID ";
 
+    // Shared ORDER BY part. Name breaks ties so the order is always the same.
+    private static final String ORDER_SQL = "ORDER BY c.Population DESC, c.Name ";
+
     /**
      * Requirement 1: print all countries in the world, largest population first.
      */
@@ -30,7 +38,8 @@ public class CountryReports
     {
         printReport(con,
                 "Report 1: All countries in the world by population (largest to smallest)",
-                BASE_SQL + "ORDER BY c.Population DESC, c.Name",
+                BASE_SQL + ORDER_SQL,
+                null,
                 null);
     }
 
@@ -51,8 +60,9 @@ public class CountryReports
         printReport(con,
                 "Report 2: All countries in the continent " + name
                         + " by population (largest to smallest)",
-                BASE_SQL + "WHERE c.Continent = ? ORDER BY c.Population DESC, c.Name",
-                name);
+                BASE_SQL + "WHERE c.Continent = ? " + ORDER_SQL,
+                name,
+                null);
     }
 
     /**
@@ -72,17 +82,105 @@ public class CountryReports
         printReport(con,
                 "Report 3: All countries in the region " + name
                         + " by population (largest to smallest)",
-                BASE_SQL + "WHERE c.Region = ? ORDER BY c.Population DESC, c.Name",
-                name);
+                BASE_SQL + "WHERE c.Region = ? " + ORDER_SQL,
+                name,
+                null);
+    }
+
+    /**
+     * Requirement 4: print the top N populated countries in the world.
+     *
+     * @param n number of countries to show, must be greater than 0
+     */
+    public void printTopNCountriesInWorld(Connection con, int n) throws SQLException
+    {
+        if (n <= 0)
+        {
+            System.out.println();
+            System.out.println("Report 4: Invalid input - N must be greater than 0");
+            return;
+        }
+
+        printReport(con,
+                "Report 4: Top " + n + " populated countries in the world"
+                        + " (largest to smallest)",
+                BASE_SQL + ORDER_SQL + "LIMIT ?",
+                null,
+                n);
+    }
+
+    /**
+     * Requirement 5: print the top N populated countries in one continent.
+     *
+     * @param n number of countries to show, must be greater than 0
+     */
+    public void printTopNCountriesInContinent(Connection con, String continent, int n)
+            throws SQLException
+    {
+        if (continent == null || continent.trim().isEmpty())
+        {
+            System.out.println();
+            System.out.println("Report 5: Invalid input - please enter a continent name");
+            return;
+        }
+
+        if (n <= 0)
+        {
+            System.out.println();
+            System.out.println("Report 5: Invalid input - N must be greater than 0");
+            return;
+        }
+
+        String name = continent.trim();
+
+        printReport(con,
+                "Report 5: Top " + n + " populated countries in the continent " + name
+                        + " (largest to smallest)",
+                BASE_SQL + "WHERE c.Continent = ? " + ORDER_SQL + "LIMIT ?",
+                name,
+                n);
+    }
+
+    /**
+     * Requirement 6: print the top N populated countries in one region.
+     *
+     * @param n number of countries to show, must be greater than 0
+     */
+    public void printTopNCountriesInRegion(Connection con, String region, int n)
+            throws SQLException
+    {
+        if (region == null || region.trim().isEmpty())
+        {
+            System.out.println();
+            System.out.println("Report 6: Invalid input - please enter a region name");
+            return;
+        }
+
+        if (n <= 0)
+        {
+            System.out.println();
+            System.out.println("Report 6: Invalid input - N must be greater than 0");
+            return;
+        }
+
+        String name = region.trim();
+
+        printReport(con,
+                "Report 6: Top " + n + " populated countries in the region " + name
+                        + " (largest to smallest)",
+                BASE_SQL + "WHERE c.Region = ? " + ORDER_SQL + "LIMIT ?",
+                name,
+                n);
     }
 
     /**
      * Run a country report query and print the result as a table.
      *
      * @param param optional single text parameter for the query, or null if none
+     * @param limit optional LIMIT value for the query, or null if none
      */
-    private void printReport(Connection con, String title, String sql, String param)
-            throws SQLException
+    private void printReport(Connection con, String title, String sql,
+                             String param, Integer limit) throws SQLException
     {
         if (con == null)
         {
@@ -97,9 +195,16 @@ public class CountryReports
 
         try (PreparedStatement stmt = con.prepareStatement(sql))
         {
+            int index = 1;
+
             if (param != null)
             {
-                stmt.setString(1, param);
+                stmt.setString(index++, param);
+            }
+
+            if (limit != null)
+            {
+                stmt.setInt(index, limit);
             }
 
             try (ResultSet rs = stmt.executeQuery())
