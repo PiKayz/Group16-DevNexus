@@ -80,9 +80,6 @@ public class Main
         return value == null || value.isBlank() ? fallback : value;
     }
 
-    /**
-     * Check the required database tables.
-     */
     public void checkWorldDatabase() throws SQLException
     {
         if (con == null)
@@ -146,10 +143,12 @@ public class Main
         cityReports.allCitiesInCountry("Myanmar");
         cityReports.allCitiesInDistrict("California");
 
-        // Win Aung: Reports 12–14
+        // Win Aung: Reports 12–16
         cityReports.topNCitiesInWorld(con, 5);
         cityReports.topNCitiesInContinent(con, "Asia", 5);
         cityReports.topNCitiesInRegion(con, "Southeast Asia", 5);
+        cityReports.topNCitiesInCountry(con, "Myanmar", 5);
+        cityReports.topNCitiesInDistrict(con, "Mandalay", 5);
     }
 
     public void runCapitalReports()

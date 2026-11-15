@@ -6,8 +6,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
- * Requirements 7–11: All cities.
- * Requirements 12–14: Top N cities.
+ * Reports 7–11: All cities.
+ * Reports 12–16: Top N cities.
  */
 public class CityReports
 {
@@ -17,9 +17,7 @@ public class CityReports
     {
         if (con == null)
         {
-            throw new IllegalArgumentException(
-                    "Database connection cannot be null"
-            );
+            throw new IllegalArgumentException("Database connection cannot be null");
         }
 
         this.con = con;
@@ -33,59 +31,43 @@ public class CityReports
         System.out.println("==============================");
     }
 
-    /** Requirement 7: All cities in the world. */
+    /** Report 7: All cities in the world. */
     public void allCitiesInWorld() throws SQLException
     {
         System.out.println("\nReport 7: All cities in the world");
         runReport(allCitiesQuery(""));
     }
 
-    /** Requirement 8: All cities in a continent. */
+    /** Report 8: All cities in a continent. */
     public void allCitiesInContinent(String continent) throws SQLException
     {
         requireValue(continent, "Continent");
         System.out.println("\nReport 8: All cities in continent: " + continent);
-
-        runReport(
-                allCitiesQuery("WHERE country.Continent = ? "),
-                continent.trim()
-        );
+        runReport(allCitiesQuery("WHERE country.Continent = ? "), continent.trim());
     }
 
-    /** Requirement 9: All cities in a region. */
+    /** Report 9: All cities in a region. */
     public void allCitiesInRegion(String region) throws SQLException
     {
         requireValue(region, "Region");
         System.out.println("\nReport 9: All cities in region: " + region);
-
-        runReport(
-                allCitiesQuery("WHERE country.Region = ? "),
-                region.trim()
-        );
+        runReport(allCitiesQuery("WHERE country.Region = ? "), region.trim());
     }
 
-    /** Requirement 10: All cities in a country. */
+    /** Report 10: All cities in a country. */
     public void allCitiesInCountry(String country) throws SQLException
     {
         requireValue(country, "Country");
         System.out.println("\nReport 10: All cities in country: " + country);
-
-        runReport(
-                allCitiesQuery("WHERE country.Name = ? "),
-                country.trim()
-        );
+        runReport(allCitiesQuery("WHERE country.Name = ? "), country.trim());
     }
 
-    /** Requirement 11: All cities in a district. */
+    /** Report 11: All cities in a district. */
     public void allCitiesInDistrict(String district) throws SQLException
     {
         requireValue(district, "District");
         System.out.println("\nReport 11: All cities in district: " + district);
-
-        runReport(
-                allCitiesQuery("WHERE city.District = ? "),
-                district.trim()
-        );
+        runReport(allCitiesQuery("WHERE city.District = ? "), district.trim());
     }
 
     private String allCitiesQuery(String filter)
@@ -107,8 +89,7 @@ public class CityReports
         }
     }
 
-    private void runReport(String sql, Object... parameters)
-            throws SQLException
+    private void runReport(String sql, Object... parameters) throws SQLException
     {
         try (PreparedStatement stmt = con.prepareStatement(sql))
         {
@@ -146,20 +127,13 @@ public class CityReports
         }
     }
 
-    /** Requirement 12: Top N cities in the world. */
-    public void topNCitiesInWorld(Connection con, int n)
-            throws SQLException
+    /** Report 12: Top N cities in the world. */
+    public void topNCitiesInWorld(Connection con, int n) throws SQLException
     {
-        printTopN(
-                con,
-                "Report 12: Top " + n + " cities in the world",
-                "",
-                null,
-                n
-        );
+        printTopN(con, "Report 12: Top " + n + " cities in the world", "", null, n);
     }
 
-    /** Requirement 13: Top N cities in a continent. */
+    /** Report 13: Top N cities in a continent. */
     public void topNCitiesInContinent(Connection con, String continent, int n)
             throws SQLException
     {
@@ -172,7 +146,7 @@ public class CityReports
         );
     }
 
-    /** Requirement 14: Top N cities in a region. */
+    /** Report 14: Top N cities in a region. */
     public void topNCitiesInRegion(Connection con, String region, int n)
             throws SQLException
     {
@@ -181,6 +155,32 @@ public class CityReports
                 "Report 14: Top " + n + " cities in region: " + region,
                 "WHERE country.Region = ? ",
                 region,
+                n
+        );
+    }
+
+    /** Report 15: Top N cities in a country. */
+    public void topNCitiesInCountry(Connection con, String country, int n)
+            throws SQLException
+    {
+        printTopN(
+                con,
+                "Report 15: Top " + n + " cities in country: " + country,
+                "WHERE country.Name = ? ",
+                country,
+                n
+        );
+    }
+
+    /** Report 16: Top N cities in a district. */
+    public void topNCitiesInDistrict(Connection con, String district, int n)
+            throws SQLException
+    {
+        printTopN(
+                con,
+                "Report 16: Top " + n + " cities in district: " + district,
+                "WHERE city.District = ? ",
+                district,
                 n
         );
     }
