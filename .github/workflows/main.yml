@@ -28,6 +28,15 @@ jobs:
           path: target/site/jacoco/
           if-no-files-found: ignore
 
+      - name: Upload unit coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./target/site/jacoco/jacoco.xml
+          flags: unit
+          disable_search: true
+          fail_ci_if_error: true
+
       - name: Build with Maven
         run: mvn -B package -DskipTests
 
@@ -71,6 +80,15 @@ jobs:
           export DB_USER="$(docker compose config --format json | jq -r '.services["devnexus-db"].environment.MYSQL_USER')"
           export DB_PASSWORD="$(docker compose config --format json | jq -r '.services["devnexus-db"].environment.MYSQL_PASSWORD')"
           mvn -B -Dtest=WorldDatabaseIT test
+
+      - name: Upload integration coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./target/site/jacoco/jacoco.xml
+          flags: integration
+          disable_search: true
+          fail_ci_if_error: true
 
       - name: Upload integration test coverage
         if: always()
