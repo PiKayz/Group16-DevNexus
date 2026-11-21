@@ -264,32 +264,27 @@ public class Main
         }
     }
 
-    public static void main(String[] args)
+    int run()
     {
-        Main app = new Main();
-
-        if (!app.connect())
+        if (!connect())
         {
             System.err.println(
                     "Could not connect to World database"
             );
-            System.exit(1);
-            return;
+            return 1;
         }
 
         int exitCode = 0;
 
         try
         {
-            app.checkWorldDatabase();
-            app.runCountryReports();
-            app.runCityReports();
-            app.runCapitalReports();
-            app.runPopulationBreakdowns();
-            app.runPopulationTotals();
-            app.languageReports.printLanguageSpeakerReport(
-                    app.con
-            );
+            checkWorldDatabase();
+            runCountryReports();
+            runCityReports();
+            runCapitalReports();
+            runPopulationBreakdowns();
+            runPopulationTotals();
+            languageReports.printLanguageSpeakerReport(con);
         }
         catch (SQLException e)
         {
@@ -301,9 +296,14 @@ public class Main
         }
         finally
         {
-            app.disconnect();
+            disconnect();
         }
 
-        System.exit(exitCode);
+        return exitCode;
+    }
+
+    public static void main(String[] args)
+    {
+        System.exit(new Main().run());
     }
 }
