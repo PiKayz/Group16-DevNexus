@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Map;
 
 public class Main
 {
@@ -19,32 +20,47 @@ public class Main
 
     public boolean connect()
     {
-        String url = getSetting("DB_URL", "jdbc:mysql://localhost:33060/world");
+        String url = getSetting(
+                "DB_URL",
+                "jdbc:mysql://localhost:33060/world"
+        );
         url += (url.contains("?") ? "&" : "?")
                 + "allowPublicKeyRetrieval=true&useSSL=false"
                 + "&connectTimeout=5000&socketTimeout=30000";
 
         String user = getSetting("DB_USER", "devnexus");
-        String password = getSetting("DB_PASSWORD", "DevNexusApp2026");
+        String password = getSetting(
+                "DB_PASSWORD",
+                "DevNexusApp2026"
+        );
         int retries = 30;
 
         for (int attempt = 1; attempt <= retries; attempt++)
         {
-            System.out.println("Connecting to database... Attempt " + attempt);
+            System.out.println(
+                    "Connecting to database... Attempt " + attempt
+            );
 
             try
             {
-                con = DriverManager.getConnection(url, user, password);
-                System.out.println("Successfully connected to World database");
+                con = DriverManager.getConnection(
+                        url, user, password
+                );
+                System.out.println(
+                        "Successfully connected to World database"
+                );
 
                 cityReports = new CityReports(con);
                 capitalReports = new CapitalReports(con);
-                populationBreakdowns = new PopulationBreakdowns(con);
+                populationBreakdowns =
+                        new PopulationBreakdowns(con);
                 return true;
             }
             catch (SQLException e)
             {
-                System.err.println("Connection failed: " + e.getMessage());
+                System.err.println(
+                        "Connection failed: " + e.getMessage()
+                );
 
                 if (attempt == retries)
                 {
@@ -58,7 +74,9 @@ public class Main
                 catch (InterruptedException interrupted)
                 {
                     Thread.currentThread().interrupt();
-                    System.err.println("Connection interrupted");
+                    System.err.println(
+                            "Connection interrupted"
+                    );
                     return false;
                 }
             }
@@ -67,17 +85,30 @@ public class Main
         return false;
     }
 
-    private static String getSetting(String name, String fallback)
+    private static String getSetting(
+            String name, String fallback)
     {
-        String value = System.getenv(name);
-        return value == null || value.isBlank() ? fallback : value;
+        return getSetting(System.getenv(), name, fallback);
+    }
+
+    static String getSetting(
+            Map<String, String> settings,
+            String name,
+            String fallback)
+    {
+        String value = settings.get(name);
+        return value == null || value.isBlank()
+                ? fallback
+                : value;
     }
 
     public void checkWorldDatabase() throws SQLException
     {
         if (con == null)
         {
-            throw new SQLException("Not connected to the database");
+            throw new SQLException(
+                    "Not connected to the database"
+            );
         }
 
         String sql = "SELECT "
@@ -90,7 +121,9 @@ public class Main
         {
             if (!result.next())
             {
-                throw new SQLException("Database check returned no result");
+                throw new SQLException(
+                        "Database check returned no result"
+                );
             }
 
             int countries = result.getInt("country_count");
@@ -99,16 +132,21 @@ public class Main
 
             System.out.println("Countries: " + countries);
             System.out.println("Cities: " + cities);
-            System.out.println("Country-language records: " + languages);
+            System.out.println(
+                    "Country-language records: " + languages
+            );
 
-            if (countries == 0 || cities == 0 || languages == 0)
+            if (countries == 0 || cities == 0
+                    || languages == 0)
             {
                 throw new SQLException(
                         "World database contains an empty required table"
                 );
             }
 
-            System.out.println("World database check passed");
+            System.out.println(
+                    "World database check passed"
+            );
         }
     }
 
@@ -116,12 +154,20 @@ public class Main
     {
         // Reports 1–6
         countryReports.printAllCountriesInWorld(con);
-        countryReports.printAllCountriesInContinent(con, "Asia");
-        countryReports.printAllCountriesInRegion(con, "Southeast Asia");
+        countryReports.printAllCountriesInContinent(
+                con, "Asia"
+        );
+        countryReports.printAllCountriesInRegion(
+                con, "Southeast Asia"
+        );
 
         countryReports.printTopNCountriesInWorld(con, 10);
-        countryReports.printTopNCountriesInContinent(con, "Asia", 5);
-        countryReports.printTopNCountriesInRegion(con, "Southeast Asia", 5);
+        countryReports.printTopNCountriesInContinent(
+                con, "Asia", 5
+        );
+        countryReports.printTopNCountriesInRegion(
+                con, "Southeast Asia", 5
+        );
     }
 
     public void runCityReports() throws SQLException
@@ -137,10 +183,18 @@ public class Main
 
         // Reports 12–16
         cityReports.topNCitiesInWorld(con, 5);
-        cityReports.topNCitiesInContinent(con, "Asia", 5);
-        cityReports.topNCitiesInRegion(con, "Southeast Asia", 5);
-        cityReports.topNCitiesInCountry(con, "Myanmar", 5);
-        cityReports.topNCitiesInDistrict(con, "Mandalay", 5);
+        cityReports.topNCitiesInContinent(
+                con, "Asia", 5
+        );
+        cityReports.topNCitiesInRegion(
+                con, "Southeast Asia", 5
+        );
+        cityReports.topNCitiesInCountry(
+                con, "Myanmar", 5
+        );
+        cityReports.topNCitiesInDistrict(
+                con, "Mandalay", 5
+        );
     }
 
     public void runCapitalReports()
@@ -154,7 +208,8 @@ public class Main
         capitalReports.report22("Caribbean", 5);
     }
 
-    public void runPopulationBreakdowns() throws SQLException
+    public void runPopulationBreakdowns()
+            throws SQLException
     {
         // Reports 23–25
         populationBreakdowns.report23();
@@ -164,15 +219,27 @@ public class Main
 
     public void runPopulationTotals() throws SQLException
     {
-        System.out.println("\n--- Running Population Totals Reports ---");
+        System.out.println(
+                "\n--- Running Population Totals Reports ---"
+        );
 
         // Reports 26–31
         populationTotals.printWorldPopulation(con);
-        populationTotals.printPopulationByContinent(con, "Asia");
-        populationTotals.printPopulationByRegion(con, "Western Europe");
-        populationTotals.printPopulationByCountry(con, "United Kingdom");
-        populationTotals.printPopulationByDistrict(con, "California");
-        populationTotals.printPopulationByCity(con, "Rangoon (Yangon)");
+        populationTotals.printPopulationByContinent(
+                con, "Asia"
+        );
+        populationTotals.printPopulationByRegion(
+                con, "Western Europe"
+        );
+        populationTotals.printPopulationByCountry(
+                con, "United Kingdom"
+        );
+        populationTotals.printPopulationByDistrict(
+                con, "California"
+        );
+        populationTotals.printPopulationByCity(
+                con, "Rangoon (Yangon)"
+        );
     }
 
     public void disconnect()
@@ -183,12 +250,15 @@ public class Main
             {
                 con.close();
                 con = null;
-                System.out.println("Disconnected from database");
+                System.out.println(
+                        "Disconnected from database"
+                );
             }
             catch (SQLException e)
             {
                 System.err.println(
-                        "Error closing database connection: " + e.getMessage()
+                        "Error closing database connection: "
+                                + e.getMessage()
                 );
             }
         }
@@ -200,7 +270,9 @@ public class Main
 
         if (!app.connect())
         {
-            System.err.println("Could not connect to World database");
+            System.err.println(
+                    "Could not connect to World database"
+            );
             System.exit(1);
             return;
         }
@@ -215,11 +287,15 @@ public class Main
             app.runCapitalReports();
             app.runPopulationBreakdowns();
             app.runPopulationTotals();
-            app.languageReports.printLanguageSpeakerReport(app.con);
+            app.languageReports.printLanguageSpeakerReport(
+                    app.con
+            );
         }
         catch (SQLException e)
         {
-            System.err.println("Database check or report query failed");
+            System.err.println(
+                    "Database check or report query failed"
+            );
             System.err.println(e.getMessage());
             exitCode = 1;
         }

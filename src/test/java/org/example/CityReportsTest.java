@@ -118,7 +118,8 @@ class CityReportsTest
 
     @ParameterizedTest
     @ValueSource(ints = {12, 13, 14, 15, 16})
-    void topCityReportsUseFilterAndLimit(int number) throws Exception
+    void topCityReportsUseFilterAndLimit(int number)
+            throws Exception
     {
         oneCity();
 
@@ -174,6 +175,14 @@ class CityReportsTest
     }
 
     @Test
+    void cityReportsPrintsHeading()
+    {
+        reports.cityReports();
+
+        assertTrue(output().contains("CITY REPORTS"));
+    }
+
+    @Test
     void emptyCityResultShowsMessage() throws Exception
     {
         when(rows.next()).thenReturn(false);
@@ -181,6 +190,19 @@ class CityReportsTest
         reports.allCitiesInWorld();
 
         assertTrue(output().contains("No cities found."));
+    }
+
+    @Test
+    void topCityReportShowsMessageWhenNoCitiesMatch()
+            throws Exception
+    {
+        when(rows.next()).thenReturn(false);
+
+        reports.topNCitiesInWorld(connection, 5);
+
+        assertTrue(output().contains("No matching records found"));
+        verify(rows).close();
+        verify(statement).close();
     }
 
     @Test
@@ -195,6 +217,22 @@ class CityReportsTest
     }
 
     @Test
+    void nullAndBlankFiltersAreRejectedBeforeQuery()
+            throws Exception
+    {
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> reports.allCitiesInCountry(null)
+        );
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> reports.topNCitiesInDistrict(connection, " ", 5)
+        );
+
+        verify(connection, never()).prepareStatement(anyString());
+    }
+
+    @Test
     void nullConnectionIsRejected()
     {
         assertThrows(
@@ -204,7 +242,8 @@ class CityReportsTest
     }
 
     @Test
-    void queryFailurePropagatesAndClosesStatement() throws Exception
+    void queryFailurePropagatesAndClosesStatement()
+            throws Exception
     {
         SQLException failure = new SQLException("Query failed");
         when(statement.executeQuery()).thenThrow(failure);

@@ -67,6 +67,7 @@ class CountryReportsTest
         assertTrue(output().contains("Rangoon"));
         assertTrue(output().contains("50,000,000"));
         assertTrue(output().contains("1 countries"));
+
         verify(connection).prepareStatement(
                 contains("ORDER BY c.Population DESC")
         );
@@ -94,7 +95,9 @@ class CountryReportsTest
     {
         oneCountry();
 
-        reports.printAllCountriesInRegion(connection, " Southeast Asia ");
+        reports.printAllCountriesInRegion(
+                connection, " Southeast Asia "
+        );
 
         assertTrue(output().contains("Report 3:"));
         verify(connection).prepareStatement(
@@ -116,11 +119,14 @@ class CountryReportsTest
     }
 
     @Test
-    void report5FiltersContinentAndLimitsResults() throws Exception
+    void report5FiltersContinentAndLimitsResults()
+            throws Exception
     {
         oneCountry();
 
-        reports.printTopNCountriesInContinent(connection, " Asia ", 5);
+        reports.printTopNCountriesInContinent(
+                connection, " Asia ", 5
+        );
 
         assertTrue(output().contains("Report 5: Top 5"));
         verify(connection).prepareStatement(
@@ -131,7 +137,8 @@ class CountryReportsTest
     }
 
     @Test
-    void report6FiltersRegionAndLimitsResults() throws Exception
+    void report6FiltersRegionAndLimitsResults()
+            throws Exception
     {
         oneCountry();
 
@@ -169,7 +176,100 @@ class CountryReportsTest
     }
 
     @Test
-    void queryFailurePropagatesAndClosesStatement() throws Exception
+    void blankContinentAndRegionShowInputMessages()
+            throws Exception
+    {
+        reports.printAllCountriesInContinent(connection, " ");
+        reports.printAllCountriesInRegion(connection, " ");
+        reports.printTopNCountriesInContinent(
+                connection, " ", 5
+        );
+        reports.printTopNCountriesInRegion(
+                connection, " ", 5
+        );
+
+        assertTrue(output().contains(
+                "Report 2: Invalid input - please enter a continent name"
+        ));
+        assertTrue(output().contains(
+                "Report 3: Invalid input - please enter a region name"
+        ));
+        assertTrue(output().contains(
+                "Report 5: Invalid input - please enter a continent name"
+        ));
+        assertTrue(output().contains(
+                "Report 6: Invalid input - please enter a region name"
+        ));
+
+        verify(connection, never()).prepareStatement(anyString());
+    }
+
+    @Test
+    void nullContinentAndRegionShowInputMessages()
+            throws Exception
+    {
+        reports.printAllCountriesInContinent(connection, null);
+        reports.printAllCountriesInRegion(connection, null);
+        reports.printTopNCountriesInContinent(
+                connection, null, 5
+        );
+        reports.printTopNCountriesInRegion(
+                connection, null, 5
+        );
+
+        assertTrue(output().contains(
+                "Report 2: Invalid input - please enter a continent name"
+        ));
+        assertTrue(output().contains(
+                "Report 3: Invalid input - please enter a region name"
+        ));
+        assertTrue(output().contains(
+                "Report 5: Invalid input - please enter a continent name"
+        ));
+        assertTrue(output().contains(
+                "Report 6: Invalid input - please enter a region name"
+        ));
+
+        verify(connection, never()).prepareStatement(anyString());
+    }
+
+    @Test
+    void reports5And6RejectNonPositiveN() throws Exception
+    {
+        reports.printTopNCountriesInContinent(
+                connection, "Asia", 0
+        );
+        reports.printTopNCountriesInRegion(
+                connection, "Southeast Asia", 0
+        );
+
+        assertTrue(output().contains(
+                "Report 5: Invalid input - N must be greater than 0"
+        ));
+        assertTrue(output().contains(
+                "Report 6: Invalid input - N must be greater than 0"
+        ));
+
+        verify(connection, never()).prepareStatement(anyString());
+    }
+
+    @Test
+    void nullConnectionIsRejected() throws Exception
+    {
+        SQLException error = assertThrows(
+                SQLException.class,
+                () -> reports.printAllCountriesInWorld(null)
+        );
+
+        assertEquals(
+                "Not connected to the database",
+                error.getMessage()
+        );
+    }
+
+    @Test
+    void queryFailurePropagatesAndClosesStatement()
+            throws Exception
     {
         SQLException failure = new SQLException("Query failed");
         when(statement.executeQuery()).thenThrow(failure);
@@ -190,7 +290,8 @@ class CountryReportsTest
         when(rows.getString("Code")).thenReturn("MMR");
         when(rows.getString("Name")).thenReturn("Myanmar");
         when(rows.getString("Continent")).thenReturn("Asia");
-        when(rows.getString("Region")).thenReturn("Southeast Asia");
+        when(rows.getString("Region"))
+                .thenReturn("Southeast Asia");
         when(rows.getInt("Population")).thenReturn(50_000_000);
         when(rows.getString("Capital")).thenReturn("Rangoon");
     }
