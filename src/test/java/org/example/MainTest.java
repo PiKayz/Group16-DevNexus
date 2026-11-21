@@ -132,24 +132,45 @@ class MainTest
     @Test
     void applicationReturnsFailureWhenConnectionFails()
     {
-        Main app = spy(new Main());
-        doReturn(false).when(app).connect();
+        Main app = new Main()
+        {
+            @Override
+            public boolean connect()
+            {
+                return false;
+            }
+        };
 
         assertEquals(1, app.run());
     }
 
     @Test
     void applicationReturnsFailureWhenDatabaseCheckFails()
-            throws Exception
     {
-        Main app = spy(new Main());
-        doReturn(true).when(app).connect();
-        doThrow(new SQLException("test query failed"))
-                .when(app).checkWorldDatabase();
-        doNothing().when(app).disconnect();
+        final boolean[] disconnected = {false};
+        Main app = new Main()
+        {
+            @Override
+            public boolean connect()
+            {
+                return true;
+            }
+
+            @Override
+            public void checkWorldDatabase() throws SQLException
+            {
+                throw new SQLException("test query failed");
+            }
+
+            @Override
+            public void disconnect()
+            {
+                disconnected[0] = true;
+            }
+        };
 
         assertEquals(1, app.run());
-        verify(app).disconnect();
+        assertTrue(disconnected[0]);
     }
 
     private static void setConnection(Main app, Connection connection)
