@@ -123,27 +123,30 @@ public class PopulationTotals
 
             try (ResultSet rs = stmt.executeQuery())
             {
-                if (rs.next())
+                if (!rs.next())
                 {
-                    long total = rs.getLong("total");
-                    if (!rs.wasNull())
-                    {
-                        if (rs.next())
-                        {
-                            System.out.println(
-                                    "Multiple matches found for " + label + ": " + name
-                            );
-                            return;
-                        }
-
-                        System.out.println(
-                                label + " Population (" + name + "): " + total
-                        );
-                        return;
-                    }
+                    System.out.println("No data found for " + label + ": " + name);
+                    return;
                 }
 
-                System.out.println("No data found for " + label + ": " + name);
+                long total = rs.getLong("total");
+                if (rs.wasNull())
+                {
+                    System.out.println("No data found for " + label + ": " + name);
+                    return;
+                }
+
+                if (rs.next())
+                {
+                    System.out.println(
+                            "Multiple matches found for " + label + ": " + name
+                    );
+                    return;
+                }
+
+                System.out.println(
+                        label + " Population (" + name + "): " + total
+                );
             }
         }
     }
