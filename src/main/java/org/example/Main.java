@@ -7,6 +7,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Map;
 
+// PMD TooManyMethods: This entry point coordinates report groups and database lifecycle.
+@SuppressWarnings("PMD.TooManyMethods")
 public class Main
 {
     private Connection con;
@@ -29,10 +31,12 @@ public class Main
                 + "&connectTimeout=5000&socketTimeout=30000";
 
         String user = getSetting("DB_USER", "devnexus");
-        String password = getSetting(
-                "DB_PASSWORD",
-                "DevNexusApp2026"
-        );
+        String password = System.getenv("DB_PASSWORD");
+        if (password == null || password.isBlank())
+        {
+            System.err.println("DB_PASSWORD must be set");
+            return false;
+        }
         int retries = 30;
 
         for (int attempt = 1; attempt <= retries; attempt++)
