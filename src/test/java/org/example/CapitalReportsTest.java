@@ -82,6 +82,15 @@ class CapitalReportsTest
         assertTrue(output().contains("Myanmar"));
         assertTrue(output().contains("925000"));
 
+        verifyReportFilter(number);
+
+        verify(rows).close();
+        verify(statement).close();
+        verify(connection, never()).close();
+    }
+
+    private void verifyReportFilter(int number) throws SQLException
+    {
         switch (number)
         {
             case 17 -> verify(connection).prepareStatement(
@@ -119,10 +128,6 @@ class CapitalReportsTest
             }
             default -> fail("Unexpected report number");
         }
-
-        verify(rows).close();
-        verify(statement).close();
-        verify(connection, never()).close();
     }
 
     @Test
