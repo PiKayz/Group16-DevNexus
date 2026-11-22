@@ -112,11 +112,15 @@ class WorldDatabaseIT
         );
 
         assertTrue(output.contains("World database check passed"));
-        assertTrue(output.contains("Report 1:"));
-        assertTrue(output.contains("Report 17:"));
-        assertTrue(output.contains("Report 23:"));
-        assertTrue(output.contains("Report 26:"));
-        assertTrue(output.contains("Report 32:"));
+        for (int reportNumber = 1; reportNumber <= 32; reportNumber++)
+        {
+            String heading = "Report " + reportNumber + ":";
+            assertTrue(output.contains(heading),
+                    () -> "Missing report output: " + heading);
+        }
+
+        // Keep the complete report output visible in the integration-test log.
+        System.out.print(output);
         assertTrue(output.contains("Disconnected from database"));
     }
 
