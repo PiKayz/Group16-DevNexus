@@ -7,6 +7,8 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -103,6 +105,27 @@ class MainTest
     }
 
     @Test
+    void databaseCheckAcceptsPopulatedWorldTables() throws Exception
+    {
+        Main app = new Main();
+        Connection connection = mock(Connection.class);
+        Statement statement = mock(Statement.class);
+        ResultSet result = mock(ResultSet.class);
+        setConnection(app, connection);
+        when(connection.createStatement()).thenReturn(statement);
+        when(statement.executeQuery(anyString())).thenReturn(result);
+        when(result.next()).thenReturn(true);
+        when(result.getInt("country_count")).thenReturn(239);
+        when(result.getInt("city_count")).thenReturn(4079);
+        when(result.getInt("language_count")).thenReturn(984);
+
+        assertDoesNotThrow(app::checkWorldDatabase);
+
+        verify(result).close();
+        verify(statement).close();
+    }
+
+    @Test
     void disconnectClosesOpenConnection() throws Exception
     {
         Main app = new Main();
@@ -171,6 +194,50 @@ class MainTest
 
         assertEquals(1, app.run());
         assertTrue(disconnected[0]);
+    }
+
+    @Test
+    void applicationStopsOnReportFailureAndDisconnects()
+    {
+        List<String> calls = new ArrayList<>();
+        Main app = new Main()
+        {
+            @Override
+            public boolean connect()
+            {
+                calls.add("connect");
+                return true;
+            }
+
+            @Override
+            public void checkWorldDatabase()
+            {
+                calls.add("database check");
+            }
+
+            @Override
+            public void runCountryReports()
+            {
+                calls.add("country reports");
+            }
+
+            @Override
+            public void runCityReports() throws SQLException
+            {
+                calls.add("city reports");
+                throw new SQLException("report query failed");
+            }
+
+            @Override
+            public void disconnect()
+            {
+                calls.add("disconnect");
+            }
+        };
+
+        assertEquals(1, app.run());
+        assertEquals(List.of("connect", "database check",
+                "country reports", "city reports", "disconnect"), calls);
     }
 
     private static void setConnection(Main app, Connection connection)
