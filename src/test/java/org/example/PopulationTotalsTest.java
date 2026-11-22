@@ -30,7 +30,7 @@ class PopulationTotalsTest
     private ByteArrayOutputStream capturedOutput;
 
     @BeforeEach
-    void setUp() throws Exception
+    void setUp() throws SQLException
     {
         connection = mock(Connection.class);
         statement = mock(Statement.class);
@@ -59,7 +59,7 @@ class PopulationTotalsTest
     }
 
     @Test
-    void report26ShowsWorldPopulation() throws Exception
+    void report26ShowsWorldPopulation() throws SQLException
     {
         when(resultSet.next()).thenReturn(true);
         when(resultSet.getLong("total")).thenReturn(6_000_000_000L);
@@ -77,7 +77,7 @@ class PopulationTotalsTest
     }
 
     @Test
-    void report26ShowsNoDataWhenSumIsNull() throws Exception
+    void report26ShowsNoDataWhenSumIsNull() throws SQLException
     {
         when(resultSet.next()).thenReturn(true);
         when(resultSet.wasNull()).thenReturn(true);
@@ -88,7 +88,7 @@ class PopulationTotalsTest
     }
 
     @Test
-    void report27ListsContinents() throws Exception
+    void report27ListsContinents() throws SQLException
     {
         when(resultSet.next()).thenReturn(true, true, false);
         when(resultSet.getString("name")).thenReturn("Asia", "Europe");
@@ -108,7 +108,7 @@ class PopulationTotalsTest
     }
 
     @Test
-    void report27FiltersSelectedContinent() throws Exception
+    void report27FiltersSelectedContinent() throws SQLException
     {
         checkSelectedArea(
                 () -> reports.printPopulationByContinent(connection, " Asia "),
@@ -117,7 +117,7 @@ class PopulationTotalsTest
     }
 
     @Test
-    void report28FiltersSelectedRegion() throws Exception
+    void report28FiltersSelectedRegion() throws SQLException
     {
         checkSelectedArea(
                 () -> reports.printPopulationByRegion(connection, " Southeast Asia "),
@@ -127,7 +127,7 @@ class PopulationTotalsTest
     }
 
     @Test
-    void report29FiltersSelectedCountry() throws Exception
+    void report29FiltersSelectedCountry() throws SQLException
     {
         checkSelectedArea(
                 () -> reports.printPopulationByCountry(connection, " Myanmar "),
@@ -136,7 +136,7 @@ class PopulationTotalsTest
     }
 
     @Test
-    void report30SumsDistrictCityPopulation() throws Exception
+    void report30SumsDistrictCityPopulation() throws SQLException
     {
         checkSelectedArea(
                 () -> reports.printPopulationByDistrict(connection, " California "),
@@ -145,7 +145,7 @@ class PopulationTotalsTest
     }
 
     @Test
-    void report31FiltersSelectedCity() throws Exception
+    void report31FiltersSelectedCity() throws SQLException
     {
         checkSelectedArea(
                 () -> reports.printPopulationByCity(connection, " Yangon "),
@@ -154,7 +154,7 @@ class PopulationTotalsTest
     }
 
     @Test
-    void missingCityShowsNoData() throws Exception
+    void missingCityShowsNoData() throws SQLException
     {
         when(resultSet.next()).thenReturn(false);
 
@@ -167,7 +167,7 @@ class PopulationTotalsTest
     }
 
     @Test
-    void duplicateCityNamesShowWarning() throws Exception
+    void duplicateCityNamesShowWarning() throws SQLException
     {
         when(resultSet.next()).thenReturn(true, true);
         when(resultSet.getLong("total")).thenReturn(100L);
@@ -180,7 +180,7 @@ class PopulationTotalsTest
     }
 
     @Test
-    void emptyRegionIsRejectedBeforeQuery() throws Exception
+    void emptyRegionIsRejectedBeforeQuery() throws SQLException
     {
         assertThrows(
                 IllegalArgumentException.class,
@@ -192,7 +192,7 @@ class PopulationTotalsTest
 
     private void checkSelectedArea(
             ReportCall call, String label, String name, String sqlPart
-    ) throws Exception
+    ) throws SQLException
     {
         when(resultSet.next()).thenReturn(true, false);
         when(resultSet.getLong("total")).thenReturn(12345L);
@@ -218,6 +218,6 @@ class PopulationTotalsTest
     @FunctionalInterface
     private interface ReportCall
     {
-        void run() throws Exception;
+        void run() throws SQLException;
     }
 }
