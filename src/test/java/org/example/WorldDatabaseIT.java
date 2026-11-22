@@ -169,6 +169,36 @@ class WorldDatabaseIT
     }
 
     @Test
+    void mainConnectsAndDelegatesReportGroups() throws Exception
+    {
+        Main application = new Main();
+        String output = captureOutput(() ->
+        {
+            assertTrue(application.connect());
+            try
+            {
+                application.checkWorldDatabase();
+                application.runCountryReports();
+                application.runCityReports();
+                application.runCapitalReports();
+                application.runPopulationBreakdowns();
+                application.runPopulationTotals();
+            }
+            finally
+            {
+                application.disconnect();
+            }
+        });
+
+        assertTrue(output.contains("World database check passed"));
+        for (int reportNumber : new int[] {1, 7, 17, 23, 26, 31})
+        {
+            assertTrue(output.contains("Report " + reportNumber + ":"));
+        }
+        assertTrue(output.contains("Disconnected from database"));
+    }
+
+    @Test
     void countryReportReadsActualRegionData() throws Exception
     {
         String output = captureOutput(() ->
