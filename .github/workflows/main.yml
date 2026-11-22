@@ -41,7 +41,7 @@ jobs:
         run: mvn -B package -DskipTests
 
       - name: Run Docker Compose
-        run: docker compose up --build --abort-on-container-exit --exit-code-from app
+        run: docker compose -f docker-compose.yml -f .github/compose-ci.yml up --build --abort-on-container-exit --exit-code-from app
 
       - name: Upload release JAR
         if: startsWith(github.ref, 'refs/tags/v')
@@ -53,7 +53,7 @@ jobs:
 
       - name: Clean up
         if: always()
-        run: docker compose down -v
+        run: docker compose -f docker-compose.yml -f .github/compose-ci.yml down -v
   integration-tests:
     name: Integration Tests
     runs-on: ubuntu-latest
