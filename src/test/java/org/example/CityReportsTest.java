@@ -31,7 +31,7 @@ class CityReportsTest
     private ByteArrayOutputStream capturedOutput;
 
     @BeforeEach
-    void setUp() throws Exception
+    void setUp() throws SQLException
     {
         connection = mock(Connection.class);
         statement = mock(PreparedStatement.class);
@@ -60,7 +60,7 @@ class CityReportsTest
     @ParameterizedTest
     @ValueSource(ints = {7, 8, 9, 10, 11})
     void allCityReportsShowCityAndApplyCorrectFilter(int number)
-            throws Exception
+            throws SQLException
     {
         oneCity();
 
@@ -119,7 +119,7 @@ class CityReportsTest
     @ParameterizedTest
     @ValueSource(ints = {12, 13, 14, 15, 16})
     void topCityReportsUseFilterAndLimit(int number)
-            throws Exception
+            throws SQLException
     {
         oneCity();
 
@@ -183,7 +183,7 @@ class CityReportsTest
     }
 
     @Test
-    void emptyCityResultShowsMessage() throws Exception
+    void emptyCityResultShowsMessage() throws SQLException
     {
         when(rows.next()).thenReturn(false);
 
@@ -194,7 +194,7 @@ class CityReportsTest
 
     @Test
     void topCityReportShowsMessageWhenNoCitiesMatch()
-            throws Exception
+            throws SQLException
     {
         when(rows.next()).thenReturn(false);
 
@@ -218,7 +218,7 @@ class CityReportsTest
 
     @Test
     void nullAndBlankFiltersAreRejectedBeforeQuery()
-            throws Exception
+            throws SQLException
     {
         assertThrows(
                 IllegalArgumentException.class,
@@ -243,7 +243,7 @@ class CityReportsTest
 
     @Test
     void queryFailurePropagatesAndClosesStatement()
-            throws Exception
+            throws SQLException
     {
         SQLException failure = new SQLException("Query failed");
         when(statement.executeQuery()).thenThrow(failure);
@@ -258,7 +258,7 @@ class CityReportsTest
         verify(connection, never()).close();
     }
 
-    private void oneCity() throws Exception
+    private void oneCity() throws SQLException
     {
         when(rows.next()).thenReturn(true, false);
         when(rows.getString("City"))
