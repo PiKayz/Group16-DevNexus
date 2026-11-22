@@ -79,37 +79,7 @@ class CityReportsTest
         assertTrue(output().contains("Myanmar"));
         assertTrue(output().contains("3361700"));
 
-        switch (number)
-        {
-            case 7 -> verify(connection).prepareStatement(
-                    contains("ORDER BY city.Population DESC")
-            );
-            case 8 -> {
-                verify(connection).prepareStatement(
-                        contains("country.Continent = ?")
-                );
-                verify(statement).setObject(1, "Asia");
-            }
-            case 9 -> {
-                verify(connection).prepareStatement(
-                        contains("country.Region = ?")
-                );
-                verify(statement).setObject(1, "Southeast Asia");
-            }
-            case 10 -> {
-                verify(connection).prepareStatement(
-                        contains("country.Name = ?")
-                );
-                verify(statement).setObject(1, "Myanmar");
-            }
-            case 11 -> {
-                verify(connection).prepareStatement(
-                        contains("city.District = ?")
-                );
-                verify(statement).setObject(1, "Rangoon [Yangon]");
-            }
-            default -> fail("Unexpected report number");
-        }
+        verifyAllCityFilter(number);
 
         verify(rows).close();
         verify(statement).close();
@@ -148,6 +118,49 @@ class CityReportsTest
 
         verify(connection).prepareStatement(contains("LIMIT ?"));
 
+        verifyTopCityBindings(number);
+
+        verify(rows).close();
+        verify(statement).close();
+    }
+
+    private void verifyAllCityFilter(int number) throws SQLException
+    {
+        switch (number)
+        {
+            case 7 -> verify(connection).prepareStatement(
+                    contains("ORDER BY city.Population DESC")
+            );
+            case 8 -> {
+                verify(connection).prepareStatement(
+                        contains("country.Continent = ?")
+                );
+                verify(statement).setObject(1, "Asia");
+            }
+            case 9 -> {
+                verify(connection).prepareStatement(
+                        contains("country.Region = ?")
+                );
+                verify(statement).setObject(1, "Southeast Asia");
+            }
+            case 10 -> {
+                verify(connection).prepareStatement(
+                        contains("country.Name = ?")
+                );
+                verify(statement).setObject(1, "Myanmar");
+            }
+            case 11 -> {
+                verify(connection).prepareStatement(
+                        contains("city.District = ?")
+                );
+                verify(statement).setObject(1, "Rangoon [Yangon]");
+            }
+            default -> fail("Unexpected report number");
+        }
+    }
+
+    private void verifyTopCityBindings(int number) throws SQLException
+    {
         if (number == 12)
         {
             verify(statement).setInt(1, 5);
@@ -169,9 +182,6 @@ class CityReportsTest
                 default -> fail("Unexpected report number");
             }
         }
-
-        verify(rows).close();
-        verify(statement).close();
     }
 
     @Test
