@@ -104,19 +104,97 @@ class WorldDatabaseIT
     }
 
     @Test
-    void applicationRunsEveryReportAgainstWorldDatabase() throws Exception
+    void everyReportMethodReadsWorldDatabase() throws Exception
+    {
+        CountryReports country = new CountryReports();
+        CityReports city = new CityReports(connection);
+        CapitalReports capital = new CapitalReports(connection);
+        PopulationBreakdowns breakdowns = new PopulationBreakdowns(connection);
+        PopulationTotals totals = new PopulationTotals();
+        LanguageReports languages = new LanguageReports();
+
+        String output = captureOutput(() ->
+        {
+            country.printAllCountriesInWorld(connection);             // 1
+            country.printAllCountriesInContinent(connection, "Asia"); // 2
+            country.printAllCountriesInRegion(connection, "Southeast Asia"); // 3
+            country.printTopNCountriesInWorld(connection, 10);       // 4
+            country.printTopNCountriesInContinent(connection, "Asia", 5); // 5
+            country.printTopNCountriesInRegion(connection, "Southeast Asia", 5); // 6
+
+            city.allCitiesInWorld();                                   // 7
+            city.allCitiesInContinent("Asia");                         // 8
+            city.allCitiesInRegion("Western Europe");                  // 9
+            city.allCitiesInCountry("Myanmar");                        // 10
+            city.allCitiesInDistrict("California");                    // 11
+            city.topNCitiesInWorld(connection, 5);                     // 12
+            city.topNCitiesInContinent(connection, "Asia", 5);         // 13
+            city.topNCitiesInRegion(connection, "Southeast Asia", 5);  // 14
+            city.topNCitiesInCountry(connection, "Myanmar", 5);       // 15
+            city.topNCitiesInDistrict(connection, "Mandalay", 5);     // 16
+
+            capital.report17();
+            capital.report18("Asia");
+            capital.report19("Southeast Asia");
+            capital.report20(10);
+            capital.report21("Europe", 5);
+            capital.report22("Caribbean", 5);
+
+            breakdowns.report23();
+            breakdowns.report24();
+            breakdowns.report25();
+
+            totals.printWorldPopulation(connection);                  // 26
+            totals.printPopulationByContinent(connection, "Asia");    // 27
+            totals.printPopulationByRegion(connection, "Western Europe"); // 28
+            totals.printPopulationByCountry(connection, "United Kingdom"); // 29
+            totals.printPopulationByDistrict(connection, "California"); // 30
+            totals.printPopulationByCity(connection, "Rangoon (Yangon)"); // 31
+
+            languages.printLanguageSpeakerReport(connection);         // 32
+        });
+
+        for (int reportNumber = 1; reportNumber <= 32; reportNumber++)
+        {
+            String heading = "Report " + reportNumber + ":";
+            assertTrue(output.contains(heading),
+                    () -> "Missing report output: " + heading);
+        }
+
+        assertTrue(output.contains("Myanmar"));
+        assertTrue(output.contains("Chinese"));
+
+        // Show the real result rows for all 32 reports in the CI test log.
+        System.out.print(output);
+    }
+
+    @Test
+    void mainConnectsAndDelegatesReportGroups() throws Exception
     {
         Main application = new Main();
         String output = captureOutput(() ->
-                assertEquals(0, application.run())
-        );
+        {
+            assertTrue(application.connect());
+            try
+            {
+                application.checkWorldDatabase();
+                application.runCountryReports();
+                application.runCityReports();
+                application.runCapitalReports();
+                application.runPopulationBreakdowns();
+                application.runPopulationTotals();
+            }
+            finally
+            {
+                application.disconnect();
+            }
+        });
 
         assertTrue(output.contains("World database check passed"));
-        assertTrue(output.contains("Report 1:"));
-        assertTrue(output.contains("Report 17:"));
-        assertTrue(output.contains("Report 23:"));
-        assertTrue(output.contains("Report 26:"));
-        assertTrue(output.contains("Report 32:"));
+        for (int reportNumber : new int[] {1, 7, 17, 23, 26, 31})
+        {
+            assertTrue(output.contains("Report " + reportNumber + ":"));
+        }
         assertTrue(output.contains("Disconnected from database"));
     }
 

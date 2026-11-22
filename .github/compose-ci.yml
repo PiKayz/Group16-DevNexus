@@ -1,0 +1,3 @@
+services:
+  devnexus-db:
+    ports: !reset []
