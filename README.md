@@ -1,4 +1,5 @@
 [![workflow](https://github.com/PiKayz/Group16-DevNexus/actions/workflows/main.yml/badge.svg)](https://github.com/PiKayz/Group16-DevNexus/actions)
+[![Coverage (feature/unit-testing)](https://codecov.io/gh/PiKayz/Group16-DevNexus/branch/feature%2Funit-testing/graph/badge.svg)](https://app.codecov.io/github/PiKayz/Group16-DevNexus/tree/feature%2Funit-testing)
 
 Develop Status [![Develop Build](https://img.shields.io/github/actions/workflow/status/PiKayz/Group16-DevNexus/main.yml?branch=develop&label=build)](https://github.com/PiKayz/Group16-DevNexus/actions/workflows/main.yml)
 

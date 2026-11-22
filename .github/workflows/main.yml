@@ -28,11 +28,28 @@ jobs:
           path: target/site/jacoco/
           if-no-files-found: ignore
 
+      - name: Upload unit coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./target/site/jacoco/jacoco.xml
+          flags: unit
+          disable_search: true
+          fail_ci_if_error: true
+
       - name: Build with Maven
         run: mvn -B package -DskipTests
 
       - name: Run Docker Compose
         run: docker compose up --build --abort-on-container-exit --exit-code-from app
+
+      - name: Upload release JAR
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-jar
+          path: target/semApp.jar
+          if-no-files-found: error
 
       - name: Clean up
         if: always()
@@ -66,20 +83,59 @@ jobs:
           docker compose logs devnexus-db
           exit 1
 
-      - name: Test against World database
+      - name: Test full suite against World database
         run: |
           export DB_USER="$(docker compose config --format json | jq -r '.services["devnexus-db"].environment.MYSQL_USER')"
           export DB_PASSWORD="$(docker compose config --format json | jq -r '.services["devnexus-db"].environment.MYSQL_PASSWORD')"
-          mvn -B -Dtest=WorldDatabaseIT test
+          mvn -B '-Dtest=*Test,WorldDatabaseIT' test
 
-      - name: Upload integration test coverage
+      - name: Upload full suite coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./target/site/jacoco/jacoco.xml
+          flags: full-suite
+          disable_search: true
+          fail_ci_if_error: true
+
+      - name: Upload full suite coverage artifact
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: integration-test-coverage
+          name: full-suite-coverage
           path: target/site/jacoco/
           if-no-files-found: ignore
 
       - name: Clean up
         if: always()
         run: docker compose down -v
+
+  release:
+    name: Publish GitHub Release
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [build, integration-tests]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout and verify tag is on main
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Verify released commit is on main
+        run: git merge-base --is-ancestor "$GITHUB_SHA" origin/main
+
+      - name: Download tested JAR
+        uses: actions/download-artifact@v4
+        with:
+          name: release-jar
+          path: dist
+
+      - name: Publish versioned release
+        uses: softprops/action-gh-release@v3
+        with:
+          files: dist/semApp.jar
+          fail_on_unmatched_files: true
+          generate_release_notes: true

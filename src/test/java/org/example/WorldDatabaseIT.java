@@ -104,6 +104,23 @@ class WorldDatabaseIT
     }
 
     @Test
+    void applicationRunsEveryReportAgainstWorldDatabase() throws Exception
+    {
+        Main application = new Main();
+        String output = captureOutput(() ->
+                assertEquals(0, application.run())
+        );
+
+        assertTrue(output.contains("World database check passed"));
+        assertTrue(output.contains("Report 1:"));
+        assertTrue(output.contains("Report 17:"));
+        assertTrue(output.contains("Report 23:"));
+        assertTrue(output.contains("Report 26:"));
+        assertTrue(output.contains("Report 32:"));
+        assertTrue(output.contains("Disconnected from database"));
+    }
+
+    @Test
     void countryReportReadsActualRegionData() throws Exception
     {
         String output = captureOutput(() ->

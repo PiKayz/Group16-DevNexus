@@ -1,0 +1,5 @@
+parsers:
+  jacoco:
+    # Match JaCoCo line coverage: an executed line counts as covered
+    # even if another branch on that line has not yet run.
+    partials_as_hits: true
