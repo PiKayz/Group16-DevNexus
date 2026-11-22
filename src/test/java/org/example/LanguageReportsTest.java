@@ -32,7 +32,7 @@ class LanguageReportsTest
     private ByteArrayOutputStream capturedOutput;
 
     @BeforeEach
-    void setUp() throws Exception
+    void setUp() throws SQLException
     {
         connection = mock(Connection.class);
         languageStatement = mock(PreparedStatement.class);
@@ -67,7 +67,7 @@ class LanguageReportsTest
     }
 
     @Test
-    void calculatesSpeakersAndSortsLargestFirst() throws Exception
+    void calculatesSpeakersAndSortsLargestFirst() throws SQLException
     {
         // Chinese: 1,000 × 50% = 500 speakers.
         // English: 200 × 25% = 50 speakers.
@@ -109,7 +109,7 @@ class LanguageReportsTest
 
     @Test
     void missingLanguagesAreMarkedAndZeroWorldPopulationShowsNA()
-            throws Exception
+            throws SQLException
     {
         when(languageRows.next()).thenReturn(false);
         when(totalRows.next()).thenReturn(true);
@@ -131,7 +131,7 @@ class LanguageReportsTest
 
     @Test
     void databaseQueryFailurePropagatesAndClosesStatement()
-            throws Exception
+            throws SQLException
     {
         SQLException failure = new SQLException("Database unavailable");
         when(languageStatement.executeQuery()).thenThrow(failure);

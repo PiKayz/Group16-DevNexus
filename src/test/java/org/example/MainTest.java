@@ -61,7 +61,7 @@ class MainTest
     }
 
     @Test
-    void databaseCheckRejectsMissingResult() throws Exception
+    void databaseCheckRejectsMissingResult() throws SQLException, ReflectiveOperationException
     {
         Main app = new Main();
         Connection connection = mock(Connection.class);
@@ -81,7 +81,7 @@ class MainTest
     }
 
     @Test
-    void databaseCheckRejectsEmptyTables() throws Exception
+    void databaseCheckRejectsEmptyTables() throws SQLException, ReflectiveOperationException
     {
         Main app = new Main();
         Connection connection = mock(Connection.class);
@@ -105,7 +105,7 @@ class MainTest
     }
 
     @Test
-    void databaseCheckAcceptsPopulatedWorldTables() throws Exception
+    void databaseCheckAcceptsPopulatedWorldTables() throws SQLException, ReflectiveOperationException
     {
         Main app = new Main();
         Connection connection = mock(Connection.class);
@@ -126,7 +126,7 @@ class MainTest
     }
 
     @Test
-    void disconnectClosesOpenConnection() throws Exception
+    void disconnectClosesOpenConnection() throws SQLException, ReflectiveOperationException
     {
         Main app = new Main();
         Connection connection = mock(Connection.class);
@@ -141,7 +141,7 @@ class MainTest
     }
 
     @Test
-    void disconnectReportsCloseFailure() throws Exception
+    void disconnectReportsCloseFailure() throws SQLException, ReflectiveOperationException
     {
         Main app = new Main();
         Connection connection = mock(Connection.class);
@@ -241,7 +241,7 @@ class MainTest
     }
 
     private static void setConnection(Main app, Connection connection)
-            throws Exception
+            throws SQLException, ReflectiveOperationException
     {
         Field field = Main.class.getDeclaredField("con");
         field.setAccessible(true);

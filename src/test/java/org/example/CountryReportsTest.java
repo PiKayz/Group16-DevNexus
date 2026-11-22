@@ -29,7 +29,7 @@ class CountryReportsTest
     private ByteArrayOutputStream capturedOutput;
 
     @BeforeEach
-    void setUp() throws Exception
+    void setUp() throws SQLException
     {
         connection = mock(Connection.class);
         statement = mock(PreparedStatement.class);
@@ -55,7 +55,7 @@ class CountryReportsTest
     }
 
     @Test
-    void report1ShowsCountryData() throws Exception
+    void report1ShowsCountryData() throws SQLException
     {
         oneCountry();
 
@@ -77,7 +77,7 @@ class CountryReportsTest
     }
 
     @Test
-    void report2FiltersByContinent() throws Exception
+    void report2FiltersByContinent() throws SQLException
     {
         oneCountry();
 
@@ -91,7 +91,7 @@ class CountryReportsTest
     }
 
     @Test
-    void report3FiltersByRegion() throws Exception
+    void report3FiltersByRegion() throws SQLException
     {
         oneCountry();
 
@@ -107,7 +107,7 @@ class CountryReportsTest
     }
 
     @Test
-    void report4LimitsWorldResults() throws Exception
+    void report4LimitsWorldResults() throws SQLException
     {
         oneCountry();
 
@@ -120,7 +120,7 @@ class CountryReportsTest
 
     @Test
     void report5FiltersContinentAndLimitsResults()
-            throws Exception
+            throws SQLException
     {
         oneCountry();
 
@@ -138,7 +138,7 @@ class CountryReportsTest
 
     @Test
     void report6FiltersRegionAndLimitsResults()
-            throws Exception
+            throws SQLException
     {
         oneCountry();
 
@@ -155,7 +155,7 @@ class CountryReportsTest
     }
 
     @Test
-    void emptyResultShowsNoMatchingRecords() throws Exception
+    void emptyResultShowsNoMatchingRecords() throws SQLException
     {
         when(rows.next()).thenReturn(false);
 
@@ -167,7 +167,7 @@ class CountryReportsTest
     }
 
     @Test
-    void invalidTopNDoesNotQueryDatabase() throws Exception
+    void invalidTopNDoesNotQueryDatabase() throws SQLException
     {
         reports.printTopNCountriesInWorld(connection, 0);
 
@@ -177,7 +177,7 @@ class CountryReportsTest
 
     @Test
     void blankContinentAndRegionShowInputMessages()
-            throws Exception
+            throws SQLException
     {
         reports.printAllCountriesInContinent(connection, " ");
         reports.printAllCountriesInRegion(connection, " ");
@@ -206,7 +206,7 @@ class CountryReportsTest
 
     @Test
     void nullContinentAndRegionShowInputMessages()
-            throws Exception
+            throws SQLException
     {
         reports.printAllCountriesInContinent(connection, null);
         reports.printAllCountriesInRegion(connection, null);
@@ -234,7 +234,7 @@ class CountryReportsTest
     }
 
     @Test
-    void reports5And6RejectNonPositiveN() throws Exception
+    void reports5And6RejectNonPositiveN() throws SQLException
     {
         reports.printTopNCountriesInContinent(
                 connection, "Asia", 0
@@ -254,7 +254,7 @@ class CountryReportsTest
     }
 
     @Test
-    void nullConnectionIsRejected() throws Exception
+    void nullConnectionIsRejected() throws SQLException
     {
         SQLException error = assertThrows(
                 SQLException.class,
@@ -269,7 +269,7 @@ class CountryReportsTest
 
     @Test
     void queryFailurePropagatesAndClosesStatement()
-            throws Exception
+            throws SQLException
     {
         SQLException failure = new SQLException("Query failed");
         when(statement.executeQuery()).thenThrow(failure);
@@ -284,7 +284,7 @@ class CountryReportsTest
         verify(connection, never()).close();
     }
 
-    private void oneCountry() throws Exception
+    private void oneCountry() throws SQLException
     {
         when(rows.next()).thenReturn(true, false);
         when(rows.getString("Code")).thenReturn("MMR");

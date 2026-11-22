@@ -31,7 +31,7 @@ class CityReportsTest
     private ByteArrayOutputStream capturedOutput;
 
     @BeforeEach
-    void setUp() throws Exception
+    void setUp() throws SQLException
     {
         connection = mock(Connection.class);
         statement = mock(PreparedStatement.class);
@@ -60,7 +60,7 @@ class CityReportsTest
     @ParameterizedTest
     @ValueSource(ints = {7, 8, 9, 10, 11})
     void allCityReportsShowCityAndApplyCorrectFilter(int number)
-            throws Exception
+            throws SQLException
     {
         oneCity();
 
@@ -79,6 +79,53 @@ class CityReportsTest
         assertTrue(output().contains("Myanmar"));
         assertTrue(output().contains("3361700"));
 
+        verifyAllCityFilter(number);
+
+        verify(rows).close();
+        verify(statement).close();
+        verify(connection, never()).close();
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {12, 13, 14, 15, 16})
+    void topCityReportsUseFilterAndLimit(int number)
+            throws SQLException
+    {
+        oneCity();
+
+        switch (number)
+        {
+            case 12 -> reports.topNCitiesInWorld(connection, 5);
+            case 13 -> reports.topNCitiesInContinent(
+                    connection, " Asia ", 5
+            );
+            case 14 -> reports.topNCitiesInRegion(
+                    connection, " Southeast Asia ", 5
+            );
+            case 15 -> reports.topNCitiesInCountry(
+                    connection, " Myanmar ", 5
+            );
+            case 16 -> reports.topNCitiesInDistrict(
+                    connection, " Rangoon [Yangon] ", 5
+            );
+            default -> fail("Unexpected report number");
+        }
+
+        assertTrue(output().contains("Report " + number + ": Top 5"));
+        assertTrue(output().contains("Rangoon (Yangon)"));
+        assertTrue(output().contains("Myanmar"));
+        assertTrue(output().contains("3,361,700"));
+
+        verify(connection).prepareStatement(contains("LIMIT ?"));
+
+        verifyTopCityBindings(number);
+
+        verify(rows).close();
+        verify(statement).close();
+    }
+
+    private void verifyAllCityFilter(int number) throws SQLException
+    {
         switch (number)
         {
             case 7 -> verify(connection).prepareStatement(
@@ -110,44 +157,10 @@ class CityReportsTest
             }
             default -> fail("Unexpected report number");
         }
-
-        verify(rows).close();
-        verify(statement).close();
-        verify(connection, never()).close();
     }
 
-    @ParameterizedTest
-    @ValueSource(ints = {12, 13, 14, 15, 16})
-    void topCityReportsUseFilterAndLimit(int number)
-            throws Exception
+    private void verifyTopCityBindings(int number) throws SQLException
     {
-        oneCity();
-
-        switch (number)
-        {
-            case 12 -> reports.topNCitiesInWorld(connection, 5);
-            case 13 -> reports.topNCitiesInContinent(
-                    connection, " Asia ", 5
-            );
-            case 14 -> reports.topNCitiesInRegion(
-                    connection, " Southeast Asia ", 5
-            );
-            case 15 -> reports.topNCitiesInCountry(
-                    connection, " Myanmar ", 5
-            );
-            case 16 -> reports.topNCitiesInDistrict(
-                    connection, " Rangoon [Yangon] ", 5
-            );
-            default -> fail("Unexpected report number");
-        }
-
-        assertTrue(output().contains("Report " + number + ": Top 5"));
-        assertTrue(output().contains("Rangoon (Yangon)"));
-        assertTrue(output().contains("Myanmar"));
-        assertTrue(output().contains("3,361,700"));
-
-        verify(connection).prepareStatement(contains("LIMIT ?"));
-
         if (number == 12)
         {
             verify(statement).setInt(1, 5);
@@ -169,9 +182,6 @@ class CityReportsTest
                 default -> fail("Unexpected report number");
             }
         }
-
-        verify(rows).close();
-        verify(statement).close();
     }
 
     @Test
@@ -183,7 +193,7 @@ class CityReportsTest
     }
 
     @Test
-    void emptyCityResultShowsMessage() throws Exception
+    void emptyCityResultShowsMessage() throws SQLException
     {
         when(rows.next()).thenReturn(false);
 
@@ -194,7 +204,7 @@ class CityReportsTest
 
     @Test
     void topCityReportShowsMessageWhenNoCitiesMatch()
-            throws Exception
+            throws SQLException
     {
         when(rows.next()).thenReturn(false);
 
@@ -218,7 +228,7 @@ class CityReportsTest
 
     @Test
     void nullAndBlankFiltersAreRejectedBeforeQuery()
-            throws Exception
+            throws SQLException
     {
         assertThrows(
                 IllegalArgumentException.class,
@@ -243,7 +253,7 @@ class CityReportsTest
 
     @Test
     void queryFailurePropagatesAndClosesStatement()
-            throws Exception
+            throws SQLException
     {
         SQLException failure = new SQLException("Query failed");
         when(statement.executeQuery()).thenThrow(failure);
@@ -258,7 +268,7 @@ class CityReportsTest
         verify(connection, never()).close();
     }
 
-    private void oneCity() throws Exception
+    private void oneCity() throws SQLException
     {
         when(rows.next()).thenReturn(true, false);
         when(rows.getString("City"))

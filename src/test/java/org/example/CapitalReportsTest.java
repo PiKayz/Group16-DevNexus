@@ -31,7 +31,7 @@ class CapitalReportsTest
     private ByteArrayOutputStream capturedOutput;
 
     @BeforeEach
-    void setUp() throws Exception
+    void setUp() throws SQLException
     {
         connection = mock(Connection.class);
         statement = mock(PreparedStatement.class);
@@ -59,7 +59,7 @@ class CapitalReportsTest
     @ParameterizedTest
     @ValueSource(ints = {17, 18, 19, 20, 21, 22})
     void capitalReportsShowResultsWithCorrectFilters(int number)
-            throws Exception
+            throws SQLException
     {
         when(rows.next()).thenReturn(true, false);
         when(rows.getString("Name")).thenReturn("Naypyidaw");
@@ -82,6 +82,15 @@ class CapitalReportsTest
         assertTrue(output().contains("Myanmar"));
         assertTrue(output().contains("925000"));
 
+        verifyReportFilter(number);
+
+        verify(rows).close();
+        verify(statement).close();
+        verify(connection, never()).close();
+    }
+
+    private void verifyReportFilter(int number) throws SQLException
+    {
         switch (number)
         {
             case 17 -> verify(connection).prepareStatement(
@@ -119,14 +128,10 @@ class CapitalReportsTest
             }
             default -> fail("Unexpected report number");
         }
-
-        verify(rows).close();
-        verify(statement).close();
-        verify(connection, never()).close();
     }
 
     @Test
-    void noCapitalMatchesShowsMessage() throws Exception
+    void noCapitalMatchesShowsMessage() throws SQLException
     {
         when(rows.next()).thenReturn(false);
 
@@ -136,7 +141,7 @@ class CapitalReportsTest
     }
 
     @Test
-    void invalidTopNDoesNotQueryDatabase() throws Exception
+    void invalidTopNDoesNotQueryDatabase() throws SQLException
     {
         reports.report20(0);
 
@@ -147,7 +152,7 @@ class CapitalReportsTest
     }
 
     @Test
-    void blankContinentDoesNotQueryDatabase() throws Exception
+    void blankContinentDoesNotQueryDatabase() throws SQLException
     {
         reports.report18("  ");
 
@@ -158,7 +163,7 @@ class CapitalReportsTest
     }
 
     @Test
-    void sqlFailureDisplaysErrorAndClosesStatement() throws Exception
+    void sqlFailureDisplaysErrorAndClosesStatement() throws SQLException
     {
         when(statement.executeQuery())
                 .thenThrow(new SQLException("Database unavailable"));

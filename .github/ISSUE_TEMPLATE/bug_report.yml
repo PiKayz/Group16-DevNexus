@@ -82,3 +82,24 @@ body:
       render: shell
     validations:
       required: false
+  - type: markdown
+    attributes:
+      value: |
+        Maintainers: after the bug is fixed, edit the issue to record who resolved it
+        and how the fix was verified. Reporters can leave the next fields empty.
+  - type: input
+    id: resolved-by
+    attributes:
+      label: Resolved by
+      description: Maintainer to complete after the fix. Use the team member's GitHub username.
+      placeholder: "@username"
+    validations:
+      required: false
+  - type: textarea
+    id: resolution
+    attributes:
+      label: How it was solved
+      description: Maintainer to complete after the fix. Describe the change, link the fixing pull request, and note how it was tested.
+      placeholder: "Changed ..., fixed in PR #..., verified by ..."
+    validations:
+      required: false
