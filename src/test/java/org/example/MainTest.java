@@ -14,6 +14,8 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+// PMD TooManyMethods: These methods cover distinct startup, database-check, and shutdown paths.
+@SuppressWarnings("PMD.TooManyMethods")
 class MainTest
 {
     @Test
