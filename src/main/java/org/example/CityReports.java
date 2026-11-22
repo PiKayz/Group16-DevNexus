@@ -9,6 +9,8 @@ import java.sql.SQLException;
  * Reports 7–11: All cities.
  * Reports 12–16: Top N cities.
  */
+// PMD TooManyMethods: Reports 7-16 share one city-report API used by Main and the integration tests.
+@SuppressWarnings("PMD.TooManyMethods")
 public class CityReports
 {
     private final Connection con;
