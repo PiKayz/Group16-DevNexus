@@ -11,6 +11,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -20,7 +21,7 @@ class WorldDatabaseIT
     private static Connection connection;
 
     @BeforeAll
-    static void connectToWorldDatabase() throws Exception
+    static void connectToWorldDatabase() throws SQLException
     {
         String url = System.getenv().getOrDefault(
                 "DB_URL", "jdbc:mysql://localhost:33060/world"
@@ -45,7 +46,7 @@ class WorldDatabaseIT
     }
 
     @AfterAll
-    static void disconnect() throws Exception
+    static void disconnect() throws SQLException
     {
         if (connection != null)
         {
@@ -54,7 +55,7 @@ class WorldDatabaseIT
     }
 
     @Test
-    void worldDatabaseContainsAllRequiredTables() throws Exception
+    void worldDatabaseContainsAllRequiredTables() throws SQLException
     {
         try (Statement statement = connection.createStatement();
              ResultSet result = statement.executeQuery(
@@ -72,7 +73,7 @@ class WorldDatabaseIT
     }
 
     @Test
-    void knownCityIsLoadedFromWorldSql() throws Exception
+    void knownCityIsLoadedFromWorldSql() throws SQLException
     {
         try (PreparedStatement statement = connection.prepareStatement(
                 "SELECT Population FROM city WHERE Name = ?"
@@ -89,7 +90,7 @@ class WorldDatabaseIT
     }
 
     @Test
-    void populationReportReadsActualCityData() throws Exception
+    void populationReportReadsActualCityData() throws SQLException
     {
         String output = captureOutput(() ->
                 new PopulationTotals().printPopulationByCity(
@@ -104,7 +105,7 @@ class WorldDatabaseIT
     }
 
     @Test
-    void everyReportMethodReadsWorldDatabase() throws Exception
+    void everyReportMethodReadsWorldDatabase() throws SQLException
     {
         CountryReports country = new CountryReports();
         CityReports city = new CityReports(connection);
@@ -169,7 +170,7 @@ class WorldDatabaseIT
     }
 
     @Test
-    void mainConnectsAndDelegatesReportGroups() throws Exception
+    void mainConnectsAndDelegatesReportGroups() throws SQLException
     {
         Main application = new Main();
         String output = captureOutput(() ->
@@ -199,7 +200,7 @@ class WorldDatabaseIT
     }
 
     @Test
-    void countryReportReadsActualRegionData() throws Exception
+    void countryReportReadsActualRegionData() throws SQLException
     {
         String output = captureOutput(() ->
                 new CountryReports().printAllCountriesInRegion(
@@ -212,7 +213,7 @@ class WorldDatabaseIT
         assertTrue(output.contains("Southeast Asia"));
     }
 
-    private static String captureOutput(SqlAction action) throws Exception
+    private static String captureOutput(SqlAction action) throws SQLException
     {
         PrintStream original = System.out;
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
@@ -235,6 +236,6 @@ class WorldDatabaseIT
     @FunctionalInterface
     private interface SqlAction
     {
-        void run() throws Exception;
+        void run() throws SQLException;
     }
 }
