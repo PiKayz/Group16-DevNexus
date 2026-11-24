@@ -19,6 +19,8 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.Mockito.*;
 
+// PMD CheckResultSet: Mockito stubs and assertions already control the next() result.
+@SuppressWarnings("PMD.CheckResultSet")
 class CapitalReportsTest
 {
     private Connection connection;

@@ -16,6 +16,8 @@ import java.sql.Statement;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+// PMD CheckResultSet: Mockito stubs and assertions already control the next() result.
+@SuppressWarnings("PMD.CheckResultSet")
 class WorldDatabaseIT
 {
     private static Connection connection;

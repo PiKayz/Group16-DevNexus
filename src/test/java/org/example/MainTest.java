@@ -15,7 +15,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 // PMD TooManyMethods: These methods cover distinct startup, database-check, and shutdown paths.
-@SuppressWarnings("PMD.TooManyMethods")
+// PMD CheckResultSet: Mockito stubs and assertions already control the next() result.
+@SuppressWarnings({"PMD.TooManyMethods", "PMD.CheckResultSet"})
 class MainTest
 {
     @Test

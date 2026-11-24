@@ -18,6 +18,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
+// PMD CheckResultSet: Mockito stubs and assertions already control the next() result.
+@SuppressWarnings("PMD.CheckResultSet")
 class LanguageReportsTest
 {
     private Connection connection;

@@ -19,7 +19,8 @@ import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.Mockito.*;
 
 // PMD TooManyMethods: One fixture verifies reports 26-31 and their shared SQL/output behavior.
-@SuppressWarnings("PMD.TooManyMethods")
+// PMD CheckResultSet: Mockito stubs and assertions already control the next() result.
+@SuppressWarnings({"PMD.TooManyMethods", "PMD.CheckResultSet"})
 class PopulationTotalsTest
 {
     private Connection connection;
