@@ -21,6 +21,9 @@ jobs:
       - name: Unit Tests
         run: mvn -B test
 
+      - name: Code quality (PMD)
+        run: mvn -B pmd:check
+
       - name: Upload unit test coverage
         if: always()
         uses: actions/upload-artifact@v4
