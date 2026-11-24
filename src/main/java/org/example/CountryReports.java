@@ -6,29 +6,20 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
- * Country reports: requirements 1-6.
+ * Prints country reports 1-6 with population ranking and optional filters.
+ * Each row includes the country code, name, region, population and capital.
  * Assigned developer: Htet Aung Shine.
- *
- * Implemented reports:
- *  1. All countries in the world, largest population first (UC-01).
- *  2. All countries in a continent, largest population first (UC-02).
- *  3. All countries in a region, largest population first (UC-03).
- *  4. Top N populated countries in the world, largest population first.
- *  5. Top N populated countries in a continent, largest population first.
- *  6. Top N populated countries in a region, largest population first.
- *
- * Every report shows: Code, Name, Continent, Region, Population, Capital.
  */
 public class CountryReports
 {
-    // Shared SELECT part. LEFT JOIN keeps countries without a capital.
+    /** Shared select that retains countries without a recorded capital. */
     private static final String BASE_SQL =
             "SELECT c.Code, c.Name, c.Continent, c.Region, c.Population, "
                     + "COALESCE(ci.Name, 'N/A') AS Capital "
                     + "FROM country c "
                     + "LEFT JOIN city ci ON c.Capital = ci.ID ";
 
-    // Shared ORDER BY part. Name breaks ties so the order is always the same.
+    /** Sorts by population, then country name to break ties. */
     private static final String ORDER_SQL = "ORDER BY c.Population DESC, c.Name ";
 
     /**

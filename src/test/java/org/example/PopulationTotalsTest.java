@@ -18,18 +18,29 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.Mockito.*;
 
-// PMD TooManyMethods: One fixture verifies reports 26-31 and their shared SQL/output behavior.
+/**
+ * Verifies population totals for reports 26-31 and their output.
+ * The shared fixture covers each supported population area.
+ */
 @SuppressWarnings("PMD.TooManyMethods")
 class PopulationTotalsTest
 {
+    /** Mock database connection for each test. */
     private Connection connection;
+    /** Mock statement used for unfiltered totals. */
     private Statement statement;
+    /** Mock statement used for filtered totals. */
     private PreparedStatement preparedStatement;
+    /** Mock population result row. */
     private ResultSet resultSet;
+    /** Population totals instance under test. */
     private PopulationTotals reports;
 
+    /** Console stream restored after each test. */
     private PrintStream originalOut;
+    /** Console stream used to capture report output. */
     private PrintStream capturedPrintStream;
+    /** Buffer holding captured report output. */
     private ByteArrayOutputStream capturedOutput;
 
     @BeforeEach

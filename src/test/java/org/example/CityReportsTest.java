@@ -19,17 +19,27 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.Mockito.*;
 
-// PMD TooManyMethods: One fixture verifies the city reports and their shared SQL/output behavior.
+/**
+ * Verifies city report filters, limits, SQL bindings, and output.
+ * The shared fixture covers the related report methods together.
+ */
 @SuppressWarnings("PMD.TooManyMethods")
 class CityReportsTest
 {
+    /** Mock database connection for each test. */
     private Connection connection;
+    /** Mock statement used for city queries. */
     private PreparedStatement statement;
+    /** Mock result rows returned by the database. */
     private ResultSet rows;
+    /** City report instance under test. */
     private CityReports reports;
 
+    /** Console stream restored after each test. */
     private PrintStream originalOut;
+    /** Console stream used to capture report output. */
     private PrintStream testOut;
+    /** Buffer holding captured report output. */
     private ByteArrayOutputStream capturedOutput;
 
     @BeforeEach

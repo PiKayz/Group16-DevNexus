@@ -20,11 +20,14 @@ import java.util.Map;
  */
 public class LanguageReports
 {
+    /** Languages included in the speaker population report. */
     private static final List<String> LANGUAGES =
             List.of("Chinese", "English", "Hindi", "Spanish", "Arabic");
 
+    /** Scale factor for converting speaker ratios to percentages. */
     private static final BigDecimal HUNDRED = BigDecimal.valueOf(100);
 
+    /** Prints estimated speakers and world-population percentages. */
     public void printLanguageSpeakerReport(Connection con) throws SQLException
     {
         Map<String, BigDecimal> speakers = new LinkedHashMap<>();

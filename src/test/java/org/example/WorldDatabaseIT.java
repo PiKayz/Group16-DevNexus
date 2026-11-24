@@ -16,8 +16,10 @@ import java.sql.Statement;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/** Exercises all report groups against the imported World database. */
 class WorldDatabaseIT
 {
+    /** Connection shared across the live-database integration tests. */
     private static Connection connection;
 
     @BeforeAll
