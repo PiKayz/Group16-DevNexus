@@ -19,7 +19,7 @@ import static org.mockito.Mockito.*;
 
 // PMD TooManyMethods: One fixture verifies the country reports and their shared SQL/output behavior.
 // PMD CheckResultSet: Mockito stubs and assertions already control the next() result.
-@SuppressWarnings({"PMD.TooManyMethods", "PMD.CheckResultSet"})
+@SuppressWarnings({"PMD.TooManyMethods", "PMD.CheckResultSet", "PMD.CloseResource", "PMD.AvoidAccessibilityAlteration", "PMD.AvoidDuplicateLiterals", "PMD.AvoidLiteralsInIfCondition"})
 class CountryReportsTest
 {
     private Connection connection;

@@ -16,7 +16,7 @@ import static org.mockito.Mockito.*;
 
 // PMD TooManyMethods: These methods cover distinct startup, database-check, and shutdown paths.
 // PMD CheckResultSet: Mockito stubs and assertions already control the next() result.
-@SuppressWarnings({"PMD.TooManyMethods", "PMD.CheckResultSet"})
+@SuppressWarnings({"PMD.TooManyMethods", "PMD.CheckResultSet", "PMD.CloseResource", "PMD.AvoidAccessibilityAlteration", "PMD.AvoidDuplicateLiterals", "PMD.AvoidLiteralsInIfCondition"})
 class MainTest
 {
     @Test

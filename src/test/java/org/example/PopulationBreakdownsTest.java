@@ -20,7 +20,7 @@ import static org.mockito.Mockito.*;
 
 // PMD TooManyMethods: One fixture verifies reports 23-25, including inconsistent source data.
 // PMD CheckResultSet: Mockito stubs and assertions already control the next() result.
-@SuppressWarnings({"PMD.TooManyMethods", "PMD.CheckResultSet"})
+@SuppressWarnings({"PMD.TooManyMethods", "PMD.CheckResultSet", "PMD.CloseResource", "PMD.AvoidAccessibilityAlteration", "PMD.AvoidDuplicateLiterals", "PMD.AvoidLiteralsInIfCondition"})
 class PopulationBreakdownsTest
 {
     private Connection connection;

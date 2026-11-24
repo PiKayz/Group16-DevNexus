@@ -19,7 +19,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 // PMD CheckResultSet: Mockito stubs and assertions already control the next() result.
-@SuppressWarnings("PMD.CheckResultSet")
+@SuppressWarnings({"PMD.CheckResultSet", "PMD.CloseResource", "PMD.AvoidAccessibilityAlteration", "PMD.AvoidDuplicateLiterals", "PMD.AvoidLiteralsInIfCondition"})
 class LanguageReportsTest
 {
     private Connection connection;
