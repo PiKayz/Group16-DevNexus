@@ -12,8 +12,14 @@ import java.util.Locale;
  */
 public class PopulationBreakdowns
 {
+    /** Shared database connection supplied by the application. */
     private final Connection con;
 
+    /**
+     * Creates the reports using an open database connection.
+     * @param con connection used to read the World database
+     * @throws IllegalArgumentException if the connection is null
+     */
     public PopulationBreakdowns(Connection con)
     {
         if (con == null)
@@ -23,18 +29,30 @@ public class PopulationBreakdowns
         this.con = con;
     }
 
+    /**
+     * Prints city and outside-city populations by continent.
+     * @throws SQLException if the database query fails
+     */
     public void report23() throws SQLException
     {
         displayReport("Report 23: Population Breakdown by Continent", "Continent",
                 buildQuery("c.Continent", "c.Continent"));
     }
 
+    /**
+     * Prints city and outside-city populations by region.
+     * @throws SQLException if the database query fails
+     */
     public void report24() throws SQLException
     {
         displayReport("Report 24: Population Breakdown by Region", "Region",
                 buildQuery("c.Region", "c.Region"));
     }
 
+    /**
+     * Prints city and outside-city populations by country.
+     * @throws SQLException if the database query fails
+     */
     public void report25() throws SQLException
     {
         displayReport("Report 25: Population Breakdown by Country", "Country",
