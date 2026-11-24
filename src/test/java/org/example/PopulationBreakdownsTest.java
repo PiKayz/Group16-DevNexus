@@ -18,7 +18,10 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
-// PMD TooManyMethods: One fixture verifies reports 23-25, including inconsistent source data.
+/**
+ * Verifies reports 23-25 with mocked database results.
+ * The shared fixture also tests inconsistent source data.
+ */
 @SuppressWarnings("PMD.TooManyMethods")
 class PopulationBreakdownsTest
 {
