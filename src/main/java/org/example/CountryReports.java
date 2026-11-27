@@ -34,7 +34,7 @@ public class CountryReports
     /**
      * Requirement 1: print all countries in the world, largest population first.
      */
-    public void printAllCountriesInWorld(Connection con) throws SQLException
+    public void printAllCountriesInWorld(final Connection con) throws SQLException
     {
         printReport(con,
                 "Report 1: All countries in the world by population (largest to smallest)",
@@ -46,7 +46,7 @@ public class CountryReports
     /**
      * Requirement 2: print all countries in one continent, largest population first.
      */
-    public void printAllCountriesInContinent(Connection con, String continent) throws SQLException
+    public void printAllCountriesInContinent(final Connection con, final String continent) throws SQLException
     {
         if (continent == null || continent.trim().isEmpty())
         {
@@ -68,7 +68,7 @@ public class CountryReports
     /**
      * Requirement 3: print all countries in one region, largest population first.
      */
-    public void printAllCountriesInRegion(Connection con, String region) throws SQLException
+    public void printAllCountriesInRegion(final Connection con, final String region) throws SQLException
     {
         if (region == null || region.trim().isEmpty())
         {
@@ -92,7 +92,7 @@ public class CountryReports
      *
      * @param topN number of countries to show, must be greater than 0
      */
-    public void printTopNCountriesInWorld(Connection con, int topN) throws SQLException
+    public void printTopNCountriesInWorld(final Connection con, final int topN) throws SQLException
     {
         if (topN <= 0)
         {
@@ -114,7 +114,7 @@ public class CountryReports
      *
      * @param topN number of countries to show, must be greater than 0
      */
-    public void printTopNCountriesInContinent(Connection con, String continent, int topN)
+    public void printTopNCountriesInContinent(final Connection con, final String continent, final int topN)
             throws SQLException
     {
         if (continent == null || continent.trim().isEmpty())
