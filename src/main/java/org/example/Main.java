@@ -125,7 +125,7 @@ public class Main
             try
             {
                 con.close();
-                con = null;
+
                 System.out.println("Disconnected from database");
             }
             catch (SQLException e)
