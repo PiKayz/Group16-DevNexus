@@ -104,7 +104,9 @@ jobs:
 
       - name: Test full suite against World database
         run: |
-          
+          export DB_USER="$(docker compose config --format json | jq -r '.services["devnexus-db"].environment.MYSQL_USER')"
+          export DB_PASSWORD="$(docker compose config --format json | jq -r '.services["devnexus-db"].environment.MYSQL_PASSWORD')"
+          mvn -B '-Dtest=*Test,WorldDatabaseIT' test
 
       - name: Upload full suite coverage to Codecov
         uses: codecov/codecov-action@v5
