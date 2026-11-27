@@ -55,7 +55,7 @@ public class CountryReports
             return;
         }
 
-        String name = continent.trim();
+        final String name = continent.trim();
 
         printReport(con,
                 "Report 2: All countries in the continent " + name
@@ -77,7 +77,7 @@ public class CountryReports
             return;
         }
 
-        String name = region.trim();
+        final String name = region.trim();
 
         printReport(con,
                 "Report 3: All countries in the region " + name
@@ -90,11 +90,11 @@ public class CountryReports
     /**
      * Requirement 4: print the top N populated countries in the world.
      *
-     * @param n number of countries to show, must be greater than 0
+     * @param topN number of countries to show, must be greater than 0
      */
-    public void printTopNCountriesInWorld(Connection con, int n) throws SQLException
+    public void printTopNCountriesInWorld(Connection con, int topN) throws SQLException
     {
-        if (n <= 0)
+        if (topN <= 0)
         {
             System.out.println();
             System.out.println("Report 4: Invalid input - N must be greater than 0");
@@ -102,19 +102,19 @@ public class CountryReports
         }
 
         printReport(con,
-                "Report 4: Top " + n + " populated countries in the world"
+                "Report 4: Top " + topN + " populated countries in the world"
                         + " (largest to smallest)",
                 BASE_SQL + ORDER_SQL + "LIMIT ?",
                 null,
-                n);
+                topN);
     }
 
     /**
      * Requirement 5: print the top N populated countries in one continent.
      *
-     * @param n number of countries to show, must be greater than 0
+     * @param topN number of countries to show, must be greater than 0
      */
-    public void printTopNCountriesInContinent(Connection con, String continent, int n)
+    public void printTopNCountriesInContinent(Connection con, String continent, int topN)
             throws SQLException
     {
         if (continent == null || continent.trim().isEmpty())
@@ -124,29 +124,29 @@ public class CountryReports
             return;
         }
 
-        if (n <= 0)
+        if (topN <= 0)
         {
             System.out.println();
             System.out.println("Report 5: Invalid input - N must be greater than 0");
             return;
         }
 
-        String name = continent.trim();
+        final String name = continent.trim();
 
         printReport(con,
-                "Report 5: Top " + n + " populated countries in the continent " + name
+                "Report 5: Top " + topN + " populated countries in the continent " + name
                         + " (largest to smallest)",
                 BASE_SQL + "WHERE c.Continent = ? " + ORDER_SQL + "LIMIT ?",
                 name,
-                n);
+                topN);
     }
 
     /**
      * Requirement 6: print the top N populated countries in one region.
      *
-     * @param n number of countries to show, must be greater than 0
+     * @param topN number of countries to show, must be greater than 0
      */
-    public void printTopNCountriesInRegion(Connection con, String region, int n)
+    public void printTopNCountriesInRegion(Connection con, String region, int topN)
             throws SQLException
     {
         if (region == null || region.trim().isEmpty())
@@ -156,21 +156,21 @@ public class CountryReports
             return;
         }
 
-        if (n <= 0)
+        if (topN <= 0)
         {
             System.out.println();
             System.out.println("Report 6: Invalid input - N must be greater than 0");
             return;
         }
 
-        String name = region.trim();
+        final String name = region.trim();
 
         printReport(con,
-                "Report 6: Top " + n + " populated countries in the region " + name
+                "Report 6: Top " + topN + " populated countries in the region " + name
                         + " (largest to smallest)",
                 BASE_SQL + "WHERE c.Region = ? " + ORDER_SQL + "LIMIT ?",
                 name,
-                n);
+                topN);
     }
 
     /**
@@ -190,7 +190,7 @@ public class CountryReports
         System.out.println();
         System.out.println(title);
 
-        String format = "%-5s %-45s %-15s %-26s %13s  %s%n";
+        final String format = "%-5s %-45s %-15s %-26s %13s  %s%n";
         int count = 0;
 
         try (PreparedStatement stmt = con.prepareStatement(sql))
@@ -199,7 +199,8 @@ public class CountryReports
 
             if (param != null)
             {
-                stmt.setString(index++, param);
+                stmt.setString(index, param);
+                index++;
             }
 
             if (limit != null)
@@ -207,9 +208,9 @@ public class CountryReports
                 stmt.setInt(index, limit);
             }
 
-            try (ResultSet rs = stmt.executeQuery())
+            try (ResultSet resultSet = stmt.executeQuery())
             {
-                while (rs.next())
+                while (resultSet.next())
                 {
                     if (count == 0)
                     {
@@ -218,12 +219,12 @@ public class CountryReports
                     }
 
                     System.out.printf(format,
-                            rs.getString("Code"),
-                            rs.getString("Name"),
-                            rs.getString("Continent"),
-                            rs.getString("Region"),
-                            String.format("%,d", rs.getInt("Population")),
-                            rs.getString("Capital"));
+                            resultSet.getString("Code"),
+                            resultSet.getString("Name"),
+                            resultSet.getString("Continent"),
+                            resultSet.getString("Region"),
+                            String.format("%,d", resultSet.getInt("Population")),
+                            resultSet.getString("Capital"));
                     count++;
                 }
             }
