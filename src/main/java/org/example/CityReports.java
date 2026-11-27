@@ -5,42 +5,73 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+/**
+ * City reports: requirements 12-16 (top N populated cities).
+ */
+@SuppressWarnings("PMD.AtLeastOneConstructor")
 public class CityReports
 {
 
-    public void topNCitiesInWorld(Connection con, int n) throws SQLException
+    /**
+     * Report 12: top N populated cities in the world.
+     *
+     * @param con   open database connection
+     * @param limit number of cities to show
+     * @throws SQLException if the query fails
+     */
+    public void topNCitiesInWorld(final Connection con, final int limit) throws SQLException
     {
-        printTopN(con, "Report 12 - Top " + n + " cities in the world", "", null, n);
+        printTopN(con, "Report 12 - Top " + limit + " cities in the world", "", null, limit);
     }
 
 
-    public void topNCitiesInContinent(Connection con, String continent, int n) throws SQLException
+    /**
+     * Report 13: top N populated cities in a continent.
+     *
+     * @param con       open database connection
+     * @param continent continent name
+     * @param limit     number of cities to show
+     * @throws SQLException if the query fails
+     */
+    public void topNCitiesInContinent(final Connection con, final String continent, final int limit)
+            throws SQLException
     {
-        printTopN(con, "Report 13 - Top " + n + " cities in " + continent,
-                "WHERE country.Continent = ? ", continent, n);
+        printTopN(con, "Report 13 - Top " + limit + " cities in " + continent,
+                "WHERE country.Continent = ? ", continent, limit);
     }
 
 
-    public void topNCitiesInRegion(Connection con, String region, int n) throws SQLException
+    /**
+     * Report 14: top N populated cities in a region.
+     *
+     * @param con    open database connection
+     * @param region region name
+     * @param limit  number of cities to show
+     * @throws SQLException if the query fails
+     */
+    public void topNCitiesInRegion(final Connection con, final String region, final int limit)
+            throws SQLException
     {
-        printTopN(con, "Report 14 - Top " + n + " cities in " + region,
-                "WHERE country.Region = ? ", region, n);
+        printTopN(con, "Report 14 - Top " + limit + " cities in " + region,
+                "WHERE country.Region = ? ", region, limit);
     }
 
 
     /** Report 15: top N populated cities in a country. */
-    public void topNCitiesInCountry(Connection con, String country, int n) throws SQLException
+    public void topNCitiesInCountry(final Connection con, final String country, final int limit)
+            throws SQLException
     {
-        printTopN(con, "Report 15 - Top " + n + " cities in " + country,
-                "WHERE country.Name = ? ", country, n);
+        printTopN(con, "Report 15 - Top " + limit + " cities in " + country,
+                "WHERE country.Name = ? ", country, limit);
     }
 
 
     /** Report 16: top N populated cities in a district. */
-    public void topNCitiesInDistrict(Connection con, String district, int n) throws SQLException
+    public void topNCitiesInDistrict(final Connection con, final String district, final int limit)
+            throws SQLException
     {
-        printTopN(con, "Report 16 - Top " + n + " cities in " + district + " district",
-                "WHERE city.District = ? ", district, n);
+        printTopN(con, "Report 16 - Top " + limit + " cities in " + district + " district",
+                "WHERE city.District = ? ", district, limit);
     }
 
     /**
@@ -48,20 +79,21 @@ public class CityReports
      * filter is an empty string for the world report, otherwise a WHERE clause
      * with one "?" that is set to value.
      */
-    private void printTopN(Connection con, String title, String filter, String value, int n)
+    private void printTopN(final Connection con, final String title, final String filter,
+                           final String value, final int limit)
             throws SQLException
     {
-        if (n <= 0)
+        if (limit <= 0)
         {
             throw new IllegalArgumentException("N must be a positive integer");
         }
 
-        if (!filter.isEmpty() && (value == null || value.trim().isEmpty()))
+        if (!filter.isEmpty() && (value == null || value.isBlank()))
         {
             throw new IllegalArgumentException("A filter value is required");
         }
 
-        String sql =
+        final String sql =
                 "SELECT city.Name, country.Name AS Country, city.District, city.Population "
                         + "FROM city JOIN country ON city.CountryCode = country.Code "
                         + filter
@@ -81,7 +113,7 @@ public class CityReports
                 stmt.setString(index++, value.trim());
             }
 
-            stmt.setInt(index, n);
+            stmt.setInt(index, limit);
 
             try (ResultSet result = stmt.executeQuery())
             {
