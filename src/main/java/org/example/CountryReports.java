@@ -1,5 +1,6 @@
 package org.example;
 
+import java.io.PrintStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -31,6 +32,9 @@ public class CountryReports
     // Shared ORDER BY part. Name breaks ties so the order is always the same.
     private static final String ORDER_SQL = "ORDER BY c.Population DESC, c.Name ";
 
+    /** Where the validation messages of reports 2-5 are printed. */
+    private final PrintStream out = System.out;
+
     /**
      * Requirement 1: print all countries in the world, largest population first.
      */
@@ -50,8 +54,8 @@ public class CountryReports
     {
         if (continent == null || continent.trim().isEmpty())
         {
-            System.out.println();
-            System.out.println("Report 2: Invalid input - please enter a continent name");
+            out.println();
+            out.println("Report 2: Invalid input - please enter a continent name");
             return;
         }
 
@@ -72,8 +76,8 @@ public class CountryReports
     {
         if (region == null || region.trim().isEmpty())
         {
-            System.out.println();
-            System.out.println("Report 3: Invalid input - please enter a region name");
+            out.println();
+            out.println("Report 3: Invalid input - please enter a region name");
             return;
         }
 
@@ -96,8 +100,8 @@ public class CountryReports
     {
         if (topN <= 0)
         {
-            System.out.println();
-            System.out.println("Report 4: Invalid input - N must be greater than 0");
+            out.println();
+            out.println("Report 4: Invalid input - N must be greater than 0");
             return;
         }
 
@@ -119,15 +123,15 @@ public class CountryReports
     {
         if (continent == null || continent.trim().isEmpty())
         {
-            System.out.println();
-            System.out.println("Report 5: Invalid input - please enter a continent name");
+            out.println();
+            out.println("Report 5: Invalid input - please enter a continent name");
             return;
         }
 
         if (topN <= 0)
         {
-            System.out.println();
-            System.out.println("Report 5: Invalid input - N must be greater than 0");
+            out.println();
+            out.println("Report 5: Invalid input - N must be greater than 0");
             return;
         }
 
