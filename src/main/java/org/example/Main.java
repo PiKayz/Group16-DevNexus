@@ -7,17 +7,30 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Map;
 
+/**
+ * Coordinates the World database connection and all report groups.
+ * Its methods remain together because they form the application entry point.
+ */
+@SuppressWarnings("PMD.TooManyMethods")
 public class Main
 {
+    /** Active World database connection. */
     private Connection con;
+    /** City reports that use the active connection. */
     private CityReports cityReports;
+    /** Capital city reports that use the active connection. */
     private CapitalReports capitalReports;
+    /** Population breakdown reports that use the active connection. */
     private PopulationBreakdowns populationBreakdowns;
 
+    /** Country report implementation. */
     private final CountryReports countryReports = new CountryReports();
+    /** Population total report implementation. */
     private final PopulationTotals populationTotals = new PopulationTotals();
+    /** Language speaker report implementation. */
     private final LanguageReports languageReports = new LanguageReports();
 
+    /** Connects to the World database and prepares connection-bound reports. */
     public boolean connect()
     {
         String url = getSetting(
@@ -29,10 +42,12 @@ public class Main
                 + "&connectTimeout=5000&socketTimeout=30000";
 
         String user = getSetting("DB_USER", "devnexus");
-        String password = getSetting(
-                "DB_PASSWORD",
-                "DevNexusApp2026"
-        );
+        String password = System.getenv("DB_PASSWORD");
+        if (password == null || password.isBlank())
+        {
+            System.err.println("DB_PASSWORD must be set");
+            return false;
+        }
         int retries = 30;
 
         for (int attempt = 1; attempt <= retries; attempt++)
@@ -102,6 +117,7 @@ public class Main
                 : value;
     }
 
+    /** Checks that all required World database tables contain data. */
     public void checkWorldDatabase() throws SQLException
     {
         if (con == null)
@@ -150,6 +166,7 @@ public class Main
         }
     }
 
+    /** Prints country reports 1-6. */
     public void runCountryReports() throws SQLException
     {
         // Reports 1–6
@@ -170,6 +187,7 @@ public class Main
         );
     }
 
+    /** Prints city reports 7-16. */
     public void runCityReports() throws SQLException
     {
         cityReports.cityReports();
@@ -197,6 +215,7 @@ public class Main
         );
     }
 
+    /** Prints capital city reports 17-22. */
     public void runCapitalReports()
     {
         // Reports 17–22
@@ -208,6 +227,7 @@ public class Main
         capitalReports.report22("Caribbean", 5);
     }
 
+    /** Prints population breakdown reports 23-25. */
     public void runPopulationBreakdowns()
             throws SQLException
     {
@@ -217,6 +237,7 @@ public class Main
         populationBreakdowns.report25();
     }
 
+    /** Prints population total reports 26-31. */
     public void runPopulationTotals() throws SQLException
     {
         System.out.println(
@@ -242,6 +263,7 @@ public class Main
         );
     }
 
+    /** Closes the active World database connection, if present. */
     public void disconnect()
     {
         if (con != null)
@@ -302,6 +324,7 @@ public class Main
         return exitCode;
     }
 
+    /** Starts the application and exits with the report run's status. */
     public static void main(String[] args)
     {
         System.exit(new Main().run());

@@ -19,15 +19,23 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.Mockito.*;
 
+/** Verifies capital city filters, limits, and rendered report rows. */
 class CapitalReportsTest
 {
+    /** Mock database connection for each test. */
     private Connection connection;
+    /** Mock query statement for capital city results. */
     private PreparedStatement statement;
+    /** Mock result rows returned by the database. */
     private ResultSet rows;
+    /** Capital report instance under test. */
     private CapitalReports reports;
 
+    /** Console stream restored after each test. */
     private PrintStream originalOut;
+    /** Console stream used to capture report output. */
     private PrintStream testOut;
+    /** Buffer holding captured report output. */
     private ByteArrayOutputStream capturedOutput;
 
     @BeforeEach

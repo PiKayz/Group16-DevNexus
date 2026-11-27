@@ -15,14 +15,17 @@ import java.util.List;
  */
 public class CapitalReports {
 
+    /** Connection used to query the World database. */
     private final Connection con;
 
-    // Capital cities are identified through country.Capital = city.ID
+    /** SQL selecting capital cities and their countries. */
     private static final String BASE_QUERY =
             "SELECT city.Name AS Name, country.Name AS Country, city.Population AS Population " +
             "FROM city JOIN country ON country.Capital = city.ID ";
+    /** Sorts capital cities by descending population. */
     private static final String ORDER_BY = "ORDER BY city.Population DESC";
 
+    /** Creates capital reports using the supplied database connection. */
     public CapitalReports(Connection con) {
         this.con = con;
     }
@@ -74,14 +77,14 @@ public class CapitalReports {
         return true;
     }
 
-    // 17. All capital cities in the world, largest to smallest population
+    /** Prints all world capital cities by descending population. */
     public void report17() {
         String query = BASE_QUERY + ORDER_BY;
         printCapitalReport("Report 17: All Capital Cities in the World by Population",
                 query, List.of());
     }
 
-    // 18. All capital cities in a continent, largest to smallest population
+    /** Prints capital cities in the selected continent. */
     public void report18(String continent) {
         if (!validText(continent, "Continent")) return;
         String query = BASE_QUERY + "WHERE country.Continent = ? " + ORDER_BY;
@@ -89,7 +92,7 @@ public class CapitalReports {
                 query, List.of(continent));
     }
 
-    // 19. All capital cities in a region, largest to smallest population
+    /** Prints capital cities in the selected region. */
     public void report19(String region) {
         if (!validText(region, "Region")) return;
         String query = BASE_QUERY + "WHERE country.Region = ? " + ORDER_BY;
@@ -97,7 +100,7 @@ public class CapitalReports {
                 query, List.of(region));
     }
 
-    // 20. Top N populated capital cities in the world
+    /** Prints the most populated capital cities in the world. */
     public void report20(int n) {
         if (!validN(n)) return;
         String query = BASE_QUERY + ORDER_BY + " LIMIT ?";
@@ -105,7 +108,7 @@ public class CapitalReports {
                 query, List.of(n));
     }
 
-    // 21. Top N populated capital cities in a continent
+    /** Prints the most populated capital cities in a continent. */
     public void report21(String continent, int n) {
         if (!validText(continent, "Continent") || !validN(n)) return;
         String query = BASE_QUERY + "WHERE country.Continent = ? " + ORDER_BY + " LIMIT ?";
@@ -113,7 +116,7 @@ public class CapitalReports {
                 query, List.of(continent, n));
     }
 
-    // 22. Top N populated capital cities in a region
+    /** Prints the most populated capital cities in a region. */
     public void report22(String region, int n) {
         if (!validText(region, "Region") || !validN(n)) return;
         String query = BASE_QUERY + "WHERE country.Region = ? " + ORDER_BY + " LIMIT ?";

@@ -18,17 +18,27 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
+/** Verifies language speaker estimates and rendered percentages. */
 class LanguageReportsTest
 {
+    /** Mock database connection for each test. */
     private Connection connection;
+    /** Mock statement used for language records. */
     private PreparedStatement languageStatement;
+    /** Mock language records returned by the database. */
     private ResultSet languageRows;
+    /** Mock statement used for the world population query. */
     private Statement totalStatement;
+    /** Mock total population row returned by the database. */
     private ResultSet totalRows;
+    /** Language report instance under test. */
     private LanguageReports reports;
 
+    /** Console stream restored after each test. */
     private PrintStream originalOut;
+    /** Console stream used to capture report output. */
     private PrintStream testOut;
+    /** Buffer holding captured report output. */
     private ByteArrayOutputStream capturedOutput;
 
     @BeforeEach

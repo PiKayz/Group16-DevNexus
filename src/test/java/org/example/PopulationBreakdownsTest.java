@@ -18,15 +18,27 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
+/**
+ * Verifies reports 23-25 with mocked database results.
+ * The shared fixture also tests inconsistent source data.
+ */
+@SuppressWarnings("PMD.TooManyMethods")
 class PopulationBreakdownsTest
 {
+    /** Mock database connection for each test. */
     private Connection connection;
+    /** Mock statement used for breakdown queries. */
     private Statement statement;
+    /** Mock population breakdown result rows. */
     private ResultSet resultSet;
+    /** Population breakdown reports under test. */
     private PopulationBreakdowns reports;
 
+    /** Buffer holding captured report output. */
     private ByteArrayOutputStream capturedOutput;
+    /** Console stream restored after each test. */
     private PrintStream originalOutput;
+    /** Console stream used to capture report output. */
     private PrintStream testOutput;
 
     @BeforeEach

@@ -8,11 +8,15 @@ import java.sql.SQLException;
 /**
  * Reports 7–11: All cities.
  * Reports 12–16: Top N cities.
+ * These methods share a city-report API used by Main and integration tests.
  */
+@SuppressWarnings("PMD.TooManyMethods")
 public class CityReports
 {
+    /** Connection used by the all-cities reports. */
     private final Connection con;
 
+    /** Creates city reports using the supplied database connection. */
     public CityReports(Connection con)
     {
         if (con == null)
@@ -23,6 +27,7 @@ public class CityReports
         this.con = con;
     }
 
+    /** Prints the heading for the city reports. */
     public void cityReports()
     {
         System.out.println();
