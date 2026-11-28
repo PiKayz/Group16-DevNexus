@@ -15,7 +15,7 @@ public class CountryReports
 {
     /** Shared SELECT part. LEFT JOIN keeps countries without a capital. */
     private static final String BASE_SQL =
-            "SELECT c.Code, c.Name, c.Continent, c.Region, c.Population, "
+            "SELECT c.Code, c.Name, c.Continent, c.Region, c.Populaton, "
                     + "COALESCE(ci.Name, 'N/A') AS Capital "
                     + "FROM country c "
                     + "LEFT JOIN city ci ON c.Capital = ci.ID ";
