@@ -14,7 +14,7 @@ public class PopulationBreakdowns
 {
     private final Connection con;
 
-    public PopulationBreakdowns(Connection con)
+    public PopulationBreakdowns(final Connection con)
     {
         if (con == null)
         {
@@ -43,7 +43,7 @@ public class PopulationBreakdowns
 
     // The city subquery returns one row per country to avoid counting
     // a country's population multiple times when it has several cities.
-    private String buildQuery(String nameColumn, String groupColumns)
+    private String buildQuery(final String nameColumn, final String groupColumns)
     {
         return "SELECT " + nameColumn + " AS area_name, "
                 + "SUM(c.Population) AS total_population, "
@@ -57,7 +57,7 @@ public class PopulationBreakdowns
                 + "ORDER BY total_population DESC, area_name ASC";
     }
 
-    private void displayReport(String title, String areaLabel, String sql)
+    private void displayReport(final String title, final String areaLabel, final String sql)
             throws SQLException
     {
         System.out.println("\n=== " + title + " ===");
@@ -71,9 +71,9 @@ public class PopulationBreakdowns
         {
             while (result.next())
             {
-                String name = result.getString("area_name");
-                long total = result.getLong("total_population");
-                long city = result.getLong("city_population");
+                final String name = result.getString("area_name");
+                final long total = result.getLong("total_population");
+                final long city = result.getLong("city_population");
                 // Keep the source figures visible, but do not present a negative
                 // outside-city population or percentages above 100% as valid.
                 if (city > total)
@@ -83,16 +83,17 @@ public class PopulationBreakdowns
                             name, total, city, "N/A", "N/A", "N/A");
                     System.out.println("  Data inconsistency: recorded city population "
                             + "exceeds the reported total for " + name + ".");
-                    rows++;
-                    continue;
                 }
-                long outside = total - city;
-                double cityPercent = total == 0 ? 0.0 : city * 100.0 / total;
-                double outsidePercent = total == 0 ? 0.0 : outside * 100.0 / total;
+                else
+                {
+                    final long outside = total - city;
+                    final double cityPercent = total == 0 ? 0.0 : city * 100.0 / total;
+                    final double outsidePercent = total == 0 ? 0.0 : outside * 100.0 / total;
 
-                System.out.printf(Locale.ROOT,
-                        "%-40s %18d %18d %11.2f%% %18d %11.2f%%%n",
-                        name, total, city, cityPercent, outside, outsidePercent);
+                    System.out.printf(Locale.ROOT,
+                            "%-40s %18d %18d %11.2f%% %18d %11.2f%%%n",
+                            name, total, city, cityPercent, outside, outsidePercent);
+                }
                 rows++;
             }
         }

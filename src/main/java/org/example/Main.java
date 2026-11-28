@@ -7,35 +7,60 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Map;
 
+// PMD TooManyMethods: This entry point coordinates report groups and database lifecycle.
+// PMD ShortClassName: "Main" is the conventional entry-point name referenced by pom.xml and the tests.
+@SuppressWarnings({"PMD.TooManyMethods", "PMD.ShortClassName"})
 public class Main
 {
     private Connection con;
     private CityReports cityReports;
     private CapitalReports capitalReports;
-    private PopulationBreakdowns populationBreakdowns;
+    private PopulationBreakdowns breakdowns;
 
     private final CountryReports countryReports = new CountryReports();
     private final PopulationTotals populationTotals = new PopulationTotals();
     private final LanguageReports languageReports = new LanguageReports();
 
+    /** Creates the application; the database connection is opened by {@link #connect()}. */
+    public Main()
+    {
+        // Report helpers are created lazily once the connection is open.
+    }
+
     public boolean connect()
     {
-        String url = getSetting(
+        final String baseUrl = getSetting(
                 "DB_URL",
                 "jdbc:mysql://localhost:33060/world"
         );
-        url += (url.contains("?") ? "&" : "?")
+        final String url = baseUrl + (baseUrl.contains("?") ? "&" : "?")
                 + "allowPublicKeyRetrieval=true&useSSL=false"
                 + "&connectTimeout=5000&socketTimeout=30000";
 
-        String user = getSetting("DB_USER", "devnexus");
-        String password = getSetting(
-                "DB_PASSWORD",
-                "DevNexusApp2026"
-        );
-        int retries = 30;
+        final String user = getSetting("DB_USER", "devnexus");
+        final String password = System.getenv("DB_PASSWORD");
+        boolean connected = false;
 
-        for (int attempt = 1; attempt <= retries; attempt++)
+        if (password == null || password.isBlank())
+        {
+            System.err.println("DB_PASSWORD must be set");
+        }
+        else
+        {
+            connected = connectWithRetries(url, user, password);
+        }
+
+        return connected;
+    }
+
+    private boolean connectWithRetries(
+            final String url, final String user, final String password)
+    {
+        final int retries = 30;
+        boolean connected = false;
+        boolean interrupted = false;
+
+        for (int attempt = 1; attempt <= retries && !connected && !interrupted; attempt++)
         {
             System.out.println(
                     "Connecting to database... Attempt " + attempt
@@ -52,9 +77,8 @@ public class Main
 
                 cityReports = new CityReports(con);
                 capitalReports = new CapitalReports(con);
-                populationBreakdowns =
-                        new PopulationBreakdowns(con);
-                return true;
+                breakdowns = new PopulationBreakdowns(con);
+                connected = true;
             }
             catch (SQLException e)
             {
@@ -62,41 +86,49 @@ public class Main
                         "Connection failed: " + e.getMessage()
                 );
 
-                if (attempt == retries)
+                if (attempt < retries)
                 {
-                    break;
-                }
-
-                try
-                {
-                    Thread.sleep(5000);
-                }
-                catch (InterruptedException interrupted)
-                {
-                    Thread.currentThread().interrupt();
-                    System.err.println(
-                            "Connection interrupted"
-                    );
-                    return false;
+                    interrupted = !pauseBeforeRetry();
                 }
             }
         }
 
-        return false;
+        return connected;
+    }
+
+    /** Waits before the next connection attempt; returns false if interrupted. */
+    private boolean pauseBeforeRetry()
+    {
+        boolean resumed = true;
+
+        try
+        {
+            Thread.sleep(5000);
+        }
+        catch (InterruptedException interrupted)
+        {
+            Thread.currentThread().interrupt();
+            System.err.println(
+                    "Connection interrupted"
+            );
+            resumed = false;
+        }
+
+        return resumed;
     }
 
     private static String getSetting(
-            String name, String fallback)
+            final String name, final String fallback)
     {
         return getSetting(System.getenv(), name, fallback);
     }
 
-    static String getSetting(
-            Map<String, String> settings,
-            String name,
-            String fallback)
+    /* default */ static String getSetting(
+            final Map<String, String> settings,
+            final String name,
+            final String fallback)
     {
-        String value = settings.get(name);
+        final String value = settings.get(name);
         return value == null || value.isBlank()
                 ? fallback
                 : value;
@@ -111,7 +143,7 @@ public class Main
             );
         }
 
-        String sql = "SELECT "
+        final String sql = "SELECT "
                 + "(SELECT COUNT(*) FROM country) AS country_count, "
                 + "(SELECT COUNT(*) FROM city) AS city_count, "
                 + "(SELECT COUNT(*) FROM countrylanguage) AS language_count";
@@ -126,9 +158,9 @@ public class Main
                 );
             }
 
-            int countries = result.getInt("country_count");
-            int cities = result.getInt("city_count");
-            int languages = result.getInt("language_count");
+            final int countries = result.getInt("country_count");
+            final int cities = result.getInt("city_count");
+            final int languages = result.getInt("language_count");
 
             System.out.println("Countries: " + countries);
             System.out.println("Cities: " + cities);
@@ -212,9 +244,9 @@ public class Main
             throws SQLException
     {
         // Reports 23–25
-        populationBreakdowns.report23();
-        populationBreakdowns.report24();
-        populationBreakdowns.report25();
+        breakdowns.report23();
+        breakdowns.report24();
+        breakdowns.report25();
     }
 
     public void runPopulationTotals() throws SQLException
@@ -264,16 +296,26 @@ public class Main
         }
     }
 
-    int run()
+    /* default */ int run()
     {
-        if (!connect())
+        int exitCode = 1;
+
+        if (connect())
+        {
+            exitCode = runAllReports();
+        }
+        else
         {
             System.err.println(
                     "Could not connect to World database"
             );
-            return 1;
         }
 
+        return exitCode;
+    }
+
+    private int runAllReports()
+    {
         int exitCode = 0;
 
         try
@@ -306,4 +348,4 @@ public class Main
     {
         System.exit(new Main().run());
     }
-}
+}

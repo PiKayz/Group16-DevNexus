@@ -25,18 +25,24 @@ public class LanguageReports
 
     private static final BigDecimal HUNDRED = BigDecimal.valueOf(100);
 
-    public void printLanguageSpeakerReport(Connection con) throws SQLException
+    /** Creates a language report generator. */
+    public LanguageReports()
     {
-        Map<String, BigDecimal> speakers = new LinkedHashMap<>();
-        Map<String, Boolean> hasData = new LinkedHashMap<>();
+        // Stateless: the connection is passed to each report method.
+    }
 
-        for (String language : LANGUAGES)
+    public void printLanguageSpeakerReport(final Connection con) throws SQLException
+    {
+        final Map<String, BigDecimal> speakers = new LinkedHashMap<>();
+        final Map<String, Boolean> dataFound = new LinkedHashMap<>();
+
+        for (final String language : LANGUAGES)
         {
             speakers.put(language, BigDecimal.ZERO);
-            hasData.put(language, false);
+            dataFound.put(language, false);
         }
 
-        String sql = "SELECT countrylanguage.Language, country.Population, "
+        final String sql = "SELECT countrylanguage.Language, country.Population, "
                 + "countrylanguage.Percentage "
                 + "FROM countrylanguage JOIN country "
                 + "ON countrylanguage.CountryCode = country.Code "
@@ -53,16 +59,16 @@ public class LanguageReports
             {
                 while (result.next())
                 {
-                    String language = result.getString("Language");
-                    BigDecimal population =
+                    final String language = result.getString("Language");
+                    final BigDecimal population =
                             BigDecimal.valueOf(result.getLong("Population"));
-                    BigDecimal percentage = result.getBigDecimal("Percentage");
+                    final BigDecimal percentage = result.getBigDecimal("Percentage");
 
-                    BigDecimal estimate = population.multiply(percentage)
+                    final BigDecimal estimate = population.multiply(percentage)
                             .divide(HUNDRED);
 
                     speakers.merge(language, estimate, BigDecimal::add);
-                    hasData.put(language, true);
+                    dataFound.put(language, true);
                 }
             }
         }
@@ -74,7 +80,7 @@ public class LanguageReports
         {
             if (result.next())
             {
-                BigDecimal total = result.getBigDecimal(1);
+                final BigDecimal total = result.getBigDecimal(1);
                 if (total != null)
                 {
                     worldPopulation = total;
@@ -82,8 +88,8 @@ public class LanguageReports
             }
         }
 
-        List<String> sorted = new ArrayList<>(LANGUAGES);
-        sorted.sort(Comparator.comparing((String language) -> speakers.get(language))
+        final List<String> sorted = new ArrayList<>(LANGUAGES);
+        sorted.sort(Comparator.<String, BigDecimal>comparing(speakers::get)
                 .reversed()
                 .thenComparing(Comparator.naturalOrder()));
 
@@ -91,11 +97,11 @@ public class LanguageReports
         System.out.printf(Locale.ROOT, "%-12s %20s %30s%n",
                 "Language", "Estimated Speakers", "Percentage of World Population");
 
-        for (String language : sorted)
+        for (final String language : sorted)
         {
-            BigDecimal count = speakers.get(language);
+            final BigDecimal count = speakers.get(language);
 
-            String percentage = worldPopulation.signum() == 0
+            final String percentage = worldPopulation.signum() == 0
                     ? "N/A"
                     : count.multiply(HUNDRED)
                     .divide(worldPopulation, 2, RoundingMode.HALF_UP)
@@ -106,7 +112,7 @@ public class LanguageReports
                     count.setScale(0, RoundingMode.HALF_UP).toBigInteger(),
                     percentage);
 
-            if (!hasData.get(language))
+            if (!dataFound.get(language))
             {
                 line += "  (data missing)";
             }

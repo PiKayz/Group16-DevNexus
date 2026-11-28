@@ -9,11 +9,13 @@ import java.sql.SQLException;
  * Reports 7–11: All cities.
  * Reports 12–16: Top N cities.
  */
+// PMD TooManyMethods: Reports 7-16 share one city-report API used by Main and the integration tests.
+@SuppressWarnings("PMD.TooManyMethods")
 public class CityReports
 {
     private final Connection con;
 
-    public CityReports(Connection con)
+    public CityReports(final Connection con)
     {
         if (con == null)
         {
@@ -39,7 +41,7 @@ public class CityReports
     }
 
     /** Report 8: All cities in a continent. */
-    public void allCitiesInContinent(String continent) throws SQLException
+    public void allCitiesInContinent(final String continent) throws SQLException
     {
         requireValue(continent, "Continent");
         System.out.println("\nReport 8: All cities in continent: " + continent);
@@ -47,7 +49,7 @@ public class CityReports
     }
 
     /** Report 9: All cities in a region. */
-    public void allCitiesInRegion(String region) throws SQLException
+    public void allCitiesInRegion(final String region) throws SQLException
     {
         requireValue(region, "Region");
         System.out.println("\nReport 9: All cities in region: " + region);
@@ -55,7 +57,7 @@ public class CityReports
     }
 
     /** Report 10: All cities in a country. */
-    public void allCitiesInCountry(String country) throws SQLException
+    public void allCitiesInCountry(final String country) throws SQLException
     {
         requireValue(country, "Country");
         System.out.println("\nReport 10: All cities in country: " + country);
@@ -63,14 +65,14 @@ public class CityReports
     }
 
     /** Report 11: All cities in a district. */
-    public void allCitiesInDistrict(String district) throws SQLException
+    public void allCitiesInDistrict(final String district) throws SQLException
     {
         requireValue(district, "District");
         System.out.println("\nReport 11: All cities in district: " + district);
         runReport(allCitiesQuery("WHERE city.District = ? "), district.trim());
     }
 
-    private String allCitiesQuery(String filter)
+    private String allCitiesQuery(final String filter)
     {
         return "SELECT city.Name AS City, "
                 + "country.Name AS Country, "
@@ -81,7 +83,7 @@ public class CityReports
                 + "ORDER BY city.Population DESC, city.Name ASC";
     }
 
-    private void requireValue(String value, String label)
+    private void requireValue(final String value, final String label)
     {
         if (value == null || value.trim().isEmpty())
         {
@@ -89,7 +91,7 @@ public class CityReports
         }
     }
 
-    private void runReport(String sql, Object... parameters) throws SQLException
+    private void runReport(final String sql, final Object... parameters) throws SQLException
     {
         try (PreparedStatement stmt = con.prepareStatement(sql))
         {
@@ -128,72 +130,72 @@ public class CityReports
     }
 
     /** Report 12: Top N cities in the world. */
-    public void topNCitiesInWorld(Connection con, int n) throws SQLException
+    public void topNCitiesInWorld(final Connection con, final int limit) throws SQLException
     {
-        printTopN(con, "Report 12: Top " + n + " cities in the world", "", null, n);
+        printTopN(con, "Report 12: Top " + limit + " cities in the world", "", null, limit);
     }
 
     /** Report 13: Top N cities in a continent. */
-    public void topNCitiesInContinent(Connection con, String continent, int n)
+    public void topNCitiesInContinent(final Connection con, final String continent, final int limit)
             throws SQLException
     {
         printTopN(
                 con,
-                "Report 13: Top " + n + " cities in continent: " + continent,
+                "Report 13: Top " + limit + " cities in continent: " + continent,
                 "WHERE country.Continent = ? ",
                 continent,
-                n
+                limit
         );
     }
 
     /** Report 14: Top N cities in a region. */
-    public void topNCitiesInRegion(Connection con, String region, int n)
+    public void topNCitiesInRegion(final Connection con, final String region, final int limit)
             throws SQLException
     {
         printTopN(
                 con,
-                "Report 14: Top " + n + " cities in region: " + region,
+                "Report 14: Top " + limit + " cities in region: " + region,
                 "WHERE country.Region = ? ",
                 region,
-                n
+                limit
         );
     }
 
     /** Report 15: Top N cities in a country. */
-    public void topNCitiesInCountry(Connection con, String country, int n)
+    public void topNCitiesInCountry(final Connection con, final String country, final int limit)
             throws SQLException
     {
         printTopN(
                 con,
-                "Report 15: Top " + n + " cities in country: " + country,
+                "Report 15: Top " + limit + " cities in country: " + country,
                 "WHERE country.Name = ? ",
                 country,
-                n
+                limit
         );
     }
 
     /** Report 16: Top N cities in a district. */
-    public void topNCitiesInDistrict(Connection con, String district, int n)
+    public void topNCitiesInDistrict(final Connection con, final String district, final int limit)
             throws SQLException
     {
         printTopN(
                 con,
-                "Report 16: Top " + n + " cities in district: " + district,
+                "Report 16: Top " + limit + " cities in district: " + district,
                 "WHERE city.District = ? ",
                 district,
-                n
+                limit
         );
     }
 
     private void printTopN(
-            Connection con,
-            String title,
-            String filter,
-            String value,
-            int n
+            final Connection con,
+            final String title,
+            final String filter,
+            final String value,
+            final int limit
     ) throws SQLException
     {
-        if (n <= 0)
+        if (limit <= 0)
         {
             throw new IllegalArgumentException("N must be a positive integer");
         }
@@ -203,7 +205,7 @@ public class CityReports
             requireValue(value, "Filter value");
         }
 
-        String sql = "SELECT city.Name, country.Name AS Country, "
+        final String sql = "SELECT city.Name, country.Name AS Country, "
                 + "city.District, city.Population "
                 + "FROM city "
                 + "JOIN country ON city.CountryCode = country.Code "
@@ -225,7 +227,7 @@ public class CityReports
                 stmt.setString(index++, value.trim());
             }
 
-            stmt.setInt(index, n);
+            stmt.setInt(index, limit);
 
             try (ResultSet result = stmt.executeQuery())
             {
@@ -250,4 +252,4 @@ public class CityReports
             }
         }
     }
-}
+}

@@ -12,56 +12,67 @@ import java.sql.Statement;
  */
 public class PopulationTotals
 {
-    /** Report 26: World population. */
-    public void printWorldPopulation(Connection con) throws SQLException
+    /** Creates a population totals report generator. */
+    public PopulationTotals()
     {
-        String sql = "SELECT SUM(Population) AS total FROM country";
+        // Stateless: the connection is passed to each report method.
+    }
+
+    /** Report 26: World population. */
+    public void printWorldPopulation(final Connection con) throws SQLException
+    {
+        final String sql = "SELECT SUM(Population) AS total FROM country";
 
         System.out.println("\nReport 26: World Population");
 
         try (Statement stmt = con.createStatement();
-             ResultSet rs = stmt.executeQuery(sql))
+             ResultSet result = stmt.executeQuery(sql))
         {
-            if (rs.next())
+            boolean printed = false;
+
+            if (result.next())
             {
-                long total = rs.getLong("total");
-                if (!rs.wasNull())
+                final long total = result.getLong("total");
+                if (!result.wasNull())
                 {
                     System.out.println("World Population: " + total);
-                    return;
+                    printed = true;
                 }
             }
 
-            System.out.println("No population data found.");
+            if (!printed)
+            {
+                System.out.println("No population data found.");
+            }
         }
     }
 
     /** Report 27: List population totals for all continents. */
-    public void printPopulationByContinent(Connection con) throws SQLException
+    public void printPopulationByContinent(final Connection con) throws SQLException
     {
-        String sql = "SELECT Continent AS name, SUM(Population) AS total "
+        final String sql = "SELECT Continent AS name, SUM(Population) AS total "
                 + "FROM country GROUP BY Continent ORDER BY total DESC";
 
         System.out.println("\nReport 27: Population by Continent");
         System.out.printf("%-15s | %s%n", "Continent", "Total Population");
 
         try (Statement stmt = con.createStatement();
-             ResultSet rs = stmt.executeQuery(sql))
+             ResultSet result = stmt.executeQuery(sql))
         {
-            while (rs.next())
+            while (result.next())
             {
                 System.out.printf("%-15s | %d%n",
-                        rs.getString("name"), rs.getLong("total"));
+                        result.getString("name"), result.getLong("total"));
             }
         }
     }
 
     /** Report 27: Population of a selected continent. */
-    public void printPopulationByContinent(Connection con, String continent)
+    public void printPopulationByContinent(final Connection con, final String continent)
             throws SQLException
     {
-        String name = requireValue(continent, "Continent");
-        String sql = "SELECT SUM(Population) AS total "
+        final String name = requireValue(continent, "Continent");
+        final String sql = "SELECT SUM(Population) AS total "
                 + "FROM country WHERE Continent = ?";
 
         System.out.println("\nReport 27: Population by Continent (" + name + ")");
@@ -69,11 +80,11 @@ public class PopulationTotals
     }
 
     /** Report 28: Population of a selected region. */
-    public void printPopulationByRegion(Connection con, String region)
+    public void printPopulationByRegion(final Connection con, final String region)
             throws SQLException
     {
-        String name = requireValue(region, "Region");
-        String sql = "SELECT SUM(Population) AS total "
+        final String name = requireValue(region, "Region");
+        final String sql = "SELECT SUM(Population) AS total "
                 + "FROM country WHERE Region = ?";
 
         System.out.println("\nReport 28: Population by Region (" + name + ")");
@@ -81,22 +92,22 @@ public class PopulationTotals
     }
 
     /** Report 29: Population of a selected country. */
-    public void printPopulationByCountry(Connection con, String countryName)
+    public void printPopulationByCountry(final Connection con, final String countryName)
             throws SQLException
     {
-        String name = requireValue(countryName, "Country");
-        String sql = "SELECT Population AS total FROM country WHERE Name = ?";
+        final String name = requireValue(countryName, "Country");
+        final String sql = "SELECT Population AS total FROM country WHERE Name = ?";
 
         System.out.println("\nReport 29: Population by Country (" + name + ")");
         printTotal(con, sql, "Country", name);
     }
 
     /** Report 30: Sum of recorded city populations in a district. */
-    public void printPopulationByDistrict(Connection con, String district)
+    public void printPopulationByDistrict(final Connection con, final String district)
             throws SQLException
     {
-        String name = requireValue(district, "District");
-        String sql = "SELECT SUM(Population) AS total "
+        final String name = requireValue(district, "District");
+        final String sql = "SELECT SUM(Population) AS total "
                 + "FROM city WHERE District = ?";
 
         System.out.println("\nReport 30: Population by District (" + name + ")");
@@ -104,54 +115,67 @@ public class PopulationTotals
     }
 
     /** Report 31: Population of a selected city. */
-    public void printPopulationByCity(Connection con, String cityName)
+    public void printPopulationByCity(final Connection con, final String cityName)
             throws SQLException
     {
-        String name = requireValue(cityName, "City");
-        String sql = "SELECT Population AS total FROM city WHERE Name = ?";
+        final String name = requireValue(cityName, "City");
+        final String sql = "SELECT Population AS total FROM city WHERE Name = ?";
 
         System.out.println("\nReport 31: Population by City (" + name + ")");
         printTotal(con, sql, "City", name);
     }
 
-    private void printTotal(Connection con, String sql, String label, String name)
+    private void printTotal(final Connection con, final String sql,
+                            final String label, final String name)
             throws SQLException
     {
         try (PreparedStatement stmt = con.prepareStatement(sql))
         {
             stmt.setString(1, name);
 
-            try (ResultSet rs = stmt.executeQuery())
+            try (ResultSet result = stmt.executeQuery())
             {
-                if (!rs.next())
-                {
-                    System.out.println("No data found for " + label + ": " + name);
-                    return;
-                }
-
-                long total = rs.getLong("total");
-                if (rs.wasNull())
-                {
-                    System.out.println("No data found for " + label + ": " + name);
-                    return;
-                }
-
-                if (rs.next())
-                {
-                    System.out.println(
-                            "Multiple matches found for " + label + ": " + name
-                    );
-                    return;
-                }
-
-                System.out.println(
-                        label + " Population (" + name + "): " + total
-                );
+                System.out.println(describeTotal(result, label, name));
             }
         }
     }
 
-    private String requireValue(String value, String label)
+    /**
+     * Builds the message for a single-value total query result.
+     * Reads at most two rows so that duplicate matches can be detected.
+     */
+    private String describeTotal(final ResultSet result, final String label,
+                                 final String name)
+            throws SQLException
+    {
+        final String message;
+
+        if (result.next())
+        {
+            final long total = result.getLong("total");
+
+            if (result.wasNull())
+            {
+                message = "No data found for " + label + ": " + name;
+            }
+            else if (result.next())
+            {
+                message = "Multiple matches found for " + label + ": " + name;
+            }
+            else
+            {
+                message = label + " Population (" + name + "): " + total;
+            }
+        }
+        else
+        {
+            message = "No data found for " + label + ": " + name;
+        }
+
+        return message;
+    }
+
+    private String requireValue(final String value, final String label)
     {
         if (value == null || value.isBlank())
         {

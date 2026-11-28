@@ -23,7 +23,7 @@ public class CapitalReports {
             "FROM city JOIN country ON country.Capital = city.ID ";
     private static final String ORDER_BY = "ORDER BY city.Population DESC";
 
-    public CapitalReports(Connection con) {
+    public CapitalReports(final Connection con) {
         this.con = con;
     }
 
@@ -31,22 +31,23 @@ public class CapitalReports {
      * Runs a capital city query and prints the result with the columns
      * Name, Country, Population.
      */
-    private void printCapitalReport(String reportName, String query, List<Object> params) {
+    private void printCapitalReport(final String reportName, final String query,
+                                    final List<Object> params) {
         System.out.println("=== " + reportName + " ===");
         try (PreparedStatement pstmt = con.prepareStatement(query)) {
             for (int i = 0; i < params.size(); i++) {
                 pstmt.setObject(i + 1, params.get(i));
             }
-            try (ResultSet rs = pstmt.executeQuery()) {
+            try (ResultSet result = pstmt.executeQuery()) {
                 System.out.printf("%-30s %-45s %-15s%n", "Name", "Country", "Population");
                 System.out.println("-".repeat(92));
                 boolean found = false;
-                while (rs.next()) {
+                while (result.next()) {
                     found = true;
                     System.out.printf("%-30s %-45s %-15d%n",
-                            rs.getString("Name"),
-                            rs.getString("Country"),
-                            rs.getInt("Population"));
+                            result.getString("Name"),
+                            result.getString("Country"),
+                            result.getInt("Population"));
                 }
                 if (!found) {
                     System.out.println("No matching records found");
@@ -58,66 +59,71 @@ public class CapitalReports {
         System.out.println();
     }
 
-    private boolean validText(String value, String label) {
-        if (value == null || value.isBlank()) {
+    private boolean validText(final String value, final String label) {
+        final boolean valid = value != null && !value.isBlank();
+        if (!valid) {
             System.out.println("Invalid input: " + label + " must not be empty.");
-            return false;
         }
-        return true;
+        return valid;
     }
 
-    private boolean validN(int n) {
-        if (n <= 0) {
+    private boolean validN(final int limit) {
+        final boolean valid = limit > 0;
+        if (!valid) {
             System.out.println("Invalid input: N must be a positive integer.");
-            return false;
         }
-        return true;
+        return valid;
     }
 
     // 17. All capital cities in the world, largest to smallest population
     public void report17() {
-        String query = BASE_QUERY + ORDER_BY;
+        final String query = BASE_QUERY + ORDER_BY;
         printCapitalReport("Report 17: All Capital Cities in the World by Population",
                 query, List.of());
     }
 
     // 18. All capital cities in a continent, largest to smallest population
-    public void report18(String continent) {
-        if (!validText(continent, "Continent")) return;
-        String query = BASE_QUERY + "WHERE country.Continent = ? " + ORDER_BY;
-        printCapitalReport("Report 18: Capital Cities in Continent (" + continent + ") by Population",
-                query, List.of(continent));
+    public void report18(final String continent) {
+        if (validText(continent, "Continent")) {
+            final String query = BASE_QUERY + "WHERE country.Continent = ? " + ORDER_BY;
+            printCapitalReport("Report 18: Capital Cities in Continent (" + continent + ") by Population",
+                    query, List.of(continent));
+        }
     }
 
     // 19. All capital cities in a region, largest to smallest population
-    public void report19(String region) {
-        if (!validText(region, "Region")) return;
-        String query = BASE_QUERY + "WHERE country.Region = ? " + ORDER_BY;
-        printCapitalReport("Report 19: Capital Cities in Region (" + region + ") by Population",
-                query, List.of(region));
+    public void report19(final String region) {
+        if (validText(region, "Region")) {
+            final String query = BASE_QUERY + "WHERE country.Region = ? " + ORDER_BY;
+            printCapitalReport("Report 19: Capital Cities in Region (" + region + ") by Population",
+                    query, List.of(region));
+        }
     }
 
     // 20. Top N populated capital cities in the world
-    public void report20(int n) {
-        if (!validN(n)) return;
-        String query = BASE_QUERY + ORDER_BY + " LIMIT ?";
-        printCapitalReport("Report 20: Top " + n + " Capital Cities in the World",
-                query, List.of(n));
+    public void report20(final int limit) {
+        if (validN(limit)) {
+            final String query = BASE_QUERY + ORDER_BY + " LIMIT ?";
+            printCapitalReport("Report 20: Top " + limit + " Capital Cities in the World",
+                    query, List.of(limit));
+        }
     }
 
     // 21. Top N populated capital cities in a continent
-    public void report21(String continent, int n) {
-        if (!validText(continent, "Continent") || !validN(n)) return;
-        String query = BASE_QUERY + "WHERE country.Continent = ? " + ORDER_BY + " LIMIT ?";
-        printCapitalReport("Report 21: Top " + n + " Capital Cities in Continent (" + continent + ")",
-                query, List.of(continent, n));
+    public void report21(final String continent, final int limit) {
+        if (validText(continent, "Continent") && validN(limit)) {
+            final String query = BASE_QUERY + "WHERE country.Continent = ? " + ORDER_BY + " LIMIT ?";
+            printCapitalReport("Report 21: Top " + limit + " Capital Cities in Continent (" + continent + ")",
+                    query, List.of(continent, limit));
+        }
     }
 
     // 22. Top N populated capital cities in a region
-    public void report22(String region, int n) {
-        if (!validText(region, "Region") || !validN(n)) return;
-        String query = BASE_QUERY + "WHERE country.Region = ? " + ORDER_BY + " LIMIT ?";
-        printCapitalReport("Report 22: Top " + n + " Capital Cities in Region (" + region + ")",
-                query, List.of(region, n));
+    public void report22(final String region, final int limit) {
+        if (validText(region, "Region") && validN(limit)) {
+            final String query = BASE_QUERY + "WHERE country.Region = ? " + ORDER_BY + " LIMIT ?";
+            printCapitalReport("Report 22: Top " + limit + " Capital Cities in Region (" + region + ")",
+                    query, List.of(region, limit));
+        }
     }
 }
