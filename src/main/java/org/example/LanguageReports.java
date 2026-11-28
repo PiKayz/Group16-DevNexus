@@ -9,19 +9,22 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Language speaker populations: requirement 32.
  * Assigned developer: Win Aung.
  */
+@SuppressWarnings("PMD.AtLeastOneConstructor")
 public class LanguageReports
 {
+    /** Languages required by the report. */
     private static final List<String> LANGUAGES =
             List.of("Chinese", "English", "Hindi", "Spanish", "Arabic");
 
+    /** Used to convert percentages into fractions. */
     private static final BigDecimal HUNDRED = BigDecimal.valueOf(100);
 
     /**
@@ -29,19 +32,22 @@ public class LanguageReports
      * Arabic, and each language's percentage of the world population.
      * Speakers = country population x language percentage / 100, summed over
      * all countries. Values are rounded only when printed.
+     *
+     * @param con open database connection
+     * @throws SQLException if a query fails
      */
-    public void printLanguageSpeakerReport(Connection con) throws SQLException
+    public void printLanguageSpeakerReport(final Connection con) throws SQLException
     {
-        Map<String, BigDecimal> speakers = new LinkedHashMap<>();
-        Map<String, Boolean> hasData = new LinkedHashMap<>();
+        final Map<String, BigDecimal> speakers = new ConcurrentHashMap<>();
+        final Map<String, Boolean> hasData = new ConcurrentHashMap<>();
 
-        for (String language : LANGUAGES)
+        for (final String language : LANGUAGES)
         {
             speakers.put(language, BigDecimal.ZERO);
             hasData.put(language, false);
         }
 
-        String sql =
+        final String sql =
                 "SELECT countrylanguage.Language, country.Population, countrylanguage.Percentage "
                         + "FROM countrylanguage JOIN country "
                         + "ON countrylanguage.CountryCode = country.Code "
@@ -49,20 +55,20 @@ public class LanguageReports
 
         try (PreparedStatement stmt = con.prepareStatement(sql))
         {
-            for (int i = 0; i < LANGUAGES.size(); i++)
+            for (int index = 0; index < LANGUAGES.size(); index++)
             {
-                stmt.setString(i + 1, LANGUAGES.get(i));
+                stmt.setString(index + 1, LANGUAGES.get(index));
             }
 
             try (ResultSet result = stmt.executeQuery())
             {
                 while (result.next())
                 {
-                    String language = result.getString("Language");
-                    BigDecimal population = BigDecimal.valueOf(result.getLong("Population"));
-                    BigDecimal percentage = result.getBigDecimal("Percentage");
+                    final String language = result.getString("Language");
+                    final BigDecimal population = BigDecimal.valueOf(result.getLong("Population"));
+                    final BigDecimal percentage = result.getBigDecimal("Percentage");
 
-                    BigDecimal estimate = population.multiply(percentage)
+                    final BigDecimal estimate = population.multiply(percentage)
                             .divide(HUNDRED);
 
                     speakers.merge(language, estimate, BigDecimal::add);
@@ -82,8 +88,8 @@ public class LanguageReports
             }
         }
 
-        List<String> sorted = new ArrayList<>(LANGUAGES);
-        sorted.sort(Comparator.comparing((String l) -> speakers.get(l)).reversed()
+        final List<String> sorted = new ArrayList<>(LANGUAGES);
+        sorted.sort(Comparator.comparing((String lang) -> speakers.get(lang)).reversed()
                 .thenComparing(Comparator.naturalOrder()));
 
         System.out.println();
@@ -91,27 +97,24 @@ public class LanguageReports
         System.out.println(String.format("%-12s %20s %28s",
                 "Language", "Estimated Speakers", "Percentage of World Population"));
 
-        for (String language : sorted)
+        for (final String language : sorted)
         {
-            BigDecimal count = speakers.get(language);
+            final BigDecimal count = speakers.get(language);
 
-            String percentage = worldPopulation.signum() == 0
+            final String percentage = worldPopulation.signum() == 0
                     ? "N/A"
                     : count.multiply(HUNDRED)
                     .divide(worldPopulation, 2, RoundingMode.HALF_UP)
                     .toPlainString() + "%";
 
-            String line = String.format("%-12s %,20d %28s",
+            final String line = String.format("%-12s %,20d %28s",
                     language,
                     count.setScale(0, RoundingMode.HALF_UP).toBigInteger(),
                     percentage);
 
-            if (!hasData.get(language))
-            {
-                line += "  (data missing)";
-            }
+            final String missing = hasData.get(language) ? "" : "  (data missing)";
 
-            System.out.println(line);
+            System.out.println(line + missing);
         }
 
         System.out.println("Note: speaker groups overlap, so the percentages must not be added together.");
