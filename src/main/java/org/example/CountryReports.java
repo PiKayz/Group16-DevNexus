@@ -9,31 +9,30 @@ import java.sql.SQLException;
 /**
  * Country reports: requirements 1-6.
  * Assigned developer: Htet Aung Shine.
- *
- * Implemented reports:
- *  1. All countries in the world, largest population first (UC-01).
- *  2. All countries in a continent, largest population first (UC-02).
- *  3. All countries in a region, largest population first (UC-03).
- *  4. Top N populated countries in the world, largest population first.
- *  5. Top N populated countries in a continent, largest population first.
- *  6. Top N populated countries in a region, largest population first.
- *
  * Every report shows: Code, Name, Continent, Region, Population, Capital.
  */
 public class CountryReports
 {
-    // Shared SELECT part. LEFT JOIN keeps countries without a capital.
+    /** Shared SELECT part. LEFT JOIN keeps countries without a capital. */
     private static final String BASE_SQL =
             "SELECT c.Code, c.Name, c.Continent, c.Region, c.Population, "
                     + "COALESCE(ci.Name, 'N/A') AS Capital "
                     + "FROM country c "
                     + "LEFT JOIN city ci ON c.Capital = ci.ID ";
 
-    // Shared ORDER BY part. Name breaks ties so the order is always the same.
+    /** Shared ORDER BY part. Name breaks ties so the order is stable. */
     private static final String ORDER_SQL = "ORDER BY c.Population DESC, c.Name ";
 
     /** Where the validation messages of reports 2-5 are printed. */
-    private final PrintStream out = System.out;
+    private final PrintStream out;
+
+    /**
+     * Create a report printer that writes to standard output.
+     */
+    public CountryReports()
+    {
+        this.out = System.out;
+    }
 
     /**
      * Requirement 1: print all countries in the world, largest population first.
@@ -52,7 +51,7 @@ public class CountryReports
      */
     public void printAllCountriesInContinent(final Connection con, final String continent) throws SQLException
     {
-        if (continent == null || continent.trim().isEmpty())
+        if (continent == null || continent.isBlank())
         {
             out.println();
             out.println("Report 2: Invalid input - please enter a continent name");
@@ -74,7 +73,7 @@ public class CountryReports
      */
     public void printAllCountriesInRegion(final Connection con, final String region) throws SQLException
     {
-        if (region == null || region.trim().isEmpty())
+        if (region == null || region.isBlank())
         {
             out.println();
             out.println("Report 3: Invalid input - please enter a region name");
@@ -121,28 +120,27 @@ public class CountryReports
     public void printTopNCountriesInContinent(final Connection con, final String continent, final int topN)
             throws SQLException
     {
-        if (continent == null || continent.trim().isEmpty())
+        if (continent == null || continent.isBlank())
         {
             out.println();
             out.println("Report 5: Invalid input - please enter a continent name");
-            return;
         }
-
-        if (topN <= 0)
+        else if (topN <= 0)
         {
             out.println();
             out.println("Report 5: Invalid input - N must be greater than 0");
-            return;
         }
+        else
+        {
+            final String name = continent.trim();
 
-        final String name = continent.trim();
-
-        printReport(con,
-                "Report 5: Top " + topN + " populated countries in the continent " + name
-                        + " (largest to smallest)",
-                BASE_SQL + "WHERE c.Continent = ? " + ORDER_SQL + "LIMIT ?",
-                name,
-                topN);
+            printReport(con,
+                    "Report 5: Top " + topN + " populated countries in the continent " + name
+                            + " (largest to smallest)",
+                    BASE_SQL + "WHERE c.Continent = ? " + ORDER_SQL + "LIMIT ?",
+                    name,
+                    topN);
+        }
     }
 
     /**
@@ -153,28 +151,27 @@ public class CountryReports
     public void printTopNCountriesInRegion(Connection con, String region, int topN)
             throws SQLException
     {
-        if (region == null || region.trim().isEmpty())
+        if (region == null || region.isBlank())
         {
             System.out.println();
             System.out.println("Report 6: Invalid input - please enter a region name");
-            return;
         }
-
-        if (topN <= 0)
+        else if (topN <= 0)
         {
             System.out.println();
             System.out.println("Report 6: Invalid input - N must be greater than 0");
-            return;
         }
+        else
+        {
+            final String name = region.trim();
 
-        final String name = region.trim();
-
-        printReport(con,
-                "Report 6: Top " + topN + " populated countries in the region " + name
-                        + " (largest to smallest)",
-                BASE_SQL + "WHERE c.Region = ? " + ORDER_SQL + "LIMIT ?",
-                name,
-                topN);
+            printReport(con,
+                    "Report 6: Top " + topN + " populated countries in the region " + name
+                            + " (largest to smallest)",
+                    BASE_SQL + "WHERE c.Region = ? " + ORDER_SQL + "LIMIT ?",
+                    name,
+                    topN);
+        }
     }
 
     /**
